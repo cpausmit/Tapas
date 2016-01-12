@@ -1,0 +1,12 @@
+._.ec2
+.DS_Store
+._.DS_Store
+.*.sw?
+*~
+*.log
+*.pid
+min/cache/*
+app/logs/*
+app/tmp/*
+!.empty
+photos
