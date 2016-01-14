@@ -25,6 +25,8 @@ research = sys.argv[3]
 
 # find student in our spreadsheet
 firstName = ''
+
+os.chdir(os.getenv('TAPAS_TOOLS_DATA','./'))
 for line in os.popen('cat spreadsheets/grads_F2016.csv spreadsheets/grads_F2014.csv spreadsheets/grads_2013.csv spreadsheets/ugrad_2015.csv spreadsheets/grads_2009.csv').readlines():   # run command
 #for line in os.popen('cat spreadsheets/grads_F2013.csv').readlines():   # run command
 #for line in os.popen('cat spreadsheets/grads_2012.csv').readlines():   # run command

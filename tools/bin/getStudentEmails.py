@@ -70,8 +70,9 @@ print "\n Read %3d students records from the database.\n"%(nStudents)
 nMatches = 0
 firstName = ''
 lastName = ''
-for line in os.popen('cat ./spreadsheets/%sRawTas.csv | tr -d \' \''%(semesterId)).readlines():   # run command
-    line = line[:-1]                                                  # stripping '\n'
+dataFile = "%s/spreadsheets/%sRawTas.csv"%(os.getenv('TAPAS_TOOLS_DATA','./'),semesterId)
+for line in os.popen('cat ' + dataFile + ' | tr -d \' \'').readlines(): # run command
+    line = line[:-1] # stripping '\n'
     f = line.split(',')
     firstName = f[0]
     lastName  = f[1]
