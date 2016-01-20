@@ -27,23 +27,24 @@ research = sys.argv[3]
 firstName = ''
 
 os.chdir(os.getenv('TAPAS_TOOLS_DATA','./'))
-for line in os.popen('cat spreadsheets/grads_F2016.csv spreadsheets/grads_F2014.csv spreadsheets/grads_2013.csv spreadsheets/ugrad_2015.csv spreadsheets/grads_2009.csv').readlines():   # run command
+for line in os.popen('cat spreadsheets/grads_F2016.csv spreadsheets/grads_F2014.csv spreadsheets/grads_2013.csv spreadsheets/grads_2012.csv spreadsheets/grads_2009.csv spreadsheets/ugrad_2015.csv').readlines():   # run command
 #for line in os.popen('cat spreadsheets/grads_F2013.csv').readlines():   # run command
 #for line in os.popen('cat spreadsheets/grads_2012.csv').readlines():   # run command
     line = line[:-1]                     # stripping '\n'
-    line = line.replace(' ','')
-    f = line.split(',')
-    #print " F2: " + f[2]
     if re.search(email,line):
+        line = line.replace(' ','')
+        line = line.replace('"','')
+        f = line.split(',')
+        #print " LINE: " + line + "\n"
         firstName  = f[0]
         lastName   = f[1]
         g          = f[2].split('/')
         year       = int(g[2])
         supervisor = f.pop()
         advisor    = f.pop()
-        print " Found in overall spreadsheet\n    ('%s','%s','%s','%s','%s',%d,'%s','%s')"%\
-              (firstName,lastName,email,advisor,supervisor,year,division,research)
 
+        print " Found in overall spreadsheet\n    ( '%s', '%s', '%s', '%s', '%s', %d, '%s', '%s')"%\
+            (firstName,lastName,email,advisor,supervisor,year,division,research)
         student = Database.Student(firstName,lastName,email,advisor,supervisor,year,division,research)
         break
 
