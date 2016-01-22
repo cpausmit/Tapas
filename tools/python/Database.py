@@ -29,6 +29,9 @@ class DatabaseHandle:
     def getHandle(self):
         return self.handle
     
+    def commit(self):
+        self.handle.commit()
+
     def disco(self):
         self.handle.close()
 

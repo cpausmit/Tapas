@@ -109,8 +109,10 @@ class TeachingTask
 
   private function findType($letter) {
     $type = '';
-    if ($letter == "Lec")
+    if     ($letter == "Lec")
       $type = 'Lecturer';
+    elseif ($letter == "Adm")
+      $type = 'Admin';
     elseif ($letter == "Rec")
       $type = 'Recitator';
     elseif (substr($letter,0,2) == "Ta")

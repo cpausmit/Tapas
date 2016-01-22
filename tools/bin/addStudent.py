@@ -23,35 +23,44 @@ email    = sys.argv[1]
 division = sys.argv[2]
 research = sys.argv[3]
 
-# find student in our spreadsheet
-firstName = ''
+if len(sys.argv) > 3:
+    firstName  = sys.argv[4]
+    lastName   = sys.argv[5]
+    year       = int(sys.argv[6])
+    supervisor = sys.argv[7]
+    advisor    = sys.argv[8]
 
-os.chdir(os.getenv('TAPAS_TOOLS_DATA','./'))
-for line in os.popen('cat spreadsheets/grads_F2016.csv spreadsheets/grads_F2014.csv spreadsheets/grads_2013.csv spreadsheets/grads_2012.csv spreadsheets/grads_2009.csv spreadsheets/ugrad_2015.csv').readlines():   # run command
-#for line in os.popen('cat spreadsheets/grads_F2013.csv').readlines():   # run command
-#for line in os.popen('cat spreadsheets/grads_2012.csv').readlines():   # run command
-    line = line[:-1]                     # stripping '\n'
-    if re.search(email,line):
-        line = line.replace(' ','')
-        line = line.replace('"','')
-        f = line.split(',')
-        #print " LINE: " + line + "\n"
-        firstName  = f[0]
-        lastName   = f[1]
-        g          = f[2].split('/')
-        year       = int(g[2])
-        supervisor = f.pop()
-        advisor    = f.pop()
-
-        print " Found in overall spreadsheet\n    ( '%s', '%s', '%s', '%s', '%s', %d, '%s', '%s')"%\
-            (firstName,lastName,email,advisor,supervisor,year,division,research)
-        student = Database.Student(firstName,lastName,email,advisor,supervisor,year,division,research)
-        break
-
+else:
+   # find student in our spreadsheet
+   firstName = ''
+   
+   os.chdir(os.getenv('TAPAS_TOOLS_DATA','./'))
+   for line in os.popen('cat spreadsheets/grads_F2016.csv spreadsheets/grads_F2014.csv spreadsheets/grads_2013.csv spreadsheets/grads_2012.csv spreadsheets/grads_2009.csv spreadsheets/ugrad_2015.csv').readlines():   # run command
+   #for line in os.popen('cat spreadsheets/grads_F2013.csv').readlines():   # run command
+   #for line in os.popen('cat spreadsheets/grads_2012.csv').readlines():   # run command
+       line = line[:-1]                     # stripping '\n'
+       if re.search(email,line):
+           line = line.replace(' ','')
+           line = line.replace('"','')
+           f = line.split(',')
+           #print " LINE: " + line + "\n"
+           firstName  = f[0]
+           lastName   = f[1]
+           g          = f[2].split('/')
+           year       = int(g[2])
+           supervisor = f.pop()
+           advisor    = f.pop()
+   
+           print " Found in overall spreadsheet\n    ( '%s', '%s', '%s', '%s', '%s', %d, '%s', '%s')"%\
+               (firstName,lastName,email,advisor,supervisor,year,division,research)
+           break
+   
 # make sure the student was found
 if firstName == "":
     print "\n ERROR - Student was not found in spreadsheet ( Wrong email %s ? ).\n"%email
     sys.exit()
+else:
+    student = Database.Student(firstName,lastName,email,advisor,supervisor,year,division,research)
     
 # Open database connection
 db = Database.DatabaseHandle()
@@ -88,7 +97,7 @@ except:
     sys.exit()
 
 if nMatches == 0:    # now we just add the new student
-    sql = " insert into Students values %s"%student.insertString()
+    sql = " insert into Students values %s"%(student.insertString())
     print " SQL> " + sql
     try:
         # Execute the SQL command

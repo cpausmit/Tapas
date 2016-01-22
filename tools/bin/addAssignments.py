@@ -11,13 +11,36 @@ import Database
 #---------------------------------------------------------------------------------------------------
 # H E L P E R
 #---------------------------------------------------------------------------------------------------
-def makeTable(cursor,semesterId="",execute=""):
+def removeTable(table,flagging=True):
+    # remove the potentially existing table -- can be run nin flagging mode only
+
+    if not flagging:
+        # Prepare SQL query to drop the existing table
+        sql = "drop table Teaching." + table + ";"
+        try:
+            # Execute the SQL command
+            print " MYSQL> " + sql
+            cursor.execute(sql)
+        except:
+            print ' ERROR - table removal failed.'
+    else:
+        print ' INFO - table removal requested -- working in flagging mode.'
+
+def makeTable(cursor,semesterId="",execute="",remove=""):
     # test whether requested table exists already and if not make the table
 
     table = "Assignments" + semesterId
 
+    # remove potentially existing table
+    if remove == "yes":
+        flagging = False
+        if execute != "exec":
+            flagging = True
+        print " FLAGGING : %d"%flagging
+        removeTable(table,flagging)
+     
     # Prepare SQL query to test whether table exists
-    sql = "select 1 from " + table + " limit 1;"
+    sql = "describe " + table
     try:
         # Execute the SQL command
         print " MYSQL> " + sql
@@ -37,15 +60,15 @@ def makeTable(cursor,semesterId="",execute=""):
         except:
             print ' ERROR - table creation failed.'
             
-    # make the task field unique
-    sql = "alter table " + table + " add unique idTask (Task);"
-    try:
-        # Execute the SQL command
-        print " MYSQL> " + sql
-        if execute == "exec":
-            cursor.execute(sql)
-    except:
-        print ' ERROR - creating unique index field failed.'
+        # make the task field unique
+        sql = "alter table " + table + " add unique idTask (Task);"
+        try:
+            # Execute the SQL command
+            print " MYSQL> " + sql
+            if execute == "exec":
+                cursor.execute(sql)
+        except:
+            print ' ERROR - creating unique index field failed.'
 
 
 def findAssignment(cursor,semesterId,task):
@@ -89,14 +112,20 @@ execute = "no"
 if len(sys.argv) > 2:
     execute = sys.argv[2]
 
+remove = "no"
+if len(sys.argv) > 3:
+    remove = sys.argv[3]
+    print '\n ATTENTION -- removing all existing assignments (%s).\n'%(remove)
+
 # Open database connection
 db = Database.DatabaseHandle()
 # Prepare a cursor object using cursor() method
 cursor = db.getCursor()
 
-makeTable(cursor,semesterId,execute)
+makeTable(cursor,semesterId,execute,remove)
 
 lastCourse = 0
+os.chdir(os.getenv('TAPAS_TOOLS_DATA','./'))
 cmd = 'cat spreadsheets/' + semesterId + 'Teachers.csv | sort  -t, -k3 | grep -v ^#'
 for line in os.popen(cmd).readlines():
     line = line[:-1]
@@ -129,10 +158,13 @@ for line in os.popen(cmd).readlines():
                 print " MYSQL> " + sql
                 if execute == "exec":
                     cursor.execute(sql)
+                    db.commit()
+
             except:
                 print ' ERROR - insert failed: ' + sql
 
 # Loop through TA the assignment file
+os.chdir(os.getenv('TAPAS_TOOLS_DATA','./'))
 for line in os.popen('cat spreadsheets/' + semesterId + 'Assignments.csv | grep -v ^#').readlines():
     line = line[:-1]
     f = line.split(',')
@@ -150,12 +182,13 @@ for line in os.popen('cat spreadsheets/' + semesterId + 'Assignments.csv | grep 
                 print " MYSQL> " + sql
                 if execute == "exec":
                     cursor.execute(sql)
+                    db.commit()
             except:
                 print ' ERROR - insert failed: ' + sql
                 # in case no assignment yet made update existing one
                 setEmail = findAssignment(cursor,semesterId,task)
                 print " set email: '" + setEmail + "'"
-                if setEmail == '':
+                if setEmail == '' or  setEmail == 'EMPTY@mit.edu':
                     sql = "update Assignments" + semesterId + " set Person = '" \
                           + email + "' where Task = '" + subtask + "';"
                     print " SQL - " + sql
@@ -164,6 +197,7 @@ for line in os.popen('cat spreadsheets/' + semesterId + 'Assignments.csv | grep 
                         print " MYSQL> " + sql
                         if execute == "exec":
                             cursor.execute(sql)
+                            db.commit()
                     except:
                         print ' ERROR - update failed: ' + sql
                     
