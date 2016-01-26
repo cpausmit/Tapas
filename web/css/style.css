@@ -1413,3 +1413,115 @@ table.header {
   margin-left: 30px;
   font-family: arial, verdana, sans-serif; font-size:60%;
 }
+
+
+/*********************************************************************************/
+/* CSS DropDown Menus                                                            */
+/*********************************************************************************/
+# ORANGE
+# menu     background:       #ff9933;
+# dropdown background hover: #cc6600;
+# dropdown background:       #ff9933;
+
+# GREEN
+# menu     background:       #009933;
+# dropdown background hover: #006600;
+
+# GREEN
+# menu     background:       lightgreen;
+# dropdown background hover: darkgreen;
+
+#cssmenu {
+  border: none;
+  border: 0px;
+  margin: 0px;
+  padding: 0px;
+  font: 100% arial, verdana, sans-serif;
+  font-size: 20px;
+  font-weight: bold;
+  width: auto;
+}
+#cssmenu ul {
+  background: lightgreen;
+  height: 34px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+  border-radius: 4px;
+    -webkit-box-shadow: inset 0px 16px 0px 0px rgba(255, 255, 255, 0.1);
+    -moz-box-shadow: inset 0px 16px 0px 0px rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0px 16px 0px 0px rgba(255, 255, 255, 0.1);
+}
+#cssmenu li {
+  float: left;
+  padding: 0px 0px 0px 4px;
+}
+#cssmenu li a {
+  color: #000;
+  display: block;
+  font-weight: normal;
+  line-height: 34px;
+  margin: 0px;
+  padding: 0px 8px;
+  text-align: center;
+  text-decoration: none;
+}
+#cssmenu li a:hover {
+  background: darkgreen;
+  color: #AABBBB;
+  text-decoration: none;
+    -webkit-box-shadow: inset 0px 0px 7px 2px rgba(0, 0, 0, 0.3);
+    -moz-box-shadow: inset 0px 0px 7px 2px rgba(0, 0, 0, 0.3);
+  box-shadow: inset 0px 0px 7px 2px rgba(0, 0, 0, 0.3);
+}
+#cssmenu ul li:hover a {
+  background: darkgreen;
+  color: #AABBBB;
+  text-decoration: none;
+}
+#cssmenu li ul {
+  display: none;
+  height: auto;
+  padding: 0px;
+  margin: 0px;
+  border: 0px;
+  position: absolute;
+  width: 200px;
+  z-index: 200;
+}
+#cssmenu li:hover ul {
+  display: block;
+}
+#cssmenu li li {
+  display: block;
+  float: none;
+  margin: 0px;
+  padding: 0px;
+  width: 200px;
+  background: lightgreen;
+}
+#cssmenu li:hover li a {
+  color: #000;
+  background: none;
+}
+#cssmenu li ul a {
+  display: block;
+  height: 34px;
+  font-size: 20px;
+  font-style: normal;
+  margin: 0px;
+  padding: 0px 4px 0px 4px;
+  text-align: left;
+}
+#cssmenu li ul a:hover,
+#cssmenu li ul li:hover a {
+  border: 0px;
+  color: #AABBBB;
+  text-decoration: none;
+  background: darkgreen;
+    -webkit-box-shadow: inset 0px 0px 7px 2px rgba(0, 0, 0, 0.3);
+    -moz-box-shadow: inset 0px 0px 7px 2px rgba(0, 0, 0, 0.3);
+  box-shadow: inset 0px 0px 7px 2px rgba(0, 0, 0, 0.3);
+}
