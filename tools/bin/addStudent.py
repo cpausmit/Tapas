@@ -23,19 +23,19 @@ email    = sys.argv[1]
 division = sys.argv[2]
 research = sys.argv[3]
 
-if len(sys.argv) > 3:
+if len(sys.argv) > 4:
+    # specify full record
     firstName  = sys.argv[4]
     lastName   = sys.argv[5]
     year       = int(sys.argv[6])
     supervisor = sys.argv[7]
     advisor    = sys.argv[8]
-
 else:
    # find student in our spreadsheet
    firstName = ''
    
    os.chdir(os.getenv('TAPAS_TOOLS_DATA','./'))
-   for line in os.popen('cat spreadsheets/grads_F2016.csv spreadsheets/grads_F2014.csv spreadsheets/grads_2013.csv spreadsheets/grads_2012.csv spreadsheets/grads_2009.csv spreadsheets/ugrad_2015.csv').readlines():   # run command
+   for line in os.popen('cat spreadsheets/grads_F2017.csv spreadsheets/grads_F2016.csv spreadsheets/grads_F2014.csv spreadsheets/grads_2013.csv spreadsheets/grads_2012.csv spreadsheets/grads_2009.csv spreadsheets/ugrad_2015.csv').readlines():   # run command
    #for line in os.popen('cat spreadsheets/grads_F2013.csv').readlines():   # run command
    #for line in os.popen('cat spreadsheets/grads_2012.csv').readlines():   # run command
        line = line[:-1]                     # stripping '\n'

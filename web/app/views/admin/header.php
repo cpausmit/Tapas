@@ -3,18 +3,6 @@
 include("app/views/header.php");
 
 if (isAdmin() && !isMaster()) {
-  print '<div style="font-family: arial, verdana, sans-serif; font-size: 20px; color: darkred; background-color: pink" class="transbox">'."\n";
-  print '&nbsp; Admins:'."\n";
-  print '&nbsp; <a href="/admin"> <span class="fa fa-home">Home</span></a> &nbsp;'."\n";
-  print ' <a href="/courses">courses</a>'."\n";
-  print ' students:';
-  print ' <a href="/students">all</a>'."\n";
-  print ' <a href="/showActiveTas">active</a>'."\n";
-  print ' assignments:';
-  print ' <a href="/assignments">all</a>'."\n";
-  print ' <a href="/showActiveAssignments">active</a>'."\n";
-  print '</div>'."\n";
-
   print '<div style="font-family: arial, verdana, sans-serif; font-size: 20px" class="transbox">'."\n";
   print " <div id='cssmenu'>";
   print " <ul>";
@@ -32,9 +20,9 @@ if (isAdmin() && !isMaster()) {
   print "    </li>";
   print "    <li class='has-sub'><a href='#'><span>Assignments</span></a>";
   print "       <ul>";
-  print "          <li><a href='/assignments'><span>all</span></a></li>";
-  print "          <li><a href='/showActiveAssignments'><span>active</span></a></li>";
-  print "          <li><a href='/showLastAssignments'><span>last</span></a></li>";
+  print "          <li><a href='/assignments'><span>all terms</span></a></li>";
+  print "          <li><a href='/showActiveAssignments?option=ALL'><span>active all</span></a></li>";
+  print "          <li><a href='/showActiveAssignments?option=TA'><span>active TAs</span></a></li>";
   print "       </ul>";
   print "    </li>";
   print " </ul>";
@@ -62,8 +50,9 @@ if (isMaster()) {
   print "    </li>";
   print "    <li class='has-sub'><a href='#'><span>Assignments</span></a>";
   print "       <ul>";
-  print "          <li><a href='/assignments'><span>all</span></a></li>";
-  print "          <li><a href='/showActiveAssignments'><span>active</span></a></li>";
+  print "          <li><a href='/assignments'><span>all terms</span></a></li>";
+  print "          <li><a href='/showActiveAssignments?option=ALL'><span>active all</span></a></li>";
+  print "          <li><a href='/showActiveAssignments?option=TA'><span>active TAs</span></a></li>";
   print "          <li><a href='/showLastAssignments'><span>last</span></a></li>";
   print "          <li><a href='/copyLastAssignments'><span>copy-last</span></a></li>";
   print "       </ul>";

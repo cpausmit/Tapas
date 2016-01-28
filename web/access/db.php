@@ -111,7 +111,7 @@ function readTeacherTable($link)
   return $teachers;
 }
 
-function showAssignment($link,$table)
+function showAssignment($link,$table,$option = "ALL")
 {
   // show all assignments
   $query = "select * from $table order by Task";
@@ -132,29 +132,39 @@ function showAssignment($link,$table)
   $iP = 0;
   while ($statement->fetch()) {
     $myTask = new TeachingTask($task);
-    //if ($myTask->isTa())
-    print "<tr><td> "
-      . "<a href=\"/showTaskSummary?number=" . $myTask->getCourse(). "\">"
-      . $myTask->getCourse()
-      . "</a>"
-      . "&nbsp;</td><td>"
-      . $myTask->getType()    . "&nbsp;</td><td>"
-      . $myTask->getEffort()  . "&nbsp;</td><td>"
-      . $myTask->getTaType()  . "&nbsp;</td><td>"
-      . "<a href=\"/showTaSummary?email=" . $person . "\">"
-      . $person
-      . "</a>"
-      . "&nbsp;</td><td>"
-      . $myTask->generateId() . "&nbsp;</td></tr>\n";
-    if ($myTask->isTa() && $myTask->getEffort() == 'full')
-      $iF = $iF + 1;
-    if ($myTask->isTa() && $myTask->getEffort() == 'half')
-      $iF = $iF + 0.5;
-    if ($myTask->isTa() && $myTask->getEffort() == 'part')
-      $iP = $iP + 1;
+
+    $display = 0;
+    if ($option == "ALL")
+      $display = 1;
+    else if ($option == "TA" && $myTask->isTa())
+      $display = 1;
+    else if ($option == "Unassigned" && ($person == "" || $person == "EMPTY@mit.edu"))
+      $display = 1;
+
+    if ($display) {
+      print "<tr><td> "
+        . "<a href=\"/showTaskSummary?number=" . $myTask->getCourse(). "\">"
+        . $myTask->getCourse()
+        . "</a>"
+        . "&nbsp;</td><td>"
+        . $myTask->getType()    . "&nbsp;</td><td>"
+        . $myTask->getEffort()  . "&nbsp;</td><td>"
+        . $myTask->getTaType()  . "&nbsp;</td><td>"
+        . "<a href=\"/showTaSummary?email=" . $person . "\">"
+        . $person
+        . "</a>"
+        . "&nbsp;</td><td>"
+        . $myTask->generateId() . "&nbsp;</td></tr>\n";
+      if ($myTask->isTa() && $myTask->getEffort() == 'full')
+        $iF = $iF + 1;
+      if ($myTask->isTa() && $myTask->getEffort() == 'half')
+        $iF = $iF + 0.5;
+      if ($myTask->isTa() && $myTask->getEffort() == 'part')
+        $iP = $iP + 1;
+    }   
   }
-  print "</table><br>";
-  print "<p> Total TA openings: <b>$iF</b> (full time)  <b>$iP</b> (part time).</p><br> \n";
+  print "</table>";
+  print "<p> TA openings ($option): <b>$iF</b> (full time)  <b>$iP</b> (part time).</p><br> \n";
 }
 
 function showTas($link,$table)
