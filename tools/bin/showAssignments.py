@@ -7,7 +7,7 @@ import sys,re,os
 import MySQLdb
 import Database
 
-debug = False
+debug = True
 check = False
 
 usage  = " usage: showAssignment.py  <semesterId>  <taskType>  [ <printEmail> ]\n\n"
@@ -25,6 +25,7 @@ if len(sys.argv) < 3:
     
 period     = sys.argv[1]
 taskType   = sys.argv[2]
+printEmail = ''
 if len(sys.argv) > 3:
     printEmail = sys.argv[3]
 
@@ -172,15 +173,14 @@ preAssignment  = [ ]
 preEmails      = ''
 teachersEmails = ''
 
-
 for key, assignment in assignments.iteritems():
     if debug:
-        print "## Key: " + key + ' --> ' + assignment
+        print "\n\n# NEXT # Key: " + key + ' --> ' + assignment
 
     try:
         student = activeStudents.retrieveElement(key)
         if debug:
-            print "\nAssignment for %s %s (%s)"%(student.firstName,student.lastName,key)
+            print "\n Assignment for %s %s (%s)"%(student.firstName,student.lastName,key)
 
         if preEmails == '':
             preEmails = key
@@ -208,14 +208,21 @@ for key, assignment in assignments.iteritems():
             
             filename += "_" + number
 
+            if debug:
+                print " FileName: %s"%(filename)
+
             if ((taskType == 'full' and (re.search('TaF',type) or re.search('TaH',type))) or \
                 (taskType == 'part' and  re.search('TaP',type)) ):
 
+                if debug:
+                    print " Number: %s"%(number)
                 course  = activeCourses.retrieveElement(number)
+                if debug:
+                    print " Admin: %s"%(course.admin)
                 faculty = activeFaculties.retrieveElement(course.admin)
 
                 if debug:
-                    print " Course: " + number + "  Faculty: " + course.faculty
+                    print " Course: " + number + "  Faculty: " + course.admin
 
                 if type[3] == "U":
                     tmp = "%-14s, %-14s TA (U) - %-6s  %-40s %s %s (%s)"%\
@@ -223,7 +230,7 @@ for key, assignment in assignments.iteritems():
                            faculty.firstName,faculty.lastName,faculty.eMail)
                     preAssignment.append(tmp)
                     assignString += " Utility TA in course  " + course.number + \
-                                    " (" + course.name + ")  taught by  " + faculty.firstName + \
+                                    " (" + course.name + ") administered by " + faculty.firstName + \
                                     " " + faculty.lastName + " (" + faculty.eMail + ")"
                 elif type[3] == "R" or type[3] == "L":
                     tmp = "%-14s, %-14s TA (R) - %-6s  %-40s %s %s (%s)"%\
@@ -232,7 +239,7 @@ for key, assignment in assignments.iteritems():
                     preAssignment.append(tmp)
 
                     assignString += " Recitation TA in course  " + course.number + \
-                                    " (" + course.name + ")  taught by  " + faculty.firstName + \
+                                    " (" + course.name + ") administered by " + faculty.firstName + \
                                     " " + faculty.lastName + " (" + faculty.eMail + ")"
                     
                 else:
@@ -240,7 +247,8 @@ for key, assignment in assignments.iteritems():
 
                 # addup the additional faculty to be copied
                 ##additionalCc += "," + faculty.eMail
-                additionalCc += "," + course.faculty
+                if course.admin != 'EMPTY@mit.edu':
+                    additionalCc += "," + course.admin
 
         if debug:
             print assignString
@@ -255,7 +263,7 @@ for key, assignment in assignments.iteritems():
 
 
         print "\n" + term + " " + student.firstName + " " + student.lastName + "\n" \
-              + assignString +" " + taskType
+              + assignString
         
         if printEmail == "email":
             cmd = "generateEmail.sh '" + term + "' \"" + student.firstName + " " \

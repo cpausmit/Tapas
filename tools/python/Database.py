@@ -48,7 +48,8 @@ class Course:
     def setFaculty(self, faculty):
         if self.faculty == 'EMPTY@mit.edu':
             self.faculty = faculty
-            self.admin   = faculty
+            if self.admin == 'EMPTY@mit.edu':
+                self.admin   = faculty
         else:
             self.faculty += ',' + faculty
 

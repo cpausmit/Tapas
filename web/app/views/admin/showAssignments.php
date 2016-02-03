@@ -17,7 +17,7 @@ print ' ';
 // connect to our database
 $link = getLink();
 
-// show last assignments
+// show assignments
 showAssignment($link,'Assignments'.$term);
 
 print '</article>'."\n";
