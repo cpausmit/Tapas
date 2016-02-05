@@ -65,13 +65,9 @@ if (isMaster()) {
   print "          <li><a href='/showEvaluators'><span>evaluators</span></a></li>";
   print "       </ul>";
   print "    </li>";
-  print "    <li class='has-sub'><a href='#'><span>Email</span></a>";
-  print "       <ul>";
-  print "          <li><a href='/email'><span>TAs</span></a></li>";
-  print "       </ul>";
-  print "    </li>";
   print "    <li class='has-sub'><a href='#'><span>Misc</span></a>";
   print "       <ul>";
+  print "          <li><a href='/email'><span>email</span></a></li>";
   print "          <li><a href='/showAccessLists'><span>access lists</span></a></li>";
   print "          <li><a href='/findTas'><span>find Tas</span></a></li>";
   print "       </ul>";
