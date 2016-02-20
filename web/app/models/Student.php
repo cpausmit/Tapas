@@ -7,8 +7,16 @@ class Student
   public function __construct() { }
   public function __destruct() { }
 
-  public static function fromEmail($db,$email) // 'constructor' with just email given
+  public static function fresh()
   {
+    // 'constructor' returns blank student
+    $instance = new self();
+    return $instance;
+  }
+
+  public static function fromEmail($db,$email)
+  {
+    // 'constructor' with just email given
     $instance = new self();
     $rows = $db->exec("select * from Students where Email = '$email'");
     $nRows = sizeof($rows);
@@ -19,8 +27,9 @@ class Student
     return $instance;
   }
 
-  public static function fromRow(array $row)   // 'constructor' using db query row
+  public static function fromRow(array $row)
   {
+    // 'constructor' using db query row
     $instance = new self();
     $instance->fill($row);
     return $instance;
@@ -38,6 +47,21 @@ class Student
     $this->year = $row[5];
     $this->division = $row[6];
     $this->research = $row[7];
+  }
+
+  public function addToDb($db)
+  {
+    // adding the given student instance to the database
+
+    // make sure this is a valid new entry
+    $this->isValid();
+  }
+
+  protected function isValid()
+  {
+    // making sure student information is valid
+
+    print '<br> validating student information ....<br>';
   }
 
   public function printTableRow($open)

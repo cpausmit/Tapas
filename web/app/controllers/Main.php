@@ -66,6 +66,11 @@ class Main extends Controller {
     $view = new View;
     echo $view->render('admin/addStudent.php');
   }
+  public function recordStudent($f3) {
+    $f3->set('selected', 'admin');
+    $view = new View;
+    echo $view->render('admin/recordStudent.php');
+  }
   public function showTaSummary($f3) {
     $f3->set('selected', 'admin');
     $view = new View;

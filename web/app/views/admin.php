@@ -10,7 +10,7 @@ if (isAdmin() || isMaster()) {
   print '&nbsp;&nbsp; <a href="/courses">courses</a>'."\n";
   print '&nbsp;&nbsp; <a href="/students">students</a>'."\n";
   print '&nbsp;&nbsp; <a href="/assignments">assignments</a>'."\n";
-  print '&nbsp;&nbsp; <a href="/showActiveAssignments">active Assignments</a>'."\n";
+  print '&nbsp;&nbsp; <a href="/showActiveAssignments?option=TA">active Assignments</a>'."\n";
   print '&nbsp;&nbsp; <a href="/showActiveTas">active Tas</a>'."\n";
   print ' '."\n";
 }
