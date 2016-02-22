@@ -1,4 +1,5 @@
 <?php
+include("app/models/Utils.php");
 
 class Student
 {
@@ -54,14 +55,48 @@ class Student
     // adding the given student instance to the database
 
     // make sure this is a valid new entry
-    $this->isValid();
+    if ($this->isValid()) {
+      print '<br> Forming the SQL. <br>';
+    }
+    else {
+      print '<br> Invalid entry. STOP!<br>';
+    }
   }
 
   protected function isValid()
   {
     // making sure student information is valid
 
+    $valid = true;
+
     print '<br> validating student information ....<br>';
+
+    if (isName($this->firstName))
+      print " -- First Name valid.<br>\n";
+    else
+      return false;
+
+    if (isName($this->lastName))
+      print " -- Last Name valid.<br>\n";
+    else
+      return false;
+
+    if (isEmail($this->email))
+      print " -- Email valid.<br>\n";
+    else
+      return false;
+
+    if (isEmail($this->advisorEmail))
+      print " -- Advisor Email valid.<br>\n";
+    else
+      return false;
+    
+    if (isEmail($this->supervisorEmail))
+      print " -- Supervisor Email valid.<br>\n";
+    else
+      return false;
+
+    return $valid;
   }
 
   public function printTableRow($open)
