@@ -19,7 +19,7 @@ $students = "";
 $rows = $db->query("select * from Students order by lastName");
 foreach ($rows as $key => $row) {
   $student = Student::fromRow($row);
-  $students[$student->getEmail()] = $student;
+  $students[$student->email] = $student;
 }
 
 // find active Ta table
@@ -36,7 +36,7 @@ foreach ($rows as $key => $row) {
 }
 $nTas = $i;
 
-print '<article class="page">'."\n";
+print "<article class=\"page\">\n";
 print "<h1>Show Active TAs</h1>\n";
 print "<p>Active assignment table: $taTable";
 print " with $nTas Tas.</p>";
@@ -61,7 +61,7 @@ foreach ($tas as $key => $ta) {
   }
 }
 
-// footer
+//footer
 print "</table>\n";
 print "<hr>\n";
 print '</article>'."\n";

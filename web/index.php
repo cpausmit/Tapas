@@ -33,6 +33,8 @@ $f3->route('GET /students',             'Main->students');
 $f3->route('GET /addStudent',           'Main->addStudent');
 $f3->route('GET|POST /updateStudent',   'Main->updateStudent');
 $f3->route('GET|POST /recordStudent',   'Main->recordStudent');
+$f3->route('GET /addActiveTa',          'Main->addActiveTa');
+$f3->route('GET|POST /updateActiveTas', 'Main->updateActiveTas');
 $f3->route('GET /showTaSummary',        'Main->showTaSummary');
 $f3->route('GET /showTaskSummary',      'Main->showTaskSummary');
 $f3->route('GET /showAssignments',      'Main->showAssignments');
