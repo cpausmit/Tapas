@@ -19,12 +19,17 @@ class Student
   {
     // 'constructor' with just email given
     $instance = new self();
-    $rows = $db->exec("select * from Students where Email = '$email'");
-    $nRows = sizeof($rows);
-    if ($nRows == 1)
-      $instance->fill($rows[0]);
-    else
-      print " ERROR -- loading failed (nRows: $nRows)\n";
+    $sql = "select * from Students where Email = '$email'";
+    //print " SQL: $sql";
+    $students = $db->query($sql);
+    foreach ($students as $key => $row) {
+      $instance->fill($row);
+    }
+ 
+    if ($instance->email == 'EMPTY@mit.edu') {
+      print "<br> WARNING -- loading failed return empty<br> -------- (SQL: $sql)<br><br>\n";
+    }
+ 
     return $instance;
   }
 
@@ -56,7 +61,14 @@ class Student
 
     // make sure this is a valid new entry
     if ($this->isValid()) {
+      // check for duplicate
       print '<br> Forming the SQL. <br>';
+      $vals = 'undefined';
+      $vals = sprintf("('%s','%s','%s','%s','%s',%d,'%s','%s')",$this->firstName,$this->lastName,
+                      $this->email,$this->advisorEmail,$this->supervisorEmail,
+                      $this->year,$this->division,$this->research);
+      $sql = " insert into Students values $vals";
+      print "<br> SQL: $sql <br>";
     }
     else {
       print '<br> Invalid entry. STOP!<br>';
@@ -96,6 +108,13 @@ class Student
     else
       return false;
 
+    if ($this->year > 1970 and $this->year < 2020)
+      print "Number is a year: $this->year -- Year valid.<br>\n";
+    else {
+      print "Number is not a year: $this->year.<br>\n";
+      return false;
+    }
+   
     return $valid;
   }
 

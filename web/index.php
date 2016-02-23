@@ -31,6 +31,7 @@ $f3->route('GET /courses',              'Main->courses');
 $f3->route('GET /assignments',          'Main->assignments');
 $f3->route('GET /students',             'Main->students');
 $f3->route('GET /addStudent',           'Main->addStudent');
+$f3->route('GET|POST /updateStudent',   'Main->updateStudent');
 $f3->route('GET|POST /recordStudent',   'Main->recordStudent');
 $f3->route('GET /showTaSummary',        'Main->showTaSummary');
 $f3->route('GET /showTaskSummary',      'Main->showTaskSummary');
