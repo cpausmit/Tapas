@@ -7,7 +7,7 @@
 #
 #    >> create table Students (FirstName char(20), LastName char(20),
 #                              Email char(40), AdvisorEmail char(40), SupervisorEmail char(40),
-#                              Year int, Divison char(4), Research char(6));
+#                              Year int, Division char(4), Research char(6));
 # ==================================================================================================
 import MySQLdb
 import sys

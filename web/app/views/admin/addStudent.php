@@ -8,7 +8,7 @@ if (! (isAdmin() || isMaster())) {
 }
 
 print '<article class="page">'."\n";
-print '<h1>Add a Students to the Database</h1>'."\n";
+print '<h1>Add/Update Student in the Database</h1>'."\n";
 print ' '."\n";
 
 $email = 'undefined';
@@ -22,7 +22,7 @@ print '  <input type="text" name="email"><br>'."\n";
 print '</td></tr>';
 print '<tr><td> ------ </td><td> </td></tr>';
 print '<tr><td></td><td>';
-print '<input type="submit" value="update student record" />'."\n";
+print '<input type="submit" value="find student record" />'."\n";
 print '</td></tr>';
 print '</table>';
 print '</form>'."\n";

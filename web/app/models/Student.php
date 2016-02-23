@@ -26,9 +26,8 @@ class Student
       $instance->fill($row);
     }
  
-    if ($instance->email == 'EMPTY@mit.edu') {
-      print "<br> WARNING -- loading failed return empty<br> -------- (SQL: $sql)<br><br>\n";
-    }
+    //if ($instance->year == 0)
+    //  print "<br> WARNING -- loading failed return empty (SQL: $sql)<br><br>\n";
  
     return $instance;
   }
@@ -55,6 +54,16 @@ class Student
     $this->research = $row[7];
   }
 
+  // Property declaration
+  public $firstName = '';
+  public $lastName = '';
+  public $email = '';
+  public $advisorEmail = '';
+  public $supervisorEmail = '';
+  public $year = 0;
+  public $division = '';
+  public $research = '';                    
+
   public function addToDb($db)
   {
     // adding the given student instance to the database
@@ -62,19 +71,44 @@ class Student
     // make sure this is a valid new entry
     if ($this->isValid()) {
       // check for duplicate
-      print '<br> Forming the SQL. <br>';
-      $vals = 'undefined';
+      print '<br> Input is valid.Forming the SQL. <br>';
       $vals = sprintf("('%s','%s','%s','%s','%s',%d,'%s','%s')",$this->firstName,$this->lastName,
                       $this->email,$this->advisorEmail,$this->supervisorEmail,
                       $this->year,$this->division,$this->research);
       $sql = " insert into Students values $vals";
       print "<br> SQL: $sql <br>";
+      $db->Exec($sql);
     }
     else {
       print '<br> Invalid entry. STOP!<br>';
     }
   }
 
+  public function updateDb($db)
+  {
+    // adding the given student instance to the database
+
+    // make sure this is a valid new entry
+    if ($this->isValid()) {
+
+        // check for duplicate
+      print '<br> Forming the SQL. <br>';
+
+      $form = "FirstName = '%s', LastName = '%s'";
+      $form = "$form , AdvisorEmail = '%s', SupervisorEmail = '%s', Year = %d";
+      $form = "$form , Division = '%s', Research = '%s'";
+      $vals = sprintf($form,$this->firstName,$this->lastName,
+                      $this->advisorEmail,$this->supervisorEmail,
+                      $this->year,$this->division,$this->research);
+      $sql = " update Students set $vals where Email = '$this->email';";
+      print "<br> SQL: $sql <br>";
+      $db->Exec($sql);
+    }
+    else {
+      print '<br> Invalid entry. STOP!<br>';
+    }
+  }
+    
   protected function isValid()
   {
     // making sure student information is valid
@@ -160,25 +194,11 @@ class Student
           ',   research supervisor: ' . $this->supervisorEmail . "\n";
   }
 
-  // Simple accessors
-  public function getFirstName() { return $this->firstName; }
-  public function getLastName() { return $this->lastName; }
-  public function getEmail() { return $this->email; }
-  public function getAdvisorEmail() { return $this->advisorEmail; }
-  public function getSupervisorEmail() { return $this->supervisorEmail; }
-  public function getYear() { return $this->year; }
-  public function getDivision() { return $this->division; }
-  public function getResearch() { return $this->research; }
-
-  // Property declaration
-  public $firstName = '';
-  public $lastName = '';
-  public $email = 'EMPTY@mit.edu';
-  public $advisorEmail = 'EMPTY@mit.edu';
-  public $supervisorEmail = 'EMPTY@mit.edu';
-  public $year = 0;
-  public $division = '';
-  public $research = '';                    
+  public function isFresh()
+  {
+    // print one row of a table with the relvant infromation
+    return ($this->year == 0);
+  }
 
 }
 
