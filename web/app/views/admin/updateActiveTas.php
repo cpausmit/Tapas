@@ -51,8 +51,14 @@ else {
   $nTas = $i;
   
   print "<p>Active assignment table: $taTable with $nTas Tas.</p>";
-  if ($new)
+  if ($new) {
     print "<p>New TA will be added: $email</p>\n";
+    $ta = Ta::fresh();
+    $ta->email = $email;
+    $ta->fullTime = 1;
+    $ta->partTime = 0;
+    $ta->addToDb($db,$taTable);
+  }
   else
     print "<p>Proposed TA is already in our list: $email</p>\n";
 

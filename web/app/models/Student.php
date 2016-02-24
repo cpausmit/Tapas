@@ -1,6 +1,7 @@
 <?php
 
-include("app/models/Utils.php");
+include_once("app/models/Utils.php");
+include_once("app/models/Dbc.php");
 
 class Student
 {
