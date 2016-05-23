@@ -3,6 +3,9 @@
 # Generate an email based on a few given templates. A few predefined standard tags will be replaced.
 #----------------------------------------------------------------------------------------------------
 
+SPOOL_DIR="./spool"
+[ -z $TAPAS_TOOLS_DATA ] || SPOOL_DIR=$TAPAS_TOOLS_DATA/spool
+
 DEBUG=0
 
 TERM="$1"
@@ -25,12 +28,12 @@ then
 fi
 
 # make sure we have a local spool directory
-if ! [ -d spool ]
+if ! [ -d $SPOOL_DIR ]
 then
-  mkdir "./spool"
+  mkdir "$SPOOL_DIR"
   if [ "$?" != "0" ]
   then
-    echo " ERROR - could not create local spool directory (./spool)"
+    echo " ERROR - could not create local spool directory ($SPOOL_DIR)"
     exit 1
   fi
 fi
@@ -49,13 +52,13 @@ fileName=`echo $NAME | tr ' ' '_'`_${TERM}_.eml
 if [ "$termType" == "I" ] # IAP at MIT is a special case
 then
   sed -e "s/XX-TA-NAME-XX/$NAME/" -e "s/XX-COURSE-XX/$ASSIGNMENT/" \
-         $TAPAS_TOOLS_TEMPLATES/PartTaIap.eml > "./spool/$FILENAME.tmp"
+         $TAPAS_TOOLS_TEMPLATES/PartTaIap.eml > "$SPOOL_DIR/$FILENAME.tmp"
 else
   sed -e "s/XX-TA-NAME-XX/$NAME/" -e "s/XX-COURSE-XX/$ASSIGNMENT/" \
-         $template > "./spool/$FILENAME.tmp"
+         $template > "$SPOOL_DIR/$FILENAME.tmp"
 fi
 
-cat "./spool/$FILENAME.tmp" | tr '#' '\n' > "./spool/$FILENAME"
-rm  "./spool/$FILENAME.tmp"
+cat "$SPOOL_DIR/$FILENAME.tmp" | tr '#' '\n' > "$SPOOL_DIR/$FILENAME"
+rm  "$SPOOL_DIR/$FILENAME.tmp"
 
 exit 0
