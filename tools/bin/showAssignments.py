@@ -7,8 +7,10 @@ import sys,re,os
 import MySQLdb
 import Database
 
-debug = True
+debug = False
 check = False
+dataDir = os.getenv('TAPAS_TOOLS_DATA','./')
+os.chdir(dataDir)
 
 usage  = " usage: showAssignment.py  <semesterId>  <taskType>  [ <printEmail> ]\n\n"
 usage += "          semesterId       identification string for a specific semster\n"
@@ -265,17 +267,17 @@ for key, assignment in assignments.iteritems():
         print "\n" + term + " " + student.firstName + " " + student.lastName + "\n" \
               + assignString
         
+        print ' EMAIL? : ' + printEmail
+
         if printEmail == "email":
             cmd = "generateEmail.sh '" + term + "' \"" + student.firstName + " " \
                   + student.lastName + "\" '" + assignString +"' \"" + filename + "\" " + taskType
             if debug:
                 print " CMD: " + cmd
-            
             os.system(cmd)
-            
             print " mail -S replyto=paus@mit.edu " + "-c " + additionalCc + "," + departmentEmail \
-                  + " -s \'TA Assignment " + term + " (" + student.firstName + " " \
-                  + student.lastName + ")\' " + student.eMail + " < " "./spool/" + filename
+                + " -s \'TA Assignment " + term + " (" + student.firstName + " " \
+                + student.lastName + ")\' " + student.eMail + " < " + dataDir + "/spool/" + filename
 
     except:
         student = 0       
