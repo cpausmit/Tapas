@@ -9,11 +9,11 @@ function findAccessParameters()
   $user = "";
   $passwd = "";
 
-  $handle = fopen('/etc/my.cnf','r');
+  $handle = fopen('/etc/myTapas.cnf','r');
   while(!feof($handle)) {
     $tmp = fgets($handle);
     $tmp = substr_replace($tmp,"",-1);
-    if ($tmp == "[mysql-teaching]") {
+    if ($tmp == "[mysql-tapas]") {
       $on = 1;
     }
     if ($on == 1 && ($host == "" || $user == "" || $passwd == "")) {
@@ -47,6 +47,7 @@ function getLink()
   $user = $pars[1];
   $passwd = $pars[2];
   //echo " HOST: $host  USER $user  PASS: $passwd";
+  //echo " HOST: $host  USER $user";
   
   $link = mysqli_connect($host,$user,$passwd,'Teaching')
     or die('Error ' . mysqli_error($link));
@@ -71,21 +72,36 @@ function readAdmins($link)
 
 function readFullTaTable($link)
 {
+  $tas = "";
+
   // first find active tables
   $tables = findActiveTable($link,'Tas');
-
-  // the one place where we load the tas
-  $tas = "";
-  $i = 0;
-  $query = "select * from $tables[0] where FullTime=1";
-  $statement = $link->prepare($query);
-  $statement->execute();
-  $statement->bind_result($email,$fullTime,$partTime);
-  while ($statement->fetch()) {
-    $tas[$i] = $email;
-    $i = $i + 1;
+  
+  if ($tables == '') {
+      //print ' No active TA tables matching.';
+    return $tas;
   }
 
+  //print ' Tables: ' . count($tables) . ' ' . $tables[0];
+  
+  // the one place where we load the tas
+  $i = 0;
+  $query = "select * from $tables[0] where FullTime=1";
+
+  try {
+      //print ' Trying...';
+      $statement = $link->prepare($query);
+      $statement->execute();
+      $statement->bind_result($email,$fullTime,$partTime);
+      while ($statement->fetch()) {
+          $tas[$i] = $email;
+          $i = $i + 1;
+      }
+  }
+  catch (Exception $e) {
+    echo 'Caught exception: ',  $e->getMessage(), "\n";
+  }
+  
   return $tas;
 }
 
@@ -493,6 +509,7 @@ function findActiveTable($link,$pattern)
     print " ERROR - no active '%$pattern%' table: ErrNo=" . $errNum . ": " . $errMsg . "\n";
     exit();
   }
+
   $statement->bind_result($tableName);
   while ($statement->fetch()) {
     $activeTables[$i] = $tableName;

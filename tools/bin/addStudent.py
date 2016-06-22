@@ -35,9 +35,17 @@ else:
    firstName = ''
    
    os.chdir(os.getenv('TAPAS_TOOLS_DATA','./'))
-   for line in os.popen('cat spreadsheets/grads_F2017.csv spreadsheets/grads_F2016.csv spreadsheets/grads_F2014.csv spreadsheets/grads_2013.csv spreadsheets/grads_2012.csv spreadsheets/grads_2009.csv spreadsheets/ugrad_2015.csv').readlines():   # run command
-   #for line in os.popen('cat spreadsheets/grads_F2013.csv').readlines():   # run command
-   #for line in os.popen('cat spreadsheets/grads_2012.csv').readlines():   # run command
+
+   # add all existing tables (starting with the newest == most up to date one)
+   tables  = "spreadsheets/grads_S2016.csv "
+   tables += "spreadsheets/grads_F2016.csv "
+   tables += "spreadsheets/grads_F2014.csv "
+   tables += "spreadsheets/grads_F2013.csv "
+   tables += "spreadsheets/grads_F2012.csv "
+   tables += "spreadsheets/grads_F2009.csv "
+   tables += "spreadsheets/ugrads_F2015.csv "
+
+   for line in os.popen('cat ' + tables).readlines():   # run command
        line = line[:-1]                     # stripping '\n'
        if re.search(email,line):
            line = line.replace(' ','')

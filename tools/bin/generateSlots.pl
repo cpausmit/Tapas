@@ -9,7 +9,6 @@ use DBI;
 #                                                        Written: December 04, 2013 (Christoph Paus)
 #---------------------------------------------------------------------------------------------------
 use lib "./perl";
-## use CourseTas;
 
 my ($host,$driver,$database,$dsn,$userid,$password,$dbh);
 my ($query,$sqlQuery);
@@ -24,6 +23,39 @@ my ($totalLec,$totalRec);
 my (@f,@g,@h);
 my ($i,$line,$cmd,$rc);
 
+sub findTag {
+  my $file = shift(@_);
+  my $group = shift(@_);
+  my $tag = shift(@_);
+
+  my $active = 0;
+  my $value = "";
+  my $testTag = "";
+  my $testValue = "";
+  
+  
+  open(INPUT,"<$file");
+  while($line = <INPUT>) {
+    chop($line);
+    if ("$line" eq "[$group]") {
+	$active = 1;
+    }
+    if ($active == 1) {
+      @f = split('=',$line);
+      $testTag = $f[0];
+      $testTag =~ s/ //g;
+      $testValue = $f[1];
+      $testValue =~ s/ //g;
+      if ($testTag eq $tag) {
+        $value = $testValue;
+        last;
+      }
+    }
+  } 
+  
+  return $value;
+}
+  
 sub addToDb {
   my $db = shift(@_);
   my $dbh = shift(@_);
@@ -33,9 +65,9 @@ sub addToDb {
 
   if ("$db" ne "") {
       my $sqlQuery  = $dbh->prepare($query)
-	  or die "Cannot prepare \"$query\": $dbh->errstr\n";
+          or die "Cannot prepare \"$query\": $dbh->errstr\n";
       my $rv = $sqlQuery->execute
-	  or printf " insert failed. moving on.\n";
+          or printf " insert failed. moving on.\n";
       my $rc = $sqlQuery->finish;
 
       return $rc;
@@ -54,14 +86,16 @@ my $DB         = $ARGV[1];
 
 
 if ("$DB" ne "") {
+
+	
   # Connect to database
-  $host     = "t3btch039.mit.edu";
+  $host = findTag("/etc/my.cnf","mysql-teaching","host");
+  $userid = findTag("/etc/my.cnf","mysql-teaching","user");
+  $password = findTag("/etc/my.cnf","mysql-teaching","password");
   $driver   = "mysql";
   $database = "Teaching";
   $dsn      = "DBI:$driver:database=$database:$host";
-  $userid   = "teaching_adm";
-  $password = "Dp1248physics!";
-  $dbh      = DBI->connect($dsn, $userid, $password ) or die $DBI::errstr;
+  $dbh      = DBI->connect($dsn, $userid, $password) or die $DBI::errstr;
   
   # Make sure to create the table is it does not exist
   $query    = "create table Assignments${SEMESTERID}(Task char(20), Person char(40));";
@@ -121,28 +155,28 @@ while($line = <INPUT>) {
         @g = split(',',$courseEmail);
         $courseEmail = @g[0];
         $lecEmail = $courseEmail;
-	my $n = $i+1;
-	my $query = "${base}-Lec-$n','$lecEmail');";
+        my $n = $i+1;
+        my $query = "${base}-Lec-$n','$lecEmail');";
 
-	$rc = addToDb($DB,$dbh,$query);
-	## >> printf " MYSQL> $query\n";
-	## >> if ("$DB" ne "") {
-	## >>   my $sqlQuery  = $dbh->prepare($query)
-	## >>     or die "Cannot prepare \"$query\": $dbh->errstr\n";
-	## >>   #my $rv = $sqlQuery->execute
-	## >>   #  or die "cannot execute query: $sqlQuery->errstr";
-	## >> 
-	## >>   my $rv = $sqlQuery->execute
-	## >>     or printf " insert failed. moving on.\n";
-	## >> 
-	## >>   ## #print "<h3>********** My Perl DBI Test ***************</h3>";
-	## >>   ## #print "<p>Here is a list of tables in the MySQL database $db.</p>";
-	## >>   ## #while (@row= $sqlQuery->fetchrow_array()) {
-	## >>   ## #  my $tables = $row[0];
-	## >>   ## #  print "$tables\n<br>";
-	## >>   ## #}
-	## >>   my $rc = $sqlQuery->finish;
-	## >> }
+        $rc = addToDb($DB,$dbh,$query);
+        ## >> printf " MYSQL> $query\n";
+        ## >> if ("$DB" ne "") {
+        ## >>   my $sqlQuery  = $dbh->prepare($query)
+        ## >>     or die "Cannot prepare \"$query\": $dbh->errstr\n";
+        ## >>   #my $rv = $sqlQuery->execute
+        ## >>   #  or die "cannot execute query: $sqlQuery->errstr";
+        ## >> 
+        ## >>   my $rv = $sqlQuery->execute
+        ## >>     or printf " insert failed. moving on.\n";
+        ## >> 
+        ## >>   ## #print "<h3>********** My Perl DBI Test ***************</h3>";
+        ## >>   ## #print "<p>Here is a list of tables in the MySQL database $db.</p>";
+        ## >>   ## #while (@row= $sqlQuery->fetchrow_array()) {
+        ## >>   ## #  my $tables = $row[0];
+        ## >>   ## #  print "$tables\n<br>";
+        ## >>   ## #}
+        ## >>   my $rc = $sqlQuery->finish;
+        ## >> }
       }
     }
     for (my $i=0; $i < $Rec; $i++) {

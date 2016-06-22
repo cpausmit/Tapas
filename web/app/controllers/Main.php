@@ -6,7 +6,6 @@ class Main extends Controller {
     $this->add_js("/jslib/knockout-3.1.0.js");
     $this->add_js("/js/main.js");
     $this->add_css("/css/timeline.css");
-
     $f3 = \Base::instance();
     $f3->set("js_bundle", $this->get_min_js_url());
     $f3->set("css_bundle", $this->get_min_css_url());

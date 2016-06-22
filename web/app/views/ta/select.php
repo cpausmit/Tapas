@@ -17,9 +17,14 @@ print ' '."\n";
 
 // connect to our database
 $link = getLink();
-// find the active table
+
+// find the active TA table
+$active = findActiveTable($link,'Tas');
+$tasTable =  $active[0];
+
+// find the active Assignment table
 $active = findActiveTable($link,'Assignments');
-print "Active assignment table: $active[0]</p>";
+print "Active tables: $tasTable (TAs), $active[0] (Assignments)</p>";
 
 // start the form
 print '<form class="ta" action="/register" method="post">'."\n";

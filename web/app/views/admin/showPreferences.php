@@ -20,8 +20,9 @@ $students = "";
 $rows = $db->query("select * from Students order by lastName");
 foreach ($rows as $key => $row) {
   $student = Student::fromRow($row);
-  $students[$student->getEmail()] = $student;
+  $students[$student->email] = $student;
 }
+
 
 // find active preference table
 $activeTables = new ActiveTables($db);

@@ -11,9 +11,8 @@ function readAccessFile($file)
       $buffer = chop($buffer);
       $buffer = strtolower($buffer);
       if ($buffer != "")  {
-	//print " BUFFER -- $buffer";
-	$users[$i] = chop($buffer);
-	$i = $i + 1;
+        $users[$i] = chop($buffer);
+        $i = $i + 1;
       }
     }
     if (!feof($handle)) {
@@ -26,7 +25,6 @@ function readAccessFile($file)
 
 function readAdminTable()
 {
-  //print ' reading admin table';
   $levels = "";
   $link = getLink();
   if ($link)
@@ -39,10 +37,8 @@ function isMaster()
 {
   // see whether the email is in the access list
   $email = strtolower(strtolower($_SERVER['SSL_CLIENT_S_DN_Email']));
-
   // open file with access list
   $levels = readAdminTable();
-  //print $levels;
   $level = -1;
   if (array_key_exists($email,$levels))
     $level = $levels[$email];
@@ -60,7 +56,6 @@ function isAdmin()
 
   // open file with access list
   $levels = readAdminTable();
-  //print $levels;
   $level = -1;
   if (array_key_exists($email,$levels))
     $level = $levels[$email];
@@ -78,8 +73,10 @@ function isTa()
   $tas = readFullTaTable($link);
 
   // make sure table is not empty
-  if ($tas == '')
+  if ($tas == '') {
+    //print ' ERROR -- TA table is empty';
     return false;
+  }
   
   // see whether the email is in the access list
   $email = strtolower($_SERVER['SSL_CLIENT_S_DN_Email']);

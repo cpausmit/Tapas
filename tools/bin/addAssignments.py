@@ -26,10 +26,10 @@ def removeTable(table,flagging=True):
     else:
         print ' INFO - table removal requested -- working in flagging mode.'
 
-def makeTable(cursor,semesterId="",execute="",remove=""):
+def makeTable(cursor,tableType,semesterId="",execute="",remove=""):
     # test whether requested table exists already and if not make the table
 
-    table = "Assignments" + semesterId
+    table = tableType + semesterId
 
     # remove potentially existing table
     if remove == "yes":
@@ -51,7 +51,13 @@ def makeTable(cursor,semesterId="",execute="",remove=""):
         print ' INFO - table (%s) does not yet exist.\n'%(table)
 
         # Prepare SQL query to create the new table
-        sql = "create table " + table + "(Task char(40), Person char(40));"
+        if   tableType == 'Assignments':
+            sql = "create table " + table + "(Task char(40), Person char(40));"
+        elif tableType == 'Tas':
+            sql = "create table " + table + "(Email char(40), FullTime tinyint, PartTime tinyint);"
+        elif tableType == 'Preferences':
+            sql = "create table " + table + "(Email char(40), Pref1 text, Pref2 text, Pref3 text);"
+            
         try:
             # Execute the SQL command
             print " MYSQL> " + sql
@@ -61,7 +67,11 @@ def makeTable(cursor,semesterId="",execute="",remove=""):
             print ' ERROR - table creation failed.'
             
         # make the task field unique
-        sql = "alter table " + table + " add unique idTask (Task);"
+        if   tableType == 'Assignments':
+            sql = "alter table " + table + " add unique idTask (Task);"
+        elif tableType == 'Tas' or tableType == 'Preferences':
+            sql = "alter table " + table + " add unique idEmail (Email);"
+
         try:
             # Execute the SQL command
             print " MYSQL> " + sql
@@ -122,7 +132,9 @@ db = Database.DatabaseHandle()
 # Prepare a cursor object using cursor() method
 cursor = db.getCursor()
 
-makeTable(cursor,semesterId,execute,remove)
+makeTable(cursor,'Assignments',semesterId,execute,remove)
+makeTable(cursor,'Tas',        semesterId,execute,remove)
+makeTable(cursor,'Preferences',semesterId,execute,remove)
 
 lastCourse = 0
 os.chdir(os.getenv('TAPAS_TOOLS_DATA','./'))
@@ -162,6 +174,24 @@ for line in os.popen(cmd).readlines():
 
             except:
                 print ' ERROR - insert failed: ' + sql
+
+# Loop through TA candidate file and add them to our table
+os.chdir(os.getenv('TAPAS_TOOLS_DATA','./'))
+for line in os.popen('cat spreadsheets/' + semesterId + 'Tas.csv | grep -v ^#').readlines():
+    line = line[:-1]
+    f = line.split(',')
+    if len(f) == 1:
+        email = f[0]
+        # Prepare SQL query to insert record into the existing table
+        sql = "insert into Tas" + semesterId + " values ('"  + email + "',1,0);"
+        try:
+            # Execute the SQL command
+            print " MYSQL> " + sql
+            if execute == "exec":
+                cursor.execute(sql)
+                db.commit()
+        except:
+            print ' ERROR - insert failed: ' + sql
 
 # Loop through TA the assignment file
 os.chdir(os.getenv('TAPAS_TOOLS_DATA','./'))

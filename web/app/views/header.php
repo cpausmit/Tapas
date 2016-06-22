@@ -1,4 +1,5 @@
 <?php
+include("access/checkAccessRights.php");
 
 // Standard Menu
 print '<!DOCTYPE HTML>'."\n";
@@ -24,7 +25,6 @@ print '  </head>'."\n";
 print '  <body>'."\n";
 
 // Check access rights - basics
-include("access/checkAccessRights.php");
 if (forbidden()) {
   exitAccessError();
 }
@@ -49,9 +49,11 @@ print '            <li><a href="/"          class="{{isset(@selected) && @select
 if (isAdmin() || isMaster()) {
   print '            <li><a href="/admin"     class="{{isset(@selected) && @selected == \'admin\' ? \'active\' : null}}"><span class="fa fa-wrench">Admins</span></a></li>'."\n";
 }
+
 if (isTa() || isMaster()) {
   print '            <li><a href="/ta"        class="{{isset(@selected) && @selected == \'ta\' ? \'active\' : null}}"><span class="fa fa-pencil">TAs</span></a></li>'."\n";
 }
+
 if (isTeacher() || isMaster()) {
   print '            <li><a href="/teacher"   class="{{isset(@selected) && @selected == \'teacher\' ? \'active\' : null}}"><span class="fa fa-pencil">Teachers</span></a></li>'."\n";
 }
