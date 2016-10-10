@@ -152,7 +152,7 @@ function showAssignment($link,$table,$option = "ALL")
     $display = 0;
     if ($option == "ALL")
       $display = 1;
-    else if ($option == "TA" && $myTask->isTa())
+    else if ($option == "TA" && $myTask->isTa() && $person != "" && $person != "EMPTY@mit.edu")
       $display = 1;
     else if ($option == "Unassigned" && ($person == "" || $person == "EMPTY@mit.edu"))
       $display = 1;

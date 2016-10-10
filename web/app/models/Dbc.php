@@ -22,7 +22,7 @@ class Dbc
     $host = $pars[0];
     $user = $pars[1];
     $passwd = $pars[2];
-    //echo " HOST: $host  USER $user  PASS: $passwd";
+    //echo " HOST: $host  USER: $user  PASS: $passwd";
     
     static $db = null;
     if ($db === null)

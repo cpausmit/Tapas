@@ -46,7 +46,7 @@ else:
    tables += "spreadsheets/ugrads_F2015.csv "
 
    for line in os.popen('cat ' + tables).readlines():   # run command
-       line = line[:-1]                     # stripping '\n'
+       line = line.replace('\n','')
        if re.search(email,line):
            line = line.replace(' ','')
            line = line.replace('"','')

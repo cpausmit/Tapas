@@ -11,6 +11,12 @@ class Main extends Controller {
     $f3->set("css_bundle", $this->get_min_css_url());
   }
 
+  public function plots($f3) {
+    $f3->set('selected', 'admin');
+    $view = new View;
+    echo $view->render('admin/plots.php');
+  }
+
   public function email($f3) {
     $f3->set('selected', 'admin');
     $view = new View;
@@ -54,6 +60,21 @@ class Main extends Controller {
     $f3->set('selected', 'admin');
     $view = new View;
     echo $view->render('admin/courses.php');
+  }
+  public function addCourse($f3) {
+    $f3->set('selected', 'admin');
+    $view = new View;
+    echo $view->render('admin/addCourse.php');
+  }
+  public function updateCourse($f3) {
+    $f3->set('selected', 'admin');
+    $view = new View;
+    echo $view->render('admin/updateCourse.php');
+  }
+  public function recordCourse($f3) {
+    $f3->set('selected', 'admin');
+    $view = new View;
+    echo $view->render('admin/recordCourse.php');
   }
   public function students($f3) {
     $f3->set('selected', 'admin');
@@ -229,6 +250,14 @@ class Main extends Controller {
     $view = new View;
     echo $view->render('teacher/review.php');
   }
+
+	// Json functions
+	public function assignmentsPerSemester($f3) {
+    $f3->set('selected', 'admin');
+		$view = new View;
+		include("app/json/assignmentsPerSemester.php");
+	}
+
 }
 
 ?>

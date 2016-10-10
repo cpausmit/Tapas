@@ -14,20 +14,30 @@
 
 class Course
 {
+  // Property declaration
+  public $number = '';
+  public $name = '';
+  public $version = -1;
 
   // Declare a public constructor
   public function __construct() { }
   public function __destruct() { }
 
+  public static function fresh()
+  {
+    // 'constructor' returns blank course
+    $instance = new self();
+    return $instance;
+  }
+
   public static function fromNumber($db,$number) // 'constructor' with just number given
   {
     $instance = new self();
-    $rows = $db->exec("select * from Courses where Number = $number");
-    $nRows = sizeof($rows);
-    if ($nRows == 1)
-      $instance->fill($rows);
-    else
-      print " ERROR -- loading failed (nRows: $nRows)\n";
+    $sql = "select * from Courses where Number = '".$number."'";
+    $courses = $db->query($sql);
+    foreach ($courses as $key => $row) {
+      $instance->fill($row);
+    }
     return $instance;
   }
 
@@ -41,7 +51,6 @@ class Course
   protected function fill(array $row)
   {
     // here we fill the content
-
     $this->number = $row[0];
     $this->name = $row[1];
     $this->version = intval($row[2]);
@@ -77,15 +86,41 @@ class Course
       print "</tr>\n";
   }
 
+  public function isFresh()
+  {
+    // say whether this is a fresh record
+    return ($this->number == '');
+  }
+
+  public function addToDb($db)
+  {
+    // adding the given course instance to the database
+
+    // check for duplicate
+    print '<br> Input is valid.Forming the SQL. <br>';
+    $vals = sprintf("('%s','%s',%d)",$this->number,$this->name,$this->version);
+    $sql = " insert into Courses values $vals";
+    print "<br> SQL: $sql <br>";
+    $db->Exec($sql);
+  }
+
+  public function updateDb($db)
+  {
+    // updating the given course instance to the database
+
+    print '<br> Forming the SQL. <br>';
+
+    $form = "Number = '%s', Name = '%s', Version = %d";
+    $vals = sprintf($form,$this->number,$this->name,$this->version);
+    $sql = " update Courses set $vals where Number = '$this->number';";
+    print "<br> SQL: $sql <br>";
+    $db->Exec($sql);
+  }
+
   // Simple accessors
   public function getNumber() { return $this->number; }
   public function getName() { return $this->name; }
   public function getVersion() { return $this->version; }
-
-  // Property declaration
-  private $number = '';
-  private $name = '';
-  private $version = -1;
 
 }
 

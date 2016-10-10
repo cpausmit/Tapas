@@ -6,6 +6,17 @@ include_once("app/models/Dbc.php");
 class Student
 {
 
+  // Property declaration
+  public $firstName = '';
+  public $lastName = '';
+  public $email = '';
+  public $advisorEmail = '';
+  public $supervisorEmail = '';
+  public $year = 0;
+  public $division = '';
+  public $research = '';                    
+
+
   // Declare a public constructor
   public function __construct() { }
   public function __destruct() { }
@@ -55,16 +66,6 @@ class Student
     $this->division = $row[6];
     $this->research = $row[7];
   }
-
-  // Property declaration
-  public $firstName = '';
-  public $lastName = '';
-  public $email = '';
-  public $advisorEmail = '';
-  public $supervisorEmail = '';
-  public $year = 0;
-  public $division = '';
-  public $research = '';                    
 
   public function addToDb($db)
   {
@@ -139,7 +140,7 @@ class Student
     else
       return false;
     
-    if (isEmail($this->supervisorEmail))
+    if (isEmail($this->supervisorEmail) or $this->supervisorEmail == "?")
       print " -- Supervisor Email valid.<br>\n";
     else
       return false;

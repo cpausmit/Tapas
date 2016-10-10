@@ -39,6 +39,7 @@ if (isMaster()) {
   print "       <ul>";
   print "          <li><a href='/addStudent'><span>add student</span></a></li>";
   print "          <li><a href='/addActiveTa'><span>add active TA</span></a></li>";
+  print "          <li><a href='/addCourse'><span>add course</span></a></li>";
   print "       </ul>";
   print "    </li>";
   print "    <li class='has-sub'><a href='#'><span>Courses</span></a>";
@@ -75,6 +76,7 @@ if (isMaster()) {
   print "          <li><a href='/email'><span>email</span></a></li>";
   print "          <li><a href='/showAccessLists'><span>access lists</span></a></li>";
   print "          <li><a href='/findTas'><span>find Tas</span></a></li>";
+  print "          <li><a href='/plots'><span>plots</span></a></li>";
   print "       </ul>";
   print "    </li>";
   print " </ul>";

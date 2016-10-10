@@ -6,7 +6,7 @@ $f3 = require('app/lib/fatfree/lib/base.php');
 $f3->set('CACHE',        FALSE);
 $f3->set('DEBUG',        3);
 $f3->set('UI',           'app/views/');
-$f3->set('AUTOLOAD',     'app/models/;app/controllers/');
+$f3->set('AUTOLOAD',     'app/models/;app/controllers/;app/json/');
 $f3->set('LOGS',         'app/logs/');
 $f3->set('TEMP',         'app/tmp/');
 $f3->set('CACHE',        'app/tmp/cache/');
@@ -20,6 +20,7 @@ $f3->set('JAR.expire',    time() + 3600*24*365);
 $f3->route('GET /email',                'Main->email');
 $f3->route('GET|POST /sendEmail',       'Main->sendEmail');
 
+$f3->route('GET /plots',                'Main->plots');
 
 $f3->route('GET /',                     'Main->index');
 $f3->route('GET /questions',            'Main->questions');
@@ -28,6 +29,9 @@ $f3->route('GET /you',                  'Main->you');
 
 $f3->route('GET /admin',                'Main->admin');
 $f3->route('GET /courses',              'Main->courses');
+$f3->route('GET /addCourse' ,           'Main->addCourse');
+$f3->route('GET|POST /updateCourse',    'Main->updateCourse');
+$f3->route('GET|POST /recordCourse',    'Main->recordCourse');
 $f3->route('GET /assignments',          'Main->assignments');
 $f3->route('GET /students',             'Main->students');
 $f3->route('GET /addStudent',           'Main->addStudent');
@@ -65,29 +69,34 @@ $f3->route('GET|POST /enterEvaluation', 'Main->enterEvaluation');
 $f3->route('GET|POST /record',          'Main->record');
 $f3->route('GET /review',               'Main->review');
 
+// Json routes
+$f3->route('GET /assignmentsPerSemester','Main->assignmentsPerSemester');
+
+
+
 ////////////////////////////////////////////////////////////////////////////////
 // Error handler
 ////////////////////////////////////////////////////////////////////////////////
 $f3->set('ONERROR',function($f3) {
-    $err_code = $f3->get('ERROR.code');
-    error_log("$err_code ERROR: " . $f3->get("URI"));
-    $f3->set("css_bundle", "//" . $_SERVER['SERVER_NAME']
-	     . "/min/?f=/css/style.css,/css/timeline.css");
+  $err_code = $f3->get('ERROR.code');
+  error_log("$err_code ERROR: " . $f3->get("URI"));
+  $f3->set("css_bundle", "//" . $_SERVER['SERVER_NAME']
+           . "/min/?f=/css/style.css,/css/timeline.css");
   
-    if ($err_code == 404) {
-      $f3->set("title", "404 Not found");
-      $view = new View;
-      echo $view->render('404.php');
-      return;
-    }
-    else {
-      $f3->set("title", "$err_code Error!");
-      $view = new View;
-      echo $view->render("error.php");
-      return;
-    }
+  if ($err_code == 404) {
+    $f3->set("title", "404 Not found");
+    $view = new View;
+    echo $view->render('404.php');
+    return;
   }
-  );
+  else {
+    $f3->set("title", "$err_code Error!");
+    $view = new View;
+    echo $view->render("error.php");
+    return;
+  }
+}
+);
 
 $f3->run();
 
