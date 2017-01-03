@@ -14,6 +14,13 @@ if (! (isAdmin() || isMaster())) {
 
 // Pick up the email from the form
 $email = $_POST['email'];
+$effort =  $_POST['effort'];
+
+// Make sure that the email makes sense (add '@mit.edu' if not provided)
+$pos = strpos($email,'@');
+if ($pos === false) { // careful triple '='
+  $email = $email . '@mit.edu';
+}
 
 // See whether this is a known student
 $db = Dbc::getReader();
@@ -55,8 +62,14 @@ else {
     print "<p>New TA will be added: $email</p>\n";
     $ta = Ta::fresh();
     $ta->email = $email;
-    $ta->fullTime = 1;
-    $ta->partTime = 0;
+    if ($effort == 1) {
+      $ta->fullTime = 1;
+      $ta->partTime = 0;
+    }
+    else {
+      $ta->fullTime = 0;
+      $ta->partTime = 1;
+    }
     $ta->addToDb($db,$taTable);
   }
   else

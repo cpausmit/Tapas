@@ -13,6 +13,12 @@ if (! (isAdmin() || isMaster())) {
 // Pick up the email from the form
 $email = $_POST['email'];
 
+// Make sure that the email makes sense (add '@mit.edu' if not provided)
+$pos = strpos($email,'@');
+if ($pos === false) { // careful triple '='
+  $email = $email . '@mit.edu';
+}
+
 // See whether this is a known student
 $db = Dbc::getReader();
 $student = Student::fromEmail($db,$email);

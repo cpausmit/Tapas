@@ -71,8 +71,9 @@ print " MESSAGE:<br> $message<br>\n";
 print " HEADERS:<br> $headers<br>\n";
 
 // Send
+print '<br><b>==== RESULT ====</b><br>'."\n";
 
-if (True) {
+if (False) {
   print "<p>Mail was NOT sent. Feature disabled for now!</p>";
 }
 else {
