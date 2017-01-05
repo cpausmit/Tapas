@@ -8,7 +8,8 @@ use DBI;
 #
 #                                                        Written: December 04, 2013 (Christoph Paus)
 #---------------------------------------------------------------------------------------------------
-use lib "./perl";
+
+# ?? needed ?? #use lib "$ENV{'TAPAS_TOOLS'}/perl";
 
 my ($host,$driver,$database,$dsn,$userid,$password,$dbh);
 my ($query,$sqlQuery);
@@ -86,7 +87,6 @@ my $DB         = $ARGV[1];
 
 
 if ("$DB" ne "") {
-
 	
   # Connect to database
   $host = findTag("/etc/my.cnf","mysql-teaching","host");
@@ -117,7 +117,7 @@ printf " MYSQL> create table Assignments${SEMESTERID}(Task char(20), Person char
 printf " Course --Lecturer(s)--------------------------- Lec Rec TaFR TaFU TaHR TaHU TaPU\n";
 printf "=================================================================================\n";
 
-open(INPUT,"<./spreadsheets/${SEMESTERID}Courses.csv");
+open(INPUT,"<$ENV{'TAPAS_TOOLS_DATA'}/spreadsheets/${SEMESTERID}Courses.csv");
 while($line = <INPUT>) {
   chop($line);
   $line =~ s/\"//g;

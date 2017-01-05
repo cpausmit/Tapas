@@ -66,13 +66,19 @@ foreach ($preferences as $email => $preference) {
   $task2 = new TeachingTask($preference->pref2);
   $task3 = new TeachingTask($preference->pref3);
 
-  print "<tr>";
-  print "<td>&nbsp; $name &nbsp;</td>";
-  print "<td>&nbsp; $email &nbsp;</td>";
-  print "<td>&nbsp; ".$task1->getTaTask()." &nbsp;</td>";
-  print "<td>&nbsp; ".$task2->getTaTask()." &nbsp;</td>";
-  print "<td>&nbsp; ".$task3->getTaTask()." &nbsp;</td>";
-  print "</tr>\n";
+  $student->printTableRow(true);
+  //print "<td>&nbsp; ".$task1->getTaTask()." &nbsp;</td>";
+  //print "<td>&nbsp; ".$task2->getTaTask()." &nbsp;</td>";
+  //print "<td>&nbsp; ".$task3->getTaTask()." &nbsp;</td>";
+  print "<td>&nbsp; ";
+  $task1->printTaskWithLink();
+  print " &nbsp;</td>";
+  print "<td>&nbsp; ";
+  $task2->printTaskWithLink();
+  print " &nbsp;</td>";
+  print "<td>&nbsp; ";
+  $task3->printTaskWithLink();
+  print " &nbsp;</td>";
 }
 print "</table>\n";
 

@@ -75,7 +75,7 @@ class TeachingTask
   public function printTaskWithLink() {
     print ' ' . $this->year . ' ' . $this->term
       . ', <a href="/showTaskSummary?number=' . $this->course . '">' . $this->course . '</a>, '
-      . $this->type . ', ' . $this->effort . ' time, ' . $this->taType . "<br>\n"; 
+      . $this->type . ', ' . $this->effort . ' time, ' . $this->taType . "\n"; 
   }
   public function getTaTask() {
     return $this->year . ' ' . $this->term . ', ' . $this->course . ', '
