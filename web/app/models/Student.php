@@ -157,7 +157,7 @@ class Student
 
   public function printTableRow($open)
   {
-    // print one row of a table with the relvant infromation
+    // print one row of a table with the relevant infromation
 
     print "<tr>\n";
     print "<td>&nbsp;";
@@ -187,7 +187,7 @@ class Student
 
   public function printSummary()
   {
-    // print one row of a table with the relvant infromation
+    // print one row of a table with the relevant infromation
 
     print "<u><b>". $this->lastName . ', ' . $this->firstName . " (" . $this->email .
           ")</b></u>\n<br>";
@@ -199,7 +199,7 @@ class Student
 
   public function isFresh()
   {
-    // print one row of a table with the relvant infromation
+    // print one row of a table with the relevant infromation
     return ($this->year == 0);
   }
 
