@@ -11,6 +11,9 @@
 // | Status    | char(20) | YES  |     | NULL    |       | 
 // +-----------+----------+------+-----+---------+-------+
 
+include_once("app/models/Utils.php");
+include_once("app/models/Dbc.php");
+
 class Teacher
 {
 
@@ -18,15 +21,21 @@ class Teacher
   public function __construct() { }
   public function __destruct() { }
 
+  public static function fresh()
+  {
+    // 'constructor' returns blank student
+    $instance = new self();
+    return $instance;
+  }
+
   public static function fromEmail($db,$email) // 'constructor' with just email given
   {
     $instance = new self();
-    $rows = $db->exec("select * from Faculties where Email = '$email'");
-    $nRows = sizeof($rows);
-    if ($nRows == 1)
-      $instance->fill($rows);
-    else
-      print " ERROR -- loading failed (nRows: $nRows)\n";
+    $sql = "select * from Faculties where Email = '$email'";
+    $teachers = $db->query($sql);
+    foreach ($teachers as $key => $row) {
+      $instance->fill($row);
+    }
     return $instance;
   }
 
@@ -40,7 +49,7 @@ class Teacher
   protected function fill(array $row)
   {
     // here we fill the content
-
+ 
     $this->firstName = $row[0];
     $this->lastName = $row[1];
     $this->email = $row[2];
@@ -48,9 +57,15 @@ class Teacher
     $this->status = $row[4];
   }
 
+  public function isFresh()
+  {
+    // print one row of a table with the relevant infromation
+    return ($this->firstName == '');
+  }
+
   public function printTableRow($open)
   {
-    // print one row of a table with the relvant infromation
+    // print one row of a table with the relevant infromation
 
     print "<tr>\n";
     print "<td>&nbsp;";
@@ -78,6 +93,83 @@ class Teacher
       print "</tr>\n";
   }
 
+  public function printSummary()
+  {
+    // print one row of a table with the relevant infromation
+
+    print "<u><b>". $this->lastName . ', ' . $this->firstName . " (" . $this->email .
+          ")</b></u>\n<br>";
+    print ' position: ' . $this->position . ',   status: ' . $this->status . "\n<br>";
+  }
+
+public function addToDb($db)
+  {
+    // adding the given student instance to the database
+
+    // make sure this is a valid new entry
+    if ($this->isValid()) {
+      // check for duplicate
+      print '<br> Input is valid.Forming the SQL. <br>';
+      $vals = sprintf("('%s','%s','%s','%s','%s')",$this->firstName,$this->lastName,
+                      $this->email,$this->position,$this->status);
+      $sql = " insert into Faculties values $vals";
+      print "<br> SQL: $sql <br>";
+      $db->Exec($sql);
+    }
+    else {
+      print '<br> Invalid entry. STOP!<br>';
+    }
+  }
+
+  public function updateDb($db)
+  {
+    // adding the given student instance to the database
+
+    // make sure this is a valid new entry
+    if ($this->isValid()) {
+
+      // check for duplicate
+      print '<br> Forming the SQL. <br>';
+
+      $form = "FirstName = '%s', LastName = '%s'";
+      $form = "$form , Position = '%s', Status = '%s'";
+      $vals = sprintf($form,$this->firstName,$this->lastName,
+                      $this->position,$this->status);
+      $sql = " update Faculties set $vals where Email = '$this->email';";
+      print "<br> SQL: $sql <br>";
+      $db->Exec($sql);
+    }
+    else {
+      print '<br> Invalid entry. STOP!<br>';
+    }
+  }
+
+  protected function isValid()
+  {
+    // making sure student information is valid
+
+    $valid = true;
+
+    print '<br> validating teacher information ....<br>';
+
+    if (isName($this->firstName))
+      print " -- First Name valid.<br>\n";
+    else
+      return false;
+
+    if (isName($this->lastName))
+      print " -- Last Name valid.<br>\n";
+    else
+      return false;
+
+    if (isEmail($this->email))
+      print " -- Email valid.<br>\n";
+    else
+      return false;
+   
+    return $valid;
+  }
+
   // Simple accessors
   public function getFirstName() { return $this->firstName; }
   public function getLastName() { return $this->lastName; }
@@ -91,7 +183,6 @@ class Teacher
   public $email = 'EMPTY@mit.edu';
   public $position = '';
   public $status = '';
-
 }
 
 ?>

@@ -96,6 +96,26 @@ class Main extends Controller {
     $view = new View;
     echo $view->render('admin/recordStudent.php');
   }
+  public function teachers($f3) {
+    $f3->set('selected', 'admin');
+    $view = new View;
+    echo $view->render('admin/teachers.php');
+  }
+  public function addTeacher($f3) {
+    $f3->set('selected', 'admin');
+    $view = new View;
+    echo $view->render('admin/addTeacher.php');
+  }
+  public function updateTeacher($f3) {
+    $f3->set('selected', 'admin');
+    $view = new View;
+    echo $view->render('admin/updateTeacher.php');
+  }
+  public function recordTeacher($f3) {
+    $f3->set('selected', 'admin');
+    $view = new View;
+    echo $view->render('admin/recordTeacher.php');
+  }
   public function addActiveTa($f3) {
     $f3->set('selected', 'admin');
     $view = new View;
