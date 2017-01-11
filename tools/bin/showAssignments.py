@@ -43,7 +43,7 @@ cursor = db.getCursor()
 
 # Make a new objects of all courses
 courses = Database.Container()
-rc = courses.fillWithCourses(db.handle)
+rc = courses.fillWithCourses(db.handle,debug)
 if rc != 0:
     print " ERROR - filling courses."
     # disconnect from server
