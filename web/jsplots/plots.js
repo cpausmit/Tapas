@@ -1,5 +1,6 @@
 var plotData = [];
 var plotTotals = [];
+
 var basicLayout = {
     autosize : false, width: 900, height: 600,
     margin: { l: 70, r: 50, t: 80, b: 80 },

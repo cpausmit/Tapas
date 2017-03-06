@@ -9,6 +9,8 @@ class TeachingTask
     // store the id
     $this->id = $id;
  
+    //print " ID: ".$id."\n<br>";
+
     // decode the id into its pieces
     $f = explode("-",$id);
     if (count($f) == 4) {

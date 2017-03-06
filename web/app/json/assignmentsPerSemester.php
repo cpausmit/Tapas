@@ -93,8 +93,8 @@ foreach ($divisions as $division) {
     $averages[$division] = 0;
 }
 
-// fill the values from the database semster by semester
-//======================================================
+// fill the values from the database semester by semester
+//=======================================================
 
 // find all matching tables and fill per table
 $nSemester = 0;
@@ -110,6 +110,8 @@ foreach ($tables as $key => $table) {
             $data['data'][$index]['numbers'][] = $semesterData[$division];
             $averages[$division] += $semesterData[$division];
             $totals += $semesterData[$division];
+
+	    //print " Semester: ".$semester." Division: ".$division." N: ".$semesterData[$division]; 
         }
         $data['totals'][] = $totals;
     }
