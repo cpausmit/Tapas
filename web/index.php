@@ -67,6 +67,8 @@ $f3->route('GET /show',                 'Main->show');
 $f3->route('GET /remove',               'Main->remove');
 $f3->route('GET|POST /register',        'Main->register');
 
+$f3->route('GET /test',                 'Main->test');
+
 $f3->route('GET /teacher',              'Main->teacher');
 $f3->route('GET /enter',                'Main->enter');
 $f3->route('GET|POST /enterEvaluation', 'Main->enterEvaluation');

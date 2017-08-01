@@ -244,6 +244,12 @@ class Main extends Controller {
     echo $view->render('ta/register.php');
   }
 
+  public function test($f3) {
+    $f3->set('selected', 'ta');
+    $view = new View;
+    echo $view->render('ta/test.php');
+  }
+
   // Teachers functions
   public function teacher($f3) {
     $f3->set('selected', 'teacher');

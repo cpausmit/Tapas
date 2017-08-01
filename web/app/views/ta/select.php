@@ -1,11 +1,21 @@
 <?php
 
 include("app/views/ta/header.php");
+include("app/models/Dbc.php");
 include("app/models/TeachingTask.php");
 
 // make sure we have a registered TA
 if (! (isTa() || isMaster())) { 
   exitAccessError();
+}
+
+//// get the list of courses
+$db = Dbc::getReader();
+$courses = "";
+$courseRows = $db->query("select * from Courses order by Number");
+foreach ($courseRows as $key => $row) {
+  $course = Course::fromRow($row);
+  $courses[$course->number] = $course;
 }
 
 print '<article class="page">'."\n";
@@ -41,11 +51,15 @@ $statement->execute();
 $statement->bind_result($task,$email);
 while ($statement->fetch()) {
   $myTask = new TeachingTask($task);
+  //$course = $courses[$myTask->course];
   if ($myTask->isTa() && $myTask->getEffort() == 'full') {
     $option = $myTask->getTaTask();
+    $number = $myTask->getCourse();
+    $course = $courses[$number];
     $find = array_search($option,$options);
     if (! $find) {
-      $options[$task] = $option;
+      //$options[$task] = $option;
+      $options[$task] = $option . ' --> ' . $course->name;
     }
   }
 }

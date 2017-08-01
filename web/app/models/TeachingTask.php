@@ -8,15 +8,13 @@ class TeachingTask
 
     // store the id
     $this->id = $id;
- 
-    //print " ID: ".$id."\n<br>";
 
     // decode the id into its pieces
     $f = explode("-",$id);
     if (count($f) == 4) {
       $this->term = $this->convertTerm(substr($f[0],0,1));
       $this->year = $this->extractYear($f[0]); 
-      $this->course = $f[1];
+      $this->course = trim($f[1]);
       $this->type = $this->findType($f[2]);
       if ($this->type == 'TA') {
 	$this->effort = $this->convertEffort(substr($f[2],2,1));
@@ -140,14 +138,14 @@ class TeachingTask
   }
 
   // property declaration
-  private $id = 'TYY-C.CCC-TaET-I';
-  private $term = 'T';
-  private $year = 'YY';
-  private $course = 'C.CCC';
-  private $effort = 'E';
-  private $type = 'T';
-  private $instance = 'I';
-  private $taType = 'Ta';
+  public $id = 'TYY-C.CCC-TaET-I';
+  public $term = 'T';
+  public $year = 'YY';
+  public $course = 'C.CCC';
+  public $effort = 'E';
+  public $type = 'T';
+  public $instance = 'I';
+  public $taType = 'Ta';
 }
 
 ?>
