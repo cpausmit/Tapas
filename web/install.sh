@@ -4,7 +4,7 @@
 #---------------------------------------------------------------------------------------------------
 
 # global setup
-[ -z "$TAPAS_WEB_SERVER" ] && export TAPAS_WEB_SERVER=t3serv012.mit.edu
+[ -z "$TAPAS_WEB_SERVER" ] && export TAPAS_WEB_SERVER=tapas.mit.edu
 [ -z "$TAPAS_WEB_BASE" ]   && export TAPAS_WEB_BASE=/var/www/html
 [ -z "$TAPAS_WEB_NAME" ]   && export TAPAS_WEB_NAME=tapas
 

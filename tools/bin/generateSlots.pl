@@ -159,24 +159,6 @@ while($line = <INPUT>) {
         my $query = "${base}-Lec-$n','$lecEmail');";
 
         $rc = addToDb($DB,$dbh,$query);
-        ## >> printf " MYSQL> $query\n";
-        ## >> if ("$DB" ne "") {
-        ## >>   my $sqlQuery  = $dbh->prepare($query)
-        ## >>     or die "Cannot prepare \"$query\": $dbh->errstr\n";
-        ## >>   #my $rv = $sqlQuery->execute
-        ## >>   #  or die "cannot execute query: $sqlQuery->errstr";
-        ## >> 
-        ## >>   my $rv = $sqlQuery->execute
-        ## >>     or printf " insert failed. moving on.\n";
-        ## >> 
-        ## >>   ## #print "<h3>********** My Perl DBI Test ***************</h3>";
-        ## >>   ## #print "<p>Here is a list of tables in the MySQL database $db.</p>";
-        ## >>   ## #while (@row= $sqlQuery->fetchrow_array()) {
-        ## >>   ## #  my $tables = $row[0];
-        ## >>   ## #  print "$tables\n<br>";
-        ## >>   ## #}
-        ## >>   my $rc = $sqlQuery->finish;
-        ## >> }
       }
     }
     for (my $i=0; $i < $Rec; $i++) {
@@ -210,6 +192,9 @@ while($line = <INPUT>) {
       $rc = addToDb($DB,$dbh,$query);
     }
     #printf "\n";
+  }
+  else {
+    printf " Skipping this line: %s\n", $line;
   }
 }
 close(INPUT);

@@ -78,7 +78,7 @@ function readFullTaTable($link)
   $tables = findActiveTable($link,'Tas');
   
   if ($tables == '') {
-      //print ' No active TA tables matching.';
+    //print ' No active TA tables matching.';
     return $tas;
   }
 
@@ -112,6 +112,8 @@ function readTeacherTable($link)
   $term = substr($tables[0],-5,5);
 
   $query = "select Person from Assignments$term where Task like '%Lec%'";
+
+  //print ' Assignments: ' . $query;
   $statement = $link->prepare($query);
   $rc = $statement->execute();
 
@@ -501,6 +503,7 @@ function findActiveTable($link,$pattern)
   $activeTables = "";
 
   $query = "select TableName from ActiveTables where TableName like '%$pattern%'";
+  //print ' ActiveTables: ' . $query;
   $statement = $link->prepare($query);
   $rc = $statement->execute();
   if (!$rc) {

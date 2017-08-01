@@ -168,12 +168,10 @@ db.disco()
 
 # prepare unique list of students that get assignments (there could be several)
 
-departmentEmail  = "paus@mit.edu,nergis@mit.edu,cmodica@mit.edu,phys-finance@mit.edu,"
-departmentEmail += "ktanaka@mit.edu,kariukit@mit.edu,nboyce@mit.edu"
-
-preAssignment  = [ ]
-preEmails      = ''
-teachersEmails = ''
+departmentEmail = os.getenv('TAPAS_TOOLS_DATA','XX-ERROR-XX@mit.edu')
+preAssignment   = [ ]
+preEmails       = ''
+teachersEmails  = ''
 
 for key, assignment in assignments.iteritems():
     if debug:
