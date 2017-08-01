@@ -60,16 +60,17 @@ foreach ($preferences as $email => $preference) {
     $student = $students[$email];
     $name = "$student->lastName, $student->firstName";
   }
-  else
-    $name = "<b>NO NAME FOUND IN DATABASE - FIX IT!</b>";
+  else {
+    $student = Student::fresh();
+    $student->email = $email;
+    $student->lastName = "<b>NO NAME FOUND IN DATABASE - FIX IT!</b>";
+  }
+
   $task1 = new TeachingTask($preference->pref1);
   $task2 = new TeachingTask($preference->pref2);
   $task3 = new TeachingTask($preference->pref3);
 
   $student->printTableRow(true);
-  //print "<td>&nbsp; ".$task1->getTaTask()." &nbsp;</td>";
-  //print "<td>&nbsp; ".$task2->getTaTask()." &nbsp;</td>";
-  //print "<td>&nbsp; ".$task3->getTaTask()." &nbsp;</td>";
   print "<td>&nbsp; ";
   $task1->printTaskWithLink();
   print " &nbsp;</td>";
