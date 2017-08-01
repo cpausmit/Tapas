@@ -51,15 +51,16 @@ $statement->execute();
 $statement->bind_result($task,$email);
 while ($statement->fetch()) {
   $myTask = new TeachingTask($task);
-  //$course = $courses[$myTask->course];
   if ($myTask->isTa() && $myTask->getEffort() == 'full') {
-    $option = $myTask->getTaTask();
     $number = $myTask->getCourse();
     $course = $courses[$number];
+
+    $option = $myTask->getTaTask() . ' --> ' . $course->name;
+
     $find = array_search($option,$options);
     if (! $find) {
       //$options[$task] = $option;
-      $options[$task] = $option . ' --> ' . $course->name;
+      $options[$task] = $option ;
     }
   }
 }

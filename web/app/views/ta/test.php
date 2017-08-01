@@ -16,8 +16,7 @@ $courseRows = $db->query("select * from Courses order by Number");
 foreach ($courseRows as $key => $row) {
   $course = Course::fromRow($row);
   $courses[$course->number] = $course;
-  print ' number>' . $course->number . '<';
- }
+}
 
 print '<article class="page">'."\n";
 print '<h1>Select TA Preferences</h1>'."\n";
@@ -52,14 +51,17 @@ $statement->execute();
 $statement->bind_result($task,$email);
 while ($statement->fetch()) {
   $myTask = new TeachingTask($task);
+
   if ($myTask->isTa() && $myTask->getEffort() == 'full') {
-    $option = $myTask->getTaTask();
     $number = $myTask->getCourse();
     $course = $courses[$number];
+
+    $option = $myTask->getTaTask() . ' --> ' . $course->name;
+
     $find = array_search($option,$options);
     if (! $find) {
       //$options[$task] = $option;
-      $options[$task] = $option . ' --> ' . $course->name;
+      $options[$task] = $option ;
     }
   }
 }
