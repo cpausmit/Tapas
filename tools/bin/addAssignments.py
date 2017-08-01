@@ -181,7 +181,8 @@ for line in os.popen('cat spreadsheets/' + semesterId + 'Tas.csv | grep -v ^#').
     line = line[:-1]
     f = line.split(',')
     if len(f) == 1:
-        email = f[0]
+        # remove leading or trialing spaces
+        email = f[0].strip()
         # Prepare SQL query to insert record into the existing table
         sql = "insert into Tas" + semesterId + " values ('"  + email + "',1,0);"
         try:
