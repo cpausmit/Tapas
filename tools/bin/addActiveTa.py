@@ -94,7 +94,6 @@ else:
         cursor.execute(sql)
     except:
         print " ERROR - deletion of existing record failed (%s)."%(email)
-        
-    
+
 # disconnect from server
 db.disco()
