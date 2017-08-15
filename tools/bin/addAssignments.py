@@ -8,6 +8,8 @@ import sys,os,re
 import MySQLdb
 import Database
 
+EMPTY_EMAIL = "EMPTY@mit.edu"
+
 #---------------------------------------------------------------------------------------------------
 # H E L P E R
 #---------------------------------------------------------------------------------------------------
@@ -144,14 +146,14 @@ for line in os.popen(cmd).readlines():
     f = line.split(',')
     if len(f) > 1:
         
-        email = f[1]
-        course = f[2]
+        email = (f[1]).strip()
+        course = (f[2]).strip()
         if lastCourse != course:
             lastCourse = course
             instance = 1
         else:
             instance = instance + 1
-        role = f[3]
+        role = (f[3]).strip()
         if   role == 'Admin':
             task = semesterId + '-' + course + '-Adm-%d'%(instance)
         elif role == 'Recitations':
@@ -182,7 +184,7 @@ for line in os.popen('cat spreadsheets/' + semesterId + 'Tas.csv | grep -v ^#').
     f = line.split(',')
     if len(f) == 1:
         # remove leading or trialing spaces
-        email = f[0].strip()
+        email = (f[0]).strip()
         # Prepare SQL query to insert record into the existing table
         sql = "insert into Tas" + semesterId + " values ('"  + email + "',1,0);"
         try:
@@ -200,8 +202,8 @@ for line in os.popen('cat spreadsheets/' + semesterId + 'Assignments.csv | grep 
     line = line[:-1]
     f = line.split(',')
     if len(f) > 1:
-        email = f[0]
-        task  = f[1]
+        email = (f[0]).strip()
+        task  = (f[1]).strip()
         g = task.split('/')
         for subtask in g:
             print " Assignment '%s' -> '%s'"%(email,subtask)
@@ -219,7 +221,7 @@ for line in os.popen('cat spreadsheets/' + semesterId + 'Assignments.csv | grep 
                 # in case no assignment yet made update existing one
                 setEmail = findAssignment(cursor,semesterId,task)
                 print " set email: '" + setEmail + "'"
-                if setEmail == '' or  setEmail == 'EMPTY@mit.edu':
+                if setEmail == '' or  setEmail == EMPTY_EMAIL:
                     sql = "update Assignments" + semesterId + " set Person = '" \
                           + email + "' where Task = '" + subtask + "';"
                     print " SQL - " + sql

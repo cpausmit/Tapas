@@ -37,6 +37,7 @@ if (isMaster()) {
   print " <ul>";
   print "    <li class='active'><a href='/admin'><span class=\"fa fa-home\">Master</span></a>";
   print "       <ul>";
+  print "          <li><a href='/addTeacher'><span>add teacher</span></a></li>";
   print "          <li><a href='/addStudent'><span>add student</span></a></li>";
   print "          <li><a href='/addActiveTa'><span>add active TA</span></a></li>";
   print "          <li><a href='/addCourse'><span>add course</span></a></li>";

@@ -37,7 +37,8 @@ else:
    os.chdir(os.getenv('TAPAS_TOOLS_DATA','./'))
 
    # add all existing tables (starting with the newest == most up to date one)
-   tables  = "spreadsheets/grads_S2016.csv "
+   tables  = "spreadsheets/grads_F2017.csv "
+   tables += "spreadsheets/grads_S2016.csv "
    tables += "spreadsheets/grads_F2016.csv "
    tables += "spreadsheets/grads_F2014.csv "
    tables += "spreadsheets/grads_F2013.csv "
