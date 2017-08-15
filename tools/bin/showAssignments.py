@@ -265,7 +265,7 @@ for key, assignment in assignments.iteritems():
         print "\n" + term + " " + student.firstName + " " + student.lastName + "\n" \
               + assignString
         
-        print ' EMAIL? : ' + printEmail
+        #print ' EMAIL? : ' + printEmail
 
         if printEmail == "email":
             cmd = "generateEmail.sh '" + term + "' \"" + student.firstName + " " \
