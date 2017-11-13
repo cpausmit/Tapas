@@ -77,6 +77,9 @@ activeCourses   = Database.Container()
 activeFaculties = Database.Container()
 activeStudents  = Database.Container()
 
+#---------------------------------------------------------------------------------------------------
+# Make a complete list of all assignments
+#---------------------------------------------------------------------------------------------------
 assignments = { }
 
 try:
@@ -110,17 +113,18 @@ try:
             activeCourses.addElement(number,course)
         except:
             print " ERROR - course is not in our master table (%s)."%(number)
+
             # disconnect from server
             db.disco()
             sys.exit()
             
-        # find the faculty in our faculties list
+        # try if it is a techer in our teachers list
         try:
             faculty = faculties.retrieveElement(email);
             activeFaculties.addElement(email,faculty)
             isFaculty = True
             # Add teaching faculty to the course
-            if   task.split('-')[2] == 'Lec': ## and task.split('-')[3] == '1':
+            if   task.split('-')[2] == 'Lec':          ## and task.split('-')[3] == '1':
                 course = activeCourses.retrieveElement(number);
                 course.setFaculty(email)
             elif task.split('-')[2] == 'Adm':
@@ -168,7 +172,7 @@ db.disco()
 
 # prepare unique list of students that get assignments (there could be several)
 
-departmentEmail = os.getenv('TAPAS_TOOLS_DATA','XX-ERROR-XX@mit.edu')
+departmentEmail = os.getenv('TAPAS_TOOLS_DEPEML','XX-ERROR-XX@mit.edu')
 preAssignment   = [ ]
 preEmails       = ''
 teachersEmails  = ''
@@ -177,8 +181,21 @@ for key, assignment in assignments.iteritems():
     if debug:
         print "\n\n# NEXT # Key: " + key + ' --> ' + assignment
 
-    try:
-        student = activeStudents.retrieveElement(key)
+#    try:
+    if True:
+        try:
+            student = activeStudents.retrieveElement(key)
+        except:
+            if debug:
+                print ' Not a student (%s) ... moving on to next entry.'%(key)
+            # make sure to add up all the teachers emails
+            if re.search('-Lec-',assignment):
+                if teachersEmails == '':
+                    teachersEmails = key
+                else:
+                    teachersEmails += "," + key
+            continue
+            
         if debug:
             print "\n Assignment for %s %s (%s)"%(student.firstName,student.lastName,key)
 
@@ -216,10 +233,19 @@ for key, assignment in assignments.iteritems():
 
                 if debug:
                     print " Number: %s"%(number)
-                course  = activeCourses.retrieveElement(number)
+                try:
+                    course  = activeCourses.retrieveElement(number)
+                except:
+                    print '\n ERROR - Not a registered course (%s). EXIT!\n'%(number)
+                    sys.exit(1)
+
                 if debug:
                     print " Admin: %s"%(course.admin)
-                faculty = activeFaculties.retrieveElement(course.admin)
+                try:
+                    faculty = activeFaculties.retrieveElement(course.admin)
+                except:
+                    print '\n ERROR - Not a registered teacher (%s). EXIT!\n'%(course.admin)
+                    sys.exit(1)
 
                 if debug:
                     print " Course: " + number + "  Faculty: " + course.admin
@@ -230,8 +256,9 @@ for key, assignment in assignments.iteritems():
                            faculty.firstName,faculty.lastName,faculty.eMail)
                     preAssignment.append(tmp)
                     assignString += " Utility TA in course  " + course.number + \
-                                    " (" + course.name + ") administered by " + faculty.firstName + \
-                                    " " + faculty.lastName + " (" + faculty.eMail + ")"
+                                    " (" + course.name + ") administered by " + \
+                                    faculty.firstName + " " + faculty.lastName + \
+                                    " (" + faculty.eMail + ")"
                 elif type[3] == "R" or type[3] == "L":
                     tmp = "%-14s, %-14s TA (R) - %-6s  %-40s %s %s (%s)"%\
                           (student.lastName,student.firstName,course.number,course.name, \
@@ -239,8 +266,9 @@ for key, assignment in assignments.iteritems():
                     preAssignment.append(tmp)
 
                     assignString += " Recitation TA in course  " + course.number + \
-                                    " (" + course.name + ") administered by " + faculty.firstName + \
-                                    " " + faculty.lastName + " (" + faculty.eMail + ")"
+                                    " (" + course.name + ") administered by " + \
+                                    faculty.firstName + " " + faculty.lastName + \
+                                    " (" + faculty.eMail + ")"
                     
                 else:
                     assignString += " ERROR - Unknown TA type found: " + type[3]
@@ -261,11 +289,8 @@ for key, assignment in assignments.iteritems():
 
         filename += ".eml"
 
-
         print "\n" + term + " " + student.firstName + " " + student.lastName + "\n" \
               + assignString
-        
-        #print ' EMAIL? : ' + printEmail
 
         if printEmail == "email":
             cmd = "generateEmail.sh '" + term + "' \"" + student.firstName + " " \
@@ -277,16 +302,9 @@ for key, assignment in assignments.iteritems():
                 + " -s \'TA Assignment " + term + " (" + student.firstName + " " \
                 + student.lastName + ")\' " + student.eMail + " < " + dataDir + "/spool/" + filename
 
-    except:
-        student = 0       
-        if re.search('Lec-1',assignment):
-            if teachersEmails == '':
-                teachersEmails = key
-            else:
-                teachersEmails += "," + key
-        if debug:
-            print " No student"
-
+#    except:
+#        student = 0       
+#
         
 
 #---------------------------------------------------------------------------------------------------

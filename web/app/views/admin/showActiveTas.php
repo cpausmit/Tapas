@@ -7,7 +7,7 @@ if (! (isMaster() || isAdmin())) {
 }
 
 include("app/models/Dbc.php");
-include("app/models/ActiveTables.php");
+include("app/models/Tables.php");
 include("app/models/Student.php");
 include("app/models/Ta.php");
 
@@ -23,7 +23,7 @@ foreach ($rows as $key => $row) {
 }
 
 // find active Ta table
-$activeTables = new ActiveTables($db);
+$activeTables = new Tables($db,"ActiveTables");
 $taTable = $activeTables->getUniqueMatchingName('Tas');
 // do the query
 $rows = $db->query("select Email, Fulltime, PartTime from $taTable order by Email");
@@ -38,8 +38,8 @@ $nTas = $i;
 
 print "<article class=\"page\">\n";
 print "<h1>Show Active TAs</h1>\n";
-print "<p>Active assignment table: $taTable";
-print " with $nTas Tas.</p>";
+print "<p>Active TA table: $taTable";
+print " with $nTas entries.</p>";
 print "<hr>\n";
 print "<table>\n";
 
@@ -54,7 +54,7 @@ foreach ($tas as $key => $ta) {
       $first = false;
     }
     $student->printTableRow(true);
-    print "<td>&nbsp;$ta->fullTime</td><td>&nbsp;$ta->partTime</td></tr>";
+    print "<td align=center>&nbsp;$ta->fullTime</td><td align=center>&nbsp;$ta->partTime</td></tr>";
   }
   else {
     print "<br><b> ERROR -- student not found in database: $ta->email</b><br>";

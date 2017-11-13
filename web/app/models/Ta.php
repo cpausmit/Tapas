@@ -40,27 +40,27 @@ class Ta
 
     $valid = true;
 
-    print '<br> validating TA information ....<br>';
+    //print '<br> validating TA information ....<br>';
     
     if (isEmail($this->email))
-      print " -- Email valid.<br>\n";
+      print ""; //print " -- Email valid.<br>\n";
     else
       return false;
     
     if ($this->fullTime >= 0 and $this->fullTime <= 1)
-      print "Fulltime fraction: $this->fullTime -- valid.<br>\n";
+      print ""; // print "Fulltime fraction: $this->fullTime -- valid.<br>\n";
     else {
       print "Fulltime fraction: $this->fullTime -- invalid.<br>\n";
       return false;
     }
     
     if ($this->partTime >= 0 and $this->partTime <= 1)
-      print "Parttime fraction: $this->partTime -- valid.<br>\n";
+      print ""; // print "Parttime fraction: $this->partTime -- valid.<br>\n";
     else {
       print "Parttime fraction: $this->partTime -- invalid.<br>\n";
       return false;
     }
-   
+
     return $valid;
   }
     
@@ -70,10 +70,10 @@ class Ta
 
     // make sure this is a valid new entry
     if ($this->isValid()) {
-      print '<br> Input is valid.Forming the SQL. <br>';
+      //print '<br> Input is valid.Forming the SQL. <br>';
       $vals = sprintf("('%s',%d,%d)",$this->email,$this->fullTime,$this->partTime);
       $sql = " insert into $table values $vals";
-      print "<br> SQL: $sql <br>";
+      //print "<br> SQL: $sql <br>";
       $db->Exec($sql);
     }
     else {

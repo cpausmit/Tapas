@@ -171,6 +171,11 @@ class Main extends Controller {
     $view = new View;
     echo $view->render('admin/showActiveTas.php');
   }
+  public function planTas($f3) {
+    $f3->set('selected', 'admin');
+    $view = new View;
+    echo $view->render('admin/planTas.php');
+  }
   public function findTas($f3) {
     $f3->set('selected', 'admin');
     $view = new View;
