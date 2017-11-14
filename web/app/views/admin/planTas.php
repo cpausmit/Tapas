@@ -128,7 +128,26 @@ if (array_key_exists('email',$_POST) &&
 }
 
 print "<article class=\"page\">\n";
-print "<h1>Plan TAs</h1>\n";
+
+print "<h1>TA List ($taTable)</h1>\n";
+print "<hr>\n";
+print '<table>';
+print '<form  action="/planTas" method="post">'."\n";
+print '<tr>';
+print '<td>';
+print 'Email:&nbsp;'."\n";
+print '</td><td>';
+print '  <input type="text" name="email"><br>'."\n";
+print '</td>';
+print '<td><select class="type" name="effort">'."\n";
+print '    <option value="1">Full Time</option>'."\n";
+print '    <option value="0">Part Time</option>';
+print '    </select></td>'."\n";
+print '<td>';
+print '<input type="submit" value="submit" />'."\n";
+print '</td></tr>';
+print '</table>';
+print '</form>'."\n";
 print "<hr>\n";
 
 // loop through all TAs
@@ -153,25 +172,6 @@ if ($nTas > 0 && $tas != "") {
   print "<p> &nbsp;&nbsp;&nbsp;&nbsp; $nTas unique entries (in: $taTable).</p>";
   print "<hr>\n";
 }
-
-print "<h1>Modify list</h1>\n";
-print '<table>';
-print '<form  action="/planTas" method="post">'."\n";
-print '<tr>';
-print '<td>';
-print 'Email:&nbsp;'."\n";
-print '</td><td>';
-print '  <input type="text" name="email"><br>'."\n";
-print '</td>';
-print '<td><select class="type" name="effort">'."\n";
-print '    <option value="1">Full Time</option>'."\n";
-print '    <option value="0">Part Time</option>';
-print '    </select></td>'."\n";
-print '<td>';
-print '<input type="submit" value="submit" />'."\n";
-print '</td></tr>';
-print '</table>';
-print '</form>'."\n";
 
 // footer
 print "<hr>\n";

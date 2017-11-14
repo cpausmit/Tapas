@@ -11,23 +11,15 @@ if (isAdmin() || isMaster()) {
   print '<ul class="cp-list">'."\n";
   print '<li> <a href="/courses">courses</a>'." all courses in the physics department.\n";
   print '<li> <a href="/students">students</a>'." all grad students that have been a TA\n";
-  print '<li> <a href="/showActiveAssignments?option=TA">active assignments</a>'." list\n";
-  print "     active assignments in the system.\n";
-  print '<li> <a href="/showActiveTas">active TAs</a>'." list active TAs in the system.\n";
-  print '<li> <a href="/planTas">planning TAs</a>'." list TAs for next term planning.\n";
+  print '<li> <a href="/showActiveTas">active TAs</a>'." active TAs in the system.\n";
+  print '<li> <a href="/planTas">planning TAs</a>'." TAs for next term planning.\n";
+  print '<li> <a href="/showActiveAssignments?option=TA">active TA assignments</a>'."\n";
+  print "     active TA assignments in the system.\n";
+  print '<li> <a href="/showActiveAssignments?option=ALL">all active assignments</a>'."\n";
+  print "     all active assignments in the system.\n";
   print "</ul>\n";
   print ' '."\n";
   print ' <hr>'."\n";
-  print ' Thank you! for the input, this is very useful for future assignments.';
-
-//  print '<p> You have admin rights:<br>'."\n";
-//  print '&nbsp;&nbsp; <a href="/courses">courses</a>'."\n";
-//  print '&nbsp;&nbsp; <a href="/students">students</a>'."\n";
-//  print '&nbsp;&nbsp; <a href="/assignments">assignments</a>'."\n";
-//  print '&nbsp;&nbsp; <a href="/showActiveAssignments?option=TA">active Assignments</a>'."\n";
-//  print '&nbsp;&nbsp; <a href="/showActiveTas">active TAs</a>'."\n";
-//  print '&nbsp;&nbsp; <a href="/planTas">TA planning</a>'."\n";
-//  print ' '."\n";
 }
 
 if (isMaster()) {

@@ -15,12 +15,16 @@ if (isAdmin() && !isMaster()) {
   print "    <li class='has-sub'><a href='#'><span>Students</span></a>";
   print "       <ul>";
   print "          <li><a href='/students'><span>all</span></a></li>";
+  print "       </ul>";
+  print "    </li>";
+  print "    <li class='has-sub'><a href='#'><span>TAs</span></a>";
+  print "       <ul>";
   print "          <li><a href='/showActiveTas'><span>active</span></a></li>";
+  print "          <li><a href='/planTas'><span>planning</span></a></li>";
   print "       </ul>";
   print "    </li>";
   print "    <li class='has-sub'><a href='#'><span>Assignments</span></a>";
   print "       <ul>";
-  print "          <li><a href='/assignments'><span>all terms</span></a></li>";
   print "          <li><a href='/showActiveAssignments?option=ALL'><span>active all</span></a></li>";
   print "          <li><a href='/showActiveAssignments?option=TA'><span>active TAs</span></a></li>";
   print "       </ul>";
