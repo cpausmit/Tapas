@@ -11,7 +11,7 @@ if (! (isAdmin() || isMaster())) {
 }
 
 // Pick up the email from the form
-$email = $_POST['email'];
+$email = $_REQUEST['email'];
 
 // Make sure that the email makes sense (add '@mit.edu' if not provided)
 $pos = strpos($email,'@');

@@ -99,7 +99,8 @@ if (array_key_exists('email',$_POST) &&
   if (! isset($students[$email])) {
     print "<h1>ERROR</h1>\n";
     print "This email is not in our database. \n";
-    print "Please first add the student <a href=\"/addStudent\">here</a><br>\n";
+    print "<h3><a href=\"/updateStudent?email=$email\">Please first add the student here.";
+    print "</a></h3><br>\n";
   }
   else {
     if (isset($tas[$email])) {
