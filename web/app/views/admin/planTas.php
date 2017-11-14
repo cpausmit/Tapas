@@ -63,6 +63,29 @@ function getTasFromDb($db)
   return $tas;
 }
 
+function printForm()
+{
+  print '<form  action="/planTas" method="post">'."\n";
+  print '<tr>';
+  print '<td align=center>';
+  print '<input type="submit" value="submit" style="width:100%" />'."\n";
+  print '</td><td>';
+  print '  <input type="text" name="email" placeholder="jane_doe"><br>'."\n";
+  print '</td>';
+  print '<td align=center><select class="type" name="fullTime">'."\n";
+  print '    <option value="1">1</option>'."\n";
+  print '    <option value="0">0</option>';
+  print '    </select>'."\n";
+  print '</td>';
+  print '<td align=center><select class="type" name="partTime">'."\n";
+  print '    <option value="0">0</option>'."\n";
+  print '    <option value="1">1</option>';
+  print '    </select>'."\n";
+  print '</td>';
+  print '</tr>';
+  print '</form>'."\n";
+}
+
 function removeFromDb($db,$taTable,$email)
 {
   // remove an existing student from the database
@@ -88,10 +111,11 @@ $nTas = sizeof($tas);
 
 // pick up email, effort and action from the form
 if (array_key_exists('email',$_POST) &&
-    array_key_exists('effort',$_POST)  ) {			    
+    array_key_exists('fullTime',$_POST) && array_key_exists('partTime',$_POST)  ) {
 
   $email = $_POST['email'];
-  $effort =  $_POST['effort'];
+  $fullTime =  $_POST['fullTime'];
+  $partTime =  $_POST['partTime'];
 
   // Make sure that the email makes sense (add '@mit.edu' if not provided)
   $email = findEmail($email);
@@ -110,14 +134,8 @@ if (array_key_exists('email',$_POST) &&
     else {
       $ta = Ta::fresh();
       $ta->email = $email;
-      if ($effort == 1) {
-        $ta->fullTime = 1;
-        $ta->partTime = 0;
-      }
-      else {
-        $ta->fullTime = 0;
-        $ta->partTime = 1;
-      }
+      $ta->fullTime = $fullTime;
+      $ta->partTime = $partTime;
       $ta->addToDb($db,$taTable);
       print "<p>Added new TA to our list: $email</p>\n";
     }
@@ -131,37 +149,22 @@ print "<article class=\"page\">\n";
 
 print "<h1>TA List ($taTable)</h1>\n";
 print "<hr>\n";
-print '<table>';
-print '<form  action="/planTas" method="post">'."\n";
-print '<tr>';
-print '<td>';
-print 'Email:&nbsp;'."\n";
-print '</td><td>';
-print '  <input type="text" name="email"><br>'."\n";
-print '</td>';
-print '<td><select class="type" name="effort">'."\n";
-print '    <option value="1">Full Time</option>'."\n";
-print '    <option value="0">Part Time</option>';
-print '    </select></td>'."\n";
-print '<td>';
-print '<input type="submit" value="submit" />'."\n";
-print '</td></tr>';
-print '</table>';
-print '</form>'."\n";
-print "<hr>\n";
+
+print "<table>\n";
 
 // loop through all TAs
 if ($nTas > 0 && $tas != "") {
-  print "<table>\n";
   $first = true;
   foreach ($tas as $key => $ta) {
     if (isset($students[$ta->email])) {
       $student = $students[$ta->email];
       if ($first) {
+        $first = false;
+        printForm();
         $student->printTableHeader(true);
         print "<th>&nbsp; FullTime &nbsp;</th><th>&nbsp; PartTime &nbsp;</th></tr>";
-        $first = false;
       }
+
       $student->printTableRow(true);
       print "<td align=center>&nbsp;$ta->fullTime</td><td align=center>&nbsp;$ta->partTime</td></tr>";
     }
