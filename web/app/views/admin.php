@@ -17,6 +17,8 @@ if (isAdmin() || isMaster()) {
   print "     active TA assignments in the system.\n";
   print '<li> <a href="/showActiveAssignments?option=ALL">all active assignments</a>'."\n";
   print "     all active assignments in the system.\n";
+  print '<li> <a href="/planCourseResources">plan course resources</a>'."\n";
+  print "     for the next term.\n";
   print "</ul>\n";
   print ' '."\n";
   print ' <hr>'."\n";
@@ -36,6 +38,9 @@ if (isMaster()) {
   print "&nbsp;&nbsp; assignments:";
   print '&nbsp;&nbsp; <a href="/showLastAssignments">show last</a>'."\n";
   print '&nbsp;&nbsp; <a href="/copyLastAssignments">copy last</a>'."\n";
+  print "<br>\n";
+  print "&nbsp;&nbsp; course resources:";
+  print '&nbsp;&nbsp; <a href="/planCourseResources">planning</a>'."\n";
   print "<br>\n";
   print "&nbsp;&nbsp; TAs:";
   print '&nbsp;&nbsp; <a href="/findTas">find Tas</a>'."\n";

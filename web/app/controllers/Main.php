@@ -76,6 +76,16 @@ class Main extends Controller {
     $view = new View;
     echo $view->render('admin/recordCourse.php');
   }
+  public function courseResources($f3) {
+    $f3->set('selected', 'admin');
+    $view = new View;
+    echo $view->render('admin/courseResources.php');
+  }
+  public function planCourseResources($f3) {
+    $f3->set('selected', 'admin');
+    $view = new View;
+    echo $view->render('admin/planCourseResources.php');
+  }
   public function students($f3) {
     $f3->set('selected', 'admin');
     $view = new View;

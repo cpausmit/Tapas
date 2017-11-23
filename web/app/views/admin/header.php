@@ -27,6 +27,7 @@ if (isAdmin() && !isMaster()) {
   print "       <ul>";
   print "          <li><a href='/showActiveAssignments?option=ALL'><span>active all</span></a></li>";
   print "          <li><a href='/showActiveAssignments?option=TA'><span>active TAs</span></a></li>";
+  print "          <li><a href='/planAssignments'><span>planning</span></a></li>";
   print "       </ul>";
   print "    </li>";
   print " </ul>";
@@ -66,6 +67,7 @@ if (isMaster()) {
   print "          <li><a href='/showActiveAssignments?option=TA'><span>active TAs</span></a></li>";
   print "          <li><a href='/showLastAssignments'><span>last</span></a></li>";
   print "          <li><a href='/copyLastAssignments'><span>copy-last</span></a></li>";
+  print "          <li><a href='/planAssignments'><span>planning</span></a></li>";
   print "       </ul>";
   print "    </li>";
   print "    <li class='has-sub'><a href='#'><span>Evaluations</span></a>";
