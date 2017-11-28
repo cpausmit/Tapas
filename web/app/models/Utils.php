@@ -5,7 +5,7 @@ function isName($name)
   $result = false;
   if (preg_match("/^[a-zA-Z\-]+$/", $name)) {
     $result = true;
-    print " String is a name: $name" ;
+    //print " String is a name: $name" ;
   }
   else {
     print " String is a not a name: $name" ;

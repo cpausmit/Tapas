@@ -1,6 +1,6 @@
 #!/bin/bash
 #---------------------------------------------------------------------------------------------------
-# Install the tapas web site. Should use composer to instal all of the php packages.
+# Install the tapas web site. Should use composer to install all of the php packages.
 #---------------------------------------------------------------------------------------------------
 
 # global setup
@@ -13,9 +13,15 @@ echo " RSYNC: rsync -Cavz ./ $TAPAS_WEB_SERVER:$TAPAS_WEB_BASE/$TAPAS_WEB_NAME >
               rsync -Cavz ./ $TAPAS_WEB_SERVER:$TAPAS_WEB_BASE/$TAPAS_WEB_NAME >& /tmp/rsync.log
 mv /tmp/rsync.log /tmp/rsync-tapas.log
 
-## install packages we need (fatfree)
-ssh $TAPAS_WEB_SERVER "cd $TAPAS_WEB_BASE/$TAPAS_WEB_NAME/app/lib; git clone https://github.com/bcosca/fatfree; cd fatfree; git checkout tags/3.2.2"
-#ssh $TAPAS_WEB_SERVER "chown apache:apache $TAPAS_WEB_BASE/$TAPAS_WEB_NAME/app/tmp"
+if [ "$1" != "lite" ]
+then
+  # install packages we need (fatfree)
+  lib=$TAPAS_WEB_BASE/$TAPAS_WEB_NAME/app/lib
+  execute="rm -rf $lib/fatfree; cd $lib; git clone https://github.com/bcosca/fatfree > message.bak"
+  ssh $TAPAS_WEB_SERVER $execute
+  execute="cd $lib/fatfree; git checkout tags/3.2.2 2>> ../message.bak"
+  ssh $TAPAS_WEB_SERVER $execute
+fi
 
 # cleanup?
 

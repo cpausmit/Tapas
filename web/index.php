@@ -10,7 +10,7 @@ $f3->set('AUTOLOAD',     'app/models/;app/controllers/;app/json/');
 $f3->set('LOGS',         'app/logs/');
 $f3->set('TEMP',         'app/tmp/');
 $f3->set('CACHE',        'app/tmp/cache/');
-$f3->set('service_name', 'mit-tapas.dyndns.org');
+$f3->set('service_name', 'tapas.mit.edu');
 $f3->set('JAR.expire',    time() + 3600*24*365);
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -32,6 +32,8 @@ $f3->route('GET /courses',              'Main->courses');
 $f3->route('GET /addCourse' ,           'Main->addCourse');
 $f3->route('GET|POST /updateCourse',    'Main->updateCourse');
 $f3->route('GET|POST /recordCourse',    'Main->recordCourse');
+$f3->route('GET /semesters',            'Main->semesters');
+$f3->route('GET /addSemester' ,         'Main->addSemester');
 $f3->route('GET /courseResources',      'Main->courseResources');
 $f3->route('GET|POST /planCourseResources','Main->planCourseResources');
 $f3->route('GET /assignments',          'Main->assignments');
@@ -40,7 +42,7 @@ $f3->route('GET /addTeacher',           'Main->addTeacher');
 $f3->route('GET|POST /updateTeacher',   'Main->updateTeacher');
 $f3->route('GET|POST /recordTeacher',   'Main->recordTeacher');
 $f3->route('GET /students',             'Main->students');
-$f3->route('GET /addStudent',           'Main->addStudent');
+$f3->route('GET|POST /addStudent',      'Main->addStudent');
 $f3->route('GET|POST /updateStudent',   'Main->updateStudent');
 $f3->route('GET|POST /recordStudent',   'Main->recordStudent');
 $f3->route('GET /addActiveTa',          'Main->addActiveTa');

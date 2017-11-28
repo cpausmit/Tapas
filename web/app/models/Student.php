@@ -5,7 +5,6 @@ include_once("app/models/Dbc.php");
 
 class Student
 {
-
   // Property declaration
   public $firstName = '';
   public $lastName = '';
@@ -15,7 +14,6 @@ class Student
   public $year = 0;
   public $division = '';
   public $research = '';                    
-
 
   // Declare a public constructor
   public function __construct() { }
@@ -39,7 +37,8 @@ class Student
       $instance->fill($row);
     }
  
-    //if ($instance->year == 0)
+    if ($instance->year == 0)
+      $instance->email = $email;
     //  print "<br> WARNING -- loading failed return empty (SQL: $sql)<br><br>\n";
  
     return $instance;
@@ -74,12 +73,12 @@ class Student
     // make sure this is a valid new entry
     if ($this->isValid()) {
       // check for duplicate
-      print '<br> Input is valid.Forming the SQL. <br>';
+      //print '<br> Input is valid.Forming the SQL. <br>';
       $vals = sprintf("('%s','%s','%s','%s','%s',%d,'%s','%s')",$this->firstName,$this->lastName,
                       $this->email,$this->advisorEmail,$this->supervisorEmail,
                       $this->year,$this->division,$this->research);
       $sql = " insert into Students values $vals";
-      print "<br> SQL: $sql <br>";
+      //print "<br> SQL: $sql <br>";
       $db->Exec($sql);
     }
     else {
@@ -94,8 +93,8 @@ class Student
     // make sure this is a valid new entry
     if ($this->isValid()) {
 
-        // check for duplicate
-      print '<br> Forming the SQL. <br>';
+      // check for duplicate
+      //print '<br> Forming the SQL. <br>';
 
       $form = "FirstName = '%s', LastName = '%s'";
       $form = "$form , AdvisorEmail = '%s', SupervisorEmail = '%s', Year = %d";
@@ -104,7 +103,7 @@ class Student
                       $this->advisorEmail,$this->supervisorEmail,
                       $this->year,$this->division,$this->research);
       $sql = " update Students set $vals where Email = '$this->email';";
-      print "<br> SQL: $sql <br>";
+      //print "<br> SQL: $sql <br>";
       $db->Exec($sql);
     }
     else {
@@ -118,35 +117,41 @@ class Student
 
     $valid = true;
 
-    print '<br> validating student information ....<br>';
+    //print '<br> validating student information ....<br>';
 
     if (isName($this->firstName))
-      print " -- First Name valid.<br>\n";
+      print "";
+    //print " -- First Name valid.<br>\n";
     else
       return false;
 
     if (isName($this->lastName))
-      print " -- Last Name valid.<br>\n";
+      print "";
+    //print " -- Last Name valid.<br>\n";
     else
       return false;
 
     if (isEmail($this->email))
-      print " -- Email valid.<br>\n";
+      print "";
+    //print " -- Email valid.<br>\n";
     else
       return false;
 
     if (isEmail($this->advisorEmail))
-      print " -- Advisor Email valid.<br>\n";
+      print "";
+    //print " -- Advisor Email valid.<br>\n";
     else
       return false;
     
     if (isEmail($this->supervisorEmail) or $this->supervisorEmail == "?")
-      print " -- Supervisor Email valid.<br>\n";
+      print "";
+    //print " -- Supervisor Email valid.<br>\n";
     else
       return false;
 
     if ($this->year > 1970 and $this->year < 2020)
-      print "Number is a year: $this->year -- Year valid.<br>\n";
+      print "";
+    //print "Number is a year: $this->year -- Year valid.<br>\n";
     else {
       print "Number is not a year: $this->year.<br>\n";
       return false;
@@ -203,6 +208,65 @@ class Student
     return ($this->year == 0);
   }
 
+  public function printStudentForm($action)
+  {
+    print '<table>';
+    print '<form  action="'.$action.'" method="post">'."\n";
+    print '<tr><td>';
+    print ' <b>FIXED EMAIL</b> ';
+    print '</td><td>';
+    print '<select class="email" name="email">'."\n";
+    print '<option value="'.$this->email.'">'.$this->email.'</option>'."\n";
+    print '</select>'."\n";
+    print '</td></tr>';
+    print '<tr><td> ------ </td><td> </td></tr>';
+    print '<tr><td>';
+    print '  First Name:&nbsp;'."\n";
+    print '</td><td>';
+    print '  <input type="text" name="firstName" value="'.$this->firstName.'"><br>'."\n";
+    print '</td></tr>';
+    print '<tr><td>';
+    print '  Last Name:&nbsp;'."\n";
+    print '</td><td>';
+    print '  <input type="text" name="lastName" value="'.$this->lastName.'"><br>'."\n";
+    print '</td></tr>';
+    print '<tr><td>';
+    print '  Academic Advisor email:&nbsp;'."\n";
+    print '</td><td>';
+    print '  <input type="text" name="advisorEmail" value="'.$this->advisorEmail.'"><br>'."\n";
+    print '</td></tr>';
+    print '<tr><td>';
+    print '  Supervisor email:&nbsp;'."\n";
+    print '</td><td>';
+    print '  <input type="text" name="supervisorEmail" value="'.$this->supervisorEmail.'"><br>'."\n";
+    print '</td></tr>';
+    print '<tr><td>';
+    print '  Year joined:&nbsp;'."\n";
+    print '</td><td>';
+    print '  <input type="text" name="year" value="'.$this->year.'"><br>'."\n";
+    print '</td></tr>';
+    print '<tr><td>';
+    print '  Division:&nbsp;'."\n";
+    print '</td><td>';
+    print '  <input type="text" name="division" value="'.$this->division.'"><br>'."\n";
+    print '</td></tr>';
+    print '<tr><td>';
+    print '  Research:&nbsp;'."\n";
+    print '</td><td>';
+    print '  <input type="text" name="research" value="'.$this->research.'"><br>'."\n";
+    print '</td></tr>';
+    print '<tr><td> ------ </td><td> </td></tr>';
+    print '<tr><td></td><td>';
+    // make sure to specify the type of action
+    if ($this->isFresh())
+      print '<input type="submit" value="submit new student record" />'."\n";
+    else
+      print '<input type="submit" value="submit updated student record" />'."\n";
+    
+    print '</td></tr>';
+    print '</table>';
+    print '</form>'."\n";
+  }
 }
 
 ?>
