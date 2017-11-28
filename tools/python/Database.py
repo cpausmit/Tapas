@@ -2,7 +2,7 @@
 #
 #    >> create table Courses  (Number char(10), Name char(80), Version int);
 #
-#    >> create table Faculty  (FirstName char(20), LastName char(20),
+#    >> create table Teacher  (FirstName char(20), LastName char(20),
 #                              Email char(40), Position char(20), Status char(20));
 #
 #    >> create table Students (FirstName char(20), LastName char(20),
@@ -38,20 +38,20 @@ class DatabaseHandle:
 class Course:
     'Base class for any MIT course.'
 
-    def __init__(self, number,name,version,faculty = 'EMPTY@mit.edu',admin = 'EMPTY@mit.edu'):
+    def __init__(self, number,name,version,teacher = 'EMPTY@mit.edu',admin = 'EMPTY@mit.edu'):
         self.number  = number
         self.name    = name
         self.version = version
-        self.faculty = faculty
+        self.teacher = teacher
         self.admin   = admin
        
-    def setFaculty(self, faculty):
-        if self.faculty == 'EMPTY@mit.edu':
-            self.faculty = faculty
+    def setTeacher(self, teacher):
+        if self.teacher == 'EMPTY@mit.edu':
+            self.teacher = teacher
             if self.admin == 'EMPTY@mit.edu':
-                self.admin   = faculty
+                self.admin   = teacher
         else:
-            self.faculty += ',' + faculty
+            self.teacher += ',' + teacher
 
     def setAdmin(self, admin):
         self.admin = admin
@@ -92,8 +92,8 @@ class Student(Teacher):
                self.year,self.division,self.research)
         return string
 
-class Faculty(Teacher):
-    'Teachers that are faculty and therefore either lecture or give recitations.'
+class Teacher(Teacher):
+    'Teachers that are teacher and therefore either lecture or give recitations.'
 
     def __init__(self, firstName,lastName,eMail,position,status):
         Teacher.__init__(self, firstName,lastName,eMail)
@@ -166,13 +166,13 @@ class Container:
         # all went well
         return 0
 
-    def fillWithFaculties(self,database,debug=False):
+    def fillWithTeachers(self,database,debug=False):
         if debug:
-            print " Start fill Faculties."
+            print " Start fill Teachers."
         # grab the cursor
         cursor = database.cursor()
         # Prepare SQL query to select all courses from the Courses table
-        sql = "SELECT * FROM Faculties"
+        sql = "SELECT * FROM Teachers"
         if debug:
             print " SQL> " + sql
         try:
@@ -189,16 +189,16 @@ class Container:
                 status     = row[4]
                 # Now print fetched result
                 if debug:
-                    print " found Faculty with ('%s','%s','%s','%s','%s');"% \
+                    print " found Teacher with ('%s','%s','%s','%s','%s');"% \
                           (firstName,lastName,eMail,position,status)
 
-                # create a new faculty and add it to our faculties object
-                faculty = Faculty(firstName,lastName,eMail,position,status)
+                # create a new teacher and add it to our teachers object
+                teacher = Teacher(firstName,lastName,eMail,position,status)
                 if debug:
-                    print " Faculty create."
-                self.addElement(eMail,faculty);
+                    print " Teacher create."
+                self.addElement(eMail,teacher);
         except:
-            print " ERROR - unable to fetch data from Faculties table."
+            print " ERROR - unable to fetch data from Teachers table."
             return 1
 
         # all went well

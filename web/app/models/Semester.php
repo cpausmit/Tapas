@@ -87,10 +87,10 @@ class Semester
     // adding the given semester instance to the database
 
     // check for duplicate
-    print '<br> Input is valid.Forming the SQL. <br>';
+    //print '<br> Input is valid.Forming the SQL. <br>';
     $vals = sprintf("('%s')",$this->term);
     $sql = " insert into Semesters values $vals";
-    print "<br> SQL: $sql <br>";
+    //print "<br> SQL: $sql <br>";
     $db->Exec($sql);
   }
 
@@ -98,12 +98,11 @@ class Semester
   {
     // updating the given course instance to the database
 
-    print '<br> Forming the SQL. <br>';
-
+    //print '<br> Forming the SQL. <br>';
     $form = "Number = '%s', Name = '%s', Version = %d";
     $vals = sprintf($form,$this->term);
     $sql = " update Semesters set $vals where Term = '$this->term';";
-    print "<br> SQL: $sql <br>";
+    //print "<br> SQL: $sql <br>";
     $db->Exec($sql);
   }
 

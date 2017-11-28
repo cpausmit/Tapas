@@ -26,4 +26,12 @@ function isEmail($email)
   return $result;
 }
 
+function makeEmail($email)
+{
+  // Make sure that the email makes sense (add '@mit.edu' if not provided)
+  if (!isEmail($email))
+    $email = $email . '@mit.edu';
+  return $email;
+}
+
 ?>

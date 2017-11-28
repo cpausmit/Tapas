@@ -1,6 +1,6 @@
 <?php
 
-// mysql> describe Faculties;
+// mysql> describe Teachers;
 // +-----------+----------+------+-----+---------+-------+
 // | Field     | Type     | Null | Key | Default | Extra |
 // +-----------+----------+------+-----+---------+-------+
@@ -31,7 +31,7 @@ class Teacher
   public static function fromEmail($db,$email) // 'constructor' with just email given
   {
     $instance = new self();
-    $sql = "select * from Faculties where Email = '$email'";
+    $sql = "select * from Teachers where Email = '$email'";
     $teachers = $db->query($sql);
     foreach ($teachers as $key => $row) {
       $instance->fill($row);
@@ -72,7 +72,7 @@ class Teacher
     print $this->lastName . ', ' . $this->firstName;
     print "&nbsp;</td>";
     print "<td>&nbsp;";
-    print "<a href=\"showTaSummary?email=" . $this->email . "\">" . $this->email . "</a>";
+    print "<a href=\"showTeacherSummary?email=" . $this->email . "\">" . $this->email . "</a>";
     print "&nbsp;</td>";
     if (!$open)
       print "</tr>\n";
@@ -112,7 +112,7 @@ public function addToDb($db)
       print '<br> Input is valid.Forming the SQL. <br>';
       $vals = sprintf("('%s','%s','%s','%s','%s')",$this->firstName,$this->lastName,
                       $this->email,$this->position,$this->status);
-      $sql = " insert into Faculties values $vals";
+      $sql = " insert into Teachers values $vals";
       print "<br> SQL: $sql <br>";
       $db->Exec($sql);
     }
@@ -135,7 +135,7 @@ public function addToDb($db)
       $form = "$form , Position = '%s', Status = '%s'";
       $vals = sprintf($form,$this->firstName,$this->lastName,
                       $this->position,$this->status);
-      $sql = " update Faculties set $vals where Email = '$this->email';";
+      $sql = " update Teachers set $vals where Email = '$this->email';";
       print "<br> SQL: $sql <br>";
       $db->Exec($sql);
     }

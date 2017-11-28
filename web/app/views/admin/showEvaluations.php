@@ -25,7 +25,7 @@ foreach ($rows as $key => $row) {
 }
 
 // get teacher names
-$rows = $db->query("select * from Faculties order by lastName");
+$rows = $db->query("select * from Teachers order by lastName");
 $teacherNames = "";
 foreach ($rows as $key => $row) {
   $teacher = Teacher::fromRow($row);

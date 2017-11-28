@@ -52,7 +52,7 @@ if rc != 0:
 
 # Make a new objects of faculties
 faculties = Database.Container()
-rc = faculties.fillWithFaculties(db.handle)
+rc = faculties.fillWithTeachers(db.handle)
 if rc != 0:
     print " ERROR - filling faculties."
     # disconnect from server
@@ -73,9 +73,9 @@ if rc != 0:
 sql = "select * from Assignments" + period
 
 # Remember active courses, faculties and students
-activeCourses   = Database.Container()
-activeFaculties = Database.Container()
-activeStudents  = Database.Container()
+activeCourses  = Database.Container()
+activeTeachers = Database.Container()
+activeStudents = Database.Container()
 
 #---------------------------------------------------------------------------------------------------
 # Make a complete list of all assignments
@@ -103,7 +103,7 @@ try:
         number = task.split('-')[1]
 
         # flags to test whether person is part of the database
-        isFaculty = False
+        isTeacher = False
         isStudent = False
 
         # find corresponding course in our courses list
@@ -120,19 +120,19 @@ try:
             
         # try if it is a techer in our teachers list
         try:
-            faculty = faculties.retrieveElement(email);
-            activeFaculties.addElement(email,faculty)
-            isFaculty = True
-            # Add teaching faculty to the course
+            teacher = faculties.retrieveElement(email);
+            activeTeachers.addElement(email,teacher)
+            isTeacher = True
+            # Add teaching teacher to the course
             if   task.split('-')[2] == 'Lec':          ## and task.split('-')[3] == '1':
                 course = activeCourses.retrieveElement(number);
-                course.setFaculty(email)
+                course.setTeacher(email)
             elif task.split('-')[2] == 'Adm':
                 course = activeCourses.retrieveElement(number);
                 course.setAdmin(email)
         except:
-            #print " Not a faculty (%s)"%(email)
-            faculty = 0
+            #print " Not a teacher (%s)"%(email)
+            teacher = 0
 
         # find the student in our students list
         try:
@@ -151,7 +151,7 @@ try:
             assignments[email] = task
 
         # did we find the person in the database
-        if isStudent or isFaculty:
+        if isStudent or isTeacher:
             if check:
                 print " Found the person."
         else:
@@ -242,39 +242,39 @@ for key, assignment in assignments.iteritems():
                 if debug:
                     print " Admin: %s"%(course.admin)
                 try:
-                    faculty = activeFaculties.retrieveElement(course.admin)
+                    teacher = activeTeachers.retrieveElement(course.admin)
                 except:
                     print '\n ERROR - Not a registered teacher (%s). EXIT!\n'%(course.admin)
                     sys.exit(1)
 
                 if debug:
-                    print " Course: " + number + "  Faculty: " + course.admin
+                    print " Course: " + number + "  Teacher: " + course.admin
 
                 if type[3] == "U":
                     tmp = "%-14s, %-14s TA (U) - %-6s  %-40s %s %s (%s)"%\
                           (student.lastName,student.firstName,course.number,course.name, \
-                           faculty.firstName,faculty.lastName,faculty.eMail)
+                           teacher.firstName,teacher.lastName,teacher.eMail)
                     preAssignment.append(tmp)
                     assignString += " Utility TA in course  " + course.number + \
                                     " (" + course.name + ") administered by " + \
-                                    faculty.firstName + " " + faculty.lastName + \
-                                    " (" + faculty.eMail + ")"
+                                    teacher.firstName + " " + teacher.lastName + \
+                                    " (" + teacher.eMail + ")"
                 elif type[3] == "R" or type[3] == "L":
                     tmp = "%-14s, %-14s TA (R) - %-6s  %-40s %s %s (%s)"%\
                           (student.lastName,student.firstName,course.number,course.name, \
-                           faculty.firstName,faculty.lastName,faculty.eMail)
+                           teacher.firstName,teacher.lastName,teacher.eMail)
                     preAssignment.append(tmp)
 
                     assignString += " Recitation TA in course  " + course.number + \
                                     " (" + course.name + ") administered by " + \
-                                    faculty.firstName + " " + faculty.lastName + \
-                                    " (" + faculty.eMail + ")"
+                                    teacher.firstName + " " + teacher.lastName + \
+                                    " (" + teacher.eMail + ")"
                     
                 else:
                     assignString += " ERROR - Unknown TA type found: " + type[3]
 
-                # addup the additional faculty to be copied
-                ##additionalCc += "," + faculty.eMail
+                # addup the additional teacher to be copied
+                ##additionalCc += "," + teacher.eMail
                 if course.admin != 'EMPTY@mit.edu':
                     additionalCc += "," + course.admin
 

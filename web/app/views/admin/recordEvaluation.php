@@ -60,7 +60,7 @@ $assignmentsTable = 'Assignments'.$term; //print " Assignments from $assignments
 
 // find teacher and TA
 $teachers = findTeacherNames($link);
-if (! isset($teachers[$teacherEmail])) {  // check if this is a valid teacher (Faculties table)
+if (! isset($teachers[$teacherEmail])) {  // check if this is a valid teacher (Teachers table)
   print ' EXIT - teacher email is not valid.';
   exitParameterError($teacherMail);
 }

@@ -56,8 +56,8 @@ except:
 # Make a new objects of faculties
 faculties = Database.Container()
 
-# Prepare SQL query to select all TAs from the Faculties table
-sql = "SELECT * FROM Faculties"
+# Prepare SQL query to select all TAs from the Teachers table
+sql = "SELECT * FROM Teachers"
 
 try:
     # Execute the SQL command
@@ -72,15 +72,15 @@ try:
         status     = row[4]
         # Now print fetched result
         if debug:
-            print " found Faculty with ('%s','%s','%s','%s','%s');"% \
+            print " found Teacher with ('%s','%s','%s','%s','%s');"% \
                   (firstName,lastName,eMail,position,status)
 
-        # create a new faculty and add it to our faculties object
-        faculty = Database.Faculty(firstName,lastName,eMail,position,status)
-        faculties.addElement(eMail,faculty);
+        # create a new teacher and add it to our faculties object
+        teacher = Database.Teacher(firstName,lastName,eMail,position,status)
+        faculties.addElement(eMail,teacher);
 
 except:
-    print " ERROR - unable to fetch data from Faculties table."
+    print " ERROR - unable to fetch data from Teachers table."
     # disconnect from server
     db.disco()
     sys.exit()

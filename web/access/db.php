@@ -371,7 +371,7 @@ function findStudentName($link,$email)
 function findTeacherNames($link)
 {
   $names = "";
-  $query = "select * from Faculties";
+  $query = "select * from Teachers";
   $statement = $link->prepare($query);
   $statement->execute();
   $statement->bind_result($firstName,$lastName,$email,$position,$status);

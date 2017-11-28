@@ -1,6 +1,7 @@
 <?php
 
 include("app/views/admin/header.php");
+include("app/models/Utils.php");
 
 // make sure we have an admin
 if (! (isAdmin() || isMaster())) { 
@@ -31,13 +32,8 @@ $db = Dbc::getReader();
 
 // Pick up the email from the form
 $email = '';
-if (array_key_exists('email',$_REQUEST)) {
-  $email = $_REQUEST['email'];
-  // Make sure that the email makes sense (add '@mit.edu' if not provided)
-  $pos = strpos($email,'@');
-  if ($pos === false)                  // careful triple '='
-    $email = $email . '@mit.edu';
-}
+if (array_key_exists('email',$_REQUEST))
+  $email = makeEmail($_REQUEST['email']);
 
 // start the page
 print '<article class="page">'."\n";

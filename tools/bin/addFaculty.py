@@ -37,7 +37,7 @@ db = Database.DatabaseHandle()
 cursor = db.getCursor()
 
 # Prepare SQL query to select a record from the database.
-sql = "select * from Faculties where Email = '" + EMAIL + "'"
+sql = "select * from Teachers where Email = '" + EMAIL + "'"
 
 nMatches = 0
 
@@ -60,13 +60,13 @@ try:
         nMatches += 1
 
 except:
-    print " ERROR - unable to fetch data from Faculties table."
+    print " ERROR - unable to fetch data from Teachers table."
     # disconnect from server
     db.disco()
     sys.exit()
 
 if nMatches == 0:    # now we just add the new student
-    sql = " insert into Faculties values %s"%faculty.insertString()
+    sql = " insert into Teachers values %s"%faculty.insertString()
     print " SQL> " + sql
     try:
         # Execute the SQL command
@@ -84,7 +84,7 @@ else:
         sys.exit()
 
     # delete the existing record from the table
-    sql = " delete from Faculties where Email = '%s'"%EMAIL
+    sql = " delete from Teachers where Email = '%s'"%EMAIL
     #print " SQL> " + sql
     try:
         # Execute the SQL command

@@ -38,8 +38,8 @@ if rc != 0:
     
 # Make a new objects of faculties
 faculties = Database.Container()
-activeFaculties = Database.Container()
-rc = faculties.fillWithFaculties(db.handle)
+activeTeachers = Database.Container()
+rc = faculties.fillWithTeachers(db.handle)
 if rc != 0:
     print " ERROR - filling faculties."
     # disconnect from server
@@ -92,7 +92,7 @@ try:
         # find the faculty in our faculties list
         try:
             faculty = faculties.retrieveElement(email);
-            activeFaculties.addElement(email,faculty)
+            activeTeachers.addElement(email,faculty)
             # Add teaching faculty to the course
             if task.split('-')[2] == 'Lec' and task.split('-')[3] == '1':
                 course = activeCourses.retrieveElement(number);

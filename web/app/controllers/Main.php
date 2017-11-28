@@ -151,6 +151,11 @@ class Main extends Controller {
     $view = new View;
     echo $view->render('admin/showTaSummary.php');
   }
+  public function showTeacherSummary($f3) {
+    $f3->set('selected', 'admin');
+    $view = new View;
+    echo $view->render('admin/showTeacherSummary.php');
+  }
   public function showTaskSummary($f3) {
     $f3->set('selected', 'admin');
     $view = new View;
