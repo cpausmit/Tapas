@@ -17,6 +17,48 @@
 // alter table CourseResources add constraint onePerTerm unique(Term, Number);
 //
 
+class CourseResources
+{
+  // Property declaration
+  public $list = '';
+  public $nTeachers = '';
+  public $nFullTas = '';
+  public $nPartTas = '';
+
+  // Declare a public constructor
+  public function __construct() { }
+  public function __destruct() { }
+
+  public static function fresh()
+  {
+    // 'constructor' returns blank course
+    $instance = new self();
+    return $instance;
+  }
+
+  public function addCourseResource($courseResource)
+  {
+    if (!isset($list[$courseResource->number])) {
+      $this->list[$courseResource->number] = $courseResource;
+      $this->nTeachers += $courseResource->numLecturers + $courseResource->numRecitators;
+      $this->nFullTas += $courseResource->numFullRecTas + $courseResource->numFullUtilTas
+        +  0.5 * ($courseResource->numHalfRecTas + $courseResource->numHalfUtilTas);
+      $this->nPartTas += $courseResource->numPartUtilTas;
+    }
+    else {
+      print " ERROR - trying to add a course resource twice.<br>\n";
+    }
+    
+    return;
+  }
+  public function showSummary()
+  {
+      print " $this->nTeachers teachers,".
+            " $this->nFullTas full time TAs,".
+            " $this->nPartTas part time TAs.<br>\n";
+  }
+}
+
 class CourseResource
 {
   // Property declaration

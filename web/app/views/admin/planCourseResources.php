@@ -96,10 +96,10 @@ function getCourseResourcesFromDb($db,$term)
 {
   // do the query
   $rows = $db->query("select * from CourseResources where Term = '$term'");
-  $courseResources = "";
+  $courseResources = CourseResources::fresh();
   foreach ($rows as $key => $row) {
     $courseResource = CourseResource::fromRow($row);
-    $courseResources[$courseResource->number] = $courseResource;
+    $courseResources->addCourseResource($courseResource);
   }
 
   return $courseResources;
@@ -202,7 +202,7 @@ $courses = getCoursesFromDb($db);
 
 // get list of CourseResources for the given semester (term)
 $courseResources = getCourseResourcesFromDb($db,$term);
-$nEntries = sizeof($courseResources);
+$nEntries = sizeof($courseResources->list);
 
 $number = getPostVariable('number');
 $numAdmins = getPostVariable('numAdmins');
@@ -220,7 +220,7 @@ if ($GLOBALS['COMPLETE']) {
     print "This term is not in our database. \n";
   }
   else {
-    if (isset($courseResources[$number])) {
+    if (isset($courseResources->list[$number])) {
       removeFromDb($db,$term,$number);
       print "Removed course $term:$number from our list<br>\n";
     }
@@ -244,7 +244,7 @@ if ($GLOBALS['COMPLETE']) {
 
     // update the TA list in memory
     $courseResources = getCourseResourcesFromDb($db,$term);
-    $nEntries =  sizeof($courseResources);
+    $nEntries =  sizeof($courseResources->list);
   }
 }
 
@@ -260,9 +260,9 @@ print "<hr>\n";
 print "<table>\n";
 
 // loop through all TAs
-if ($courseResources != "") {
+if ($courseResources->list != "") {
   $first = true;
-  foreach ($courseResources as $key => $courseResource) {
+  foreach ($courseResources->list as $key => $courseResource) {
     if ($first) {
       $first = false;
       $courseResource->printTableHeader(false);
@@ -271,7 +271,10 @@ if ($courseResources != "") {
     $courseResource->printTableRow(true);
   }
   print "</table>\n";
-  print "<p> &nbsp;&nbsp;&nbsp;&nbsp; $nEntries unique entries (for term: $term).</p>";
+  print "<p> &nbsp;&nbsp;&nbsp;&nbsp; $nEntries unique entries (for term: $term).".
+        "<br> &nbsp;&nbsp;&nbsp;&nbsp;";
+  $courseResources->showSummary();
+  print "</p>\n";
   print "<hr>\n";
 }
 else {

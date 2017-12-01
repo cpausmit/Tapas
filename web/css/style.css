@@ -1292,8 +1292,8 @@ p.top {
 div.transbox {
   margin: 15px;
   background-color: #ffffff;
-  opacity:0.5;
-  filter:alpha(opacity=50); /* For IE8 and earlier */
+  opacity:0.9;
+  filter:alpha(opacity=90); /* For IE8 and earlier */
 }
 div.transbox a:link {
   color:#ff0000; text-decoration:none;
