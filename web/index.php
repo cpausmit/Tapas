@@ -17,7 +17,7 @@ $f3->set('JAR.expire',    time() + 3600*24*365);
 // Routes
 ////////////////////////////////////////////////////////////////////////////////
 
-$f3->route('GET /email',                'Main->email');
+$f3->route('GET|POST /email',           'Main->email');
 $f3->route('GET|POST /sendEmail',       'Main->sendEmail');
 
 $f3->route('GET /plots',                'Main->plots');
