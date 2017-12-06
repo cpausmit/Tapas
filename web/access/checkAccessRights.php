@@ -73,10 +73,8 @@ function isTa()
   $tas = readFullTaTable($link);
 
   // make sure table is not empty
-  if ($tas == '') {
-    //print ' ERROR -- TA table is empty';
+  if ($tas == '')
     return false;
-  }
   
   // see whether the email is in the access list
   $email = strtolower($_SERVER['SSL_CLIENT_S_DN_Email']);

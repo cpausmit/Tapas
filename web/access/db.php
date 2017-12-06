@@ -46,9 +46,7 @@ function getLink()
   $host = $pars[0];
   $user = $pars[1];
   $passwd = $pars[2];
-  //echo " HOST: $host  USER $user  PASS: $passwd";
-  //echo " HOST: $host  USER $user";
-  
+
   $link = mysqli_connect($host,$user,$passwd,'Teaching')
     or die('Error ' . mysqli_error($link));
   
@@ -77,26 +75,21 @@ function readFullTaTable($link)
   // first find active tables
   $tables = findActiveTable($link,'Tas');
   
-  if ($tables == '') {
-    //print ' No active TA tables matching.';
+  if ($tables == '')
     return $tas;
-  }
-
-  //print ' Tables: ' . count($tables) . ' ' . $tables[0];
   
   // the one place where we load the tas
   $i = 0;
   $query = "select * from $tables[0] where FullTime=1";
 
   try {
-      //print ' Trying...';
-      $statement = $link->prepare($query);
-      $statement->execute();
-      $statement->bind_result($email,$fullTime,$partTime);
-      while ($statement->fetch()) {
-          $tas[$i] = $email;
-          $i = $i + 1;
-      }
+    $statement = $link->prepare($query);
+    $statement->execute();
+    $statement->bind_result($email,$fullTime,$partTime);
+    while ($statement->fetch()) {
+      $tas[$i] = $email;
+      $i = $i + 1;
+    }
   }
   catch (Exception $e) {
     echo 'Caught exception: ',  $e->getMessage(), "\n";

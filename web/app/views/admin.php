@@ -21,6 +21,8 @@ if (isAdmin() || isMaster()) {
   print "     all active assignments in the system.\n";
   print '<li> <a href="/planCourseResources">plan course resources</a>'."\n";
   print "     for the next term.\n";
+  print '<li> <a href="/generateAssignments">generate assignments</a>'."\n";
+  print "     for the next term.\n";
   print "</ul>\n";
   print ' '."\n";
   print ' <hr>'."\n";

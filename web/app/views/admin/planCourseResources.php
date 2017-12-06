@@ -21,6 +21,8 @@ function findTerm($semesters)
 
   if (!$GLOBALS['COMPLETE']) {
     print "<article class=\"page\">\n";
+    print "<h1>Which Term?</h1>\n";
+    print "<hr>\n";
     printTermForm($semesters);
     // footer
     print "<hr>\n";
@@ -113,6 +115,22 @@ function printNum($min,$max)
   }
 }
 
+function printGenerateAssignments($term)
+{
+  print '<table>';
+  print '<form  action="/generateAssignments?term='.$term.'" method="post">'."\n";
+  print '<tr>';
+  print '<td align=center><select class="type" name="action">'."\n";
+  print "<option value=\"\"> action ?</option>";
+  print "<option value=\"clear\"> clear  assignments </option>";
+  print "<option value=\"generate\"> generate  assignments </option>";
+  print '                 </select></td>'."\n";
+  print '<td><input type="submit" value="select" />'."\n";
+  print '</td></tr>';
+  print '</table>';
+  print '</form>'."\n";
+}
+
 // Generate the form for the courseResource planning
 function printForm($courses,$term)
 {
@@ -122,7 +140,7 @@ function printForm($courses,$term)
   print '<input type="submit" value="submit" style="width:100%" />'."\n";
   print '</td>';
   print '<td align=center><select class="type" name="number">'."\n";
-  print "<option value=\"\">CHOOSE</option>";
+  print "<option value=\"\">term ?</option>";
   foreach ($courses as $key => $course)
       print "<option value=\"$key\"> $key </option>";
   print '    </select></td>'."\n";
@@ -166,7 +184,7 @@ function printTermForm($semesters)
   print '  Term:&nbsp;'."\n";
   print '</td>';
   print '<td align=center><select class="type" name="term">'."\n";
-  print "<option value=\"\">CHOOSE</option>";
+  print "<option value=\"\">term ?</option>";
   foreach ($semesters as $key => $semester)
     print "<option value=\"$key\"> $key </option>";
   print '    </select></td>'."\n";
@@ -259,7 +277,7 @@ print "<hr>\n";
   
 print "<table>\n";
 
-// loop through all TAs
+// loop through all course resources
 if ($courseResources->list != "") {
   $first = true;
   foreach ($courseResources->list as $key => $courseResource) {
@@ -276,6 +294,8 @@ if ($courseResources->list != "") {
   $courseResources->showSummary();
   print "</p>\n";
   print "<hr>\n";
+  // register all present assignment slots
+  printGenerateAssignments($term);
 }
 else {
   $courseResource = courseResource::fresh();

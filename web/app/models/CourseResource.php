@@ -51,17 +51,29 @@ class CourseResources
     
     return;
   }
+
   public function showSummary()
   {
-      print " $this->nTeachers teachers,".
-            " $this->nFullTas full time TAs,".
-            " $this->nPartTas part time TAs.<br>\n";
+    // print a summery of the course resources
+    print " $this->nTeachers teachers,".
+          " $this->nFullTas full time TAs,".
+          " $this->nPartTas part time TAs.<br>\n";
+  }
+
+  public function printAssignments()
+  {
+    // loop through course resources and print the resulting assignments
+    foreach ($this->list as $key => $courseResource) {
+      print "<br> Course: <b>$courseResource->number </b>\n";
+      $courseResource->printAssignments();
+    }
   }
 }
 
 class CourseResource
 {
   // Property declaration
+
   public $term = '';
   public $number = '';
   public $numAdmins = 0;
@@ -105,6 +117,7 @@ class CourseResource
   protected function fill(array $row)
   {
     // here we fill the content
+
     $this->term = $row[0];
     $this->number = $row[1];
     $this->numAdmins = intval($row[2]);
@@ -115,6 +128,53 @@ class CourseResource
     $this->numFullUtilTas = intval($row[7]);
     $this->numHalfUtilTas = intval($row[8]);
     $this->numPartUtilTas = intval($row[9]);
+  }
+
+  public function printAssignments()
+  {
+    // print one row of a table with the relvant information
+
+    for ($i=1; $i<=$this->numAdmins; $i++) {
+      if ($i==1)
+        print "<br>\n";
+      print $this->term."-".$this->number."-Adm-".$i." ";
+    }
+    for ($i=1; $i<=$this->numLecturers; $i++) {
+      if ($i==1)
+        print "<br>\n";
+      print $this->term."-".$this->number."-Lec-".$i." ";
+    }
+    for ($i=1; $i<=$this->numRecitators; $i++) {
+      if ($i==1)
+        print "<br>\n";
+      print $this->term."-".$this->number."-Rec-".$i." ";
+    }
+    for ($i=1; $i<=$this->numFullRecTas; $i++) {
+      if ($i==1)
+        print "<br>\n";
+      print $this->term."-".$this->number."-TaFR-".$i." ";
+    }
+    for ($i=1; $i<=$this->numFullUtilTas; $i++) {
+      if ($i==1)
+        print "<br>\n";
+      print $this->term."-".$this->number."-TaFU-".$i." ";
+    }
+    for ($i=1; $i<=$this->numHalfRecTas; $i++) {
+      if ($i==1)
+        print "<br>\n";
+      print $this->term."-".$this->number."-TaHR-".$i." ";
+    }
+    for ($i=1; $i<=$this->numHalfUtilTas; $i++) {
+      if ($i==1)
+        print "<br>\n";
+      print $this->term."-".$this->number."-TaHU-".$i." ";
+    }
+    for ($i=1; $i<=$this->numPartUtilTas; $i++) {
+      if ($i==1)
+        print "<br>\n";
+      print $this->term."-".$this->number."-TaPU-".$i." ";
+    }
+    print "<br>";
   }
 
   public function printTableRow($open)
@@ -166,7 +226,6 @@ class CourseResource
     // adding the given course instance to the database
 
     // check for duplicate
-    //print '<br> Input is valid.Forming the SQL. <br>';
     $vals = sprintf("('%s','%s',%d,%d,%d,%d,%d,%d,%d,%d)",
                     $this->term,$this->number,
                     $this->numAdmins,$this->numLecturers,$this->numRecitators,
@@ -174,15 +233,12 @@ class CourseResource
                     $this->numFullUtilTas,$this->numHalfUtilTas,
                     $this->numPartUtilTas);
     $sql = " insert into CourseResources values $vals";
-    //print "<br> SQL: $sql <br>";
     $db->Exec($sql);
   }
 
   public function updateDb($db)
   {
     // updating the given course instance to the database
-
-    //print '<br> Forming the SQL. <br>';
 
     $form = "Term = '%s', Number = '%s', NumAdmins = %d, NumLecturers = %d, NumRecitators = %d,".
             " NumFullRecTas = %d, NumHalfRecTas = %d, NumFullUtilTas = %d, NumHalfUtilTas = %d,".
@@ -196,7 +252,6 @@ class CourseResource
 
     $sql = " update CourseResources set $vals where".
            " Term = '$this->term' and Number = '$this->number';";
-    //print "<br> SQL: $sql <br>";
     $db->Exec($sql);
   }
 

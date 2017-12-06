@@ -191,6 +191,11 @@ class Main extends Controller {
     $view = new View;
     echo $view->render('admin/copyLastAssignments.php');
   }
+  public function generateAssignments($f3) {
+    $f3->set('selected', 'admin');
+    $view = new View;
+    echo $view->render('admin/generateAssignments.php');
+  }
   public function showActiveTas($f3) {
     $f3->set('selected', 'admin');
     $view = new View;

@@ -9,7 +9,7 @@ if (! (isTa() || isMaster())) {
   exitAccessError();
 }
 
-//// get the list of courses
+// get the list of courses
 $db = Dbc::getReader();
 $courses = "";
 $courseRows = $db->query("select * from Courses order by Number");

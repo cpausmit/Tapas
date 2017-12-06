@@ -37,6 +37,7 @@ $f3->route('GET|POST /addSemester',     'Main->addSemester');
 $f3->route('GET /courseResources',      'Main->courseResources');
 $f3->route('GET|POST /planCourseResources','Main->planCourseResources');
 $f3->route('GET /assignments',          'Main->assignments');
+$f3->route('GET|POST /generateAssignments','Main->generateAssignments');
 $f3->route('GET /teachers',             'Main->teachers');
 $f3->route('GET /addTeacher',           'Main->addTeacher');
 $f3->route('GET|POST /updateTeacher',   'Main->updateTeacher');

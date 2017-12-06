@@ -10,9 +10,9 @@ function findRecipientList($db,$targetString,$email)
 {
   $list = "";
   if ($targetString == "TAs") {
-    // find active Ta table
-    $activeTables = new ActiveTables($db);
-    $taTable = $activeTables->getUniqueMatchingName('Tas');
+    // find planning Ta table
+    $planningTables = new Tables($db,"PlanningTables");
+    $taTable = $planningTables->getUniqueMatchingName('Tas');
     // do the query
     $rows = $db->query("select Email from $taTable");
     foreach ($rows as $key => $row) {
@@ -60,11 +60,13 @@ function printEmailForm($subject,$message)
   print '  </select>'."\n";
   print "Write your message.\n";
   if ($subject == "")
-    print '<textarea placeholder="Subject: " '.$style.' name="Subject" rows=1 cols=40>'.$subject.'</textarea>';
+    print '<textarea placeholder="Subject: " '.$style.' name="Subject" rows=1 cols=40>'.
+        $subject.'</textarea>';
   else
     print '<textarea '.$style.' name="Subject" rows=1 cols=40>'.$subject.'</textarea>';
   if ($message == "")
-    print '<textarea placeholder="Message: "'.$style.' name="Message" rows=8 cols=80>'.$message.'</textarea>';
+    print '<textarea placeholder="Message: "'.$style.' name="Message" rows=8 cols=80>'.
+        $message.'</textarea>';
   else
     print '<textarea '.$style.' name="Message" rows=8 cols=80>'.$message.'</textarea>';
   print '<input type="submit" value="send email" />'."\n";
@@ -124,10 +126,11 @@ if (isMessageReady()) {
     print "<p>Mail was NOT sent. Feature disabled for now!</p>";
   }
   else {
-   if (mail($list,$subject,$message,$headers))
-     print "<p>Mail accepted for delivery (does not guarantee delivery though).</p>";
-   else
-     print "<p>Mail was NOT accepted for delivery.</p>";
+   //if (mail($list,$subject,$message,$headers))
+   //  print "<p>Mail accepted for delivery (does not guarantee delivery though).</p>";
+   //else
+   //  print "<p>Mail was NOT accepted for delivery.</p>";
+      print " MESSAGE NOT SEND.";
   }
 }
 print "<hr>\n";
