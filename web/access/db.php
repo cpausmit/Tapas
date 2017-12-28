@@ -105,8 +105,6 @@ function readTeacherTable($link)
   $term = substr($tables[0],-5,5);
 
   $query = "select Person from Assignments$term where Task like '%Lec%'";
-
-  //print ' Assignments: ' . $query;
   $statement = $link->prepare($query);
   $rc = $statement->execute();
 

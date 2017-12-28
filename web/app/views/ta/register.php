@@ -7,6 +7,10 @@ if (! (isTa() || isMaster())) {
   exitAccessError();
 }
 
+include("app/models/Dbc.php");
+include("app/models/Course.php");
+include("app/models/Tables.php");
+
 function testSelection($p1,$p2,$p3) {
   $valid = false;
   // test validity of selection
@@ -17,12 +21,20 @@ function testSelection($p1,$p2,$p3) {
   return($valid);
 }
 
+// database pointer
+$db = Dbc::getReader();
+$courses = Courses::fromDb($db);
+
+// get all TAs and the possible full time assignments
+$planningTables = new Tables($db,'PlanningTables');
+$preferencesTable = $planningTables->getUniqueMatchingName('Preferences');
+
+$email = strtolower($_SERVER['SSL_CLIENT_S_DN_Email']);
+
 print '<article class="page">'."\n";
 print '<h1>Selected TA Preferences</h1>';
 print '<p>Your selected TA preferences are:</p>';
 print ' ';
-
-$email = strtolower($_SERVER['SSL_CLIENT_S_DN_Email']);
 
 print '<p>';
 $task1 = new TeachingTask($_POST['pref1']); print '&nbsp;&nbsp; 1: '; $task1->printTaTask();
@@ -34,42 +46,37 @@ print '</p>';
 if (testSelection($_POST['pref1'],$_POST['pref2'],$_POST['pref3'])) {
   print '<p>Selection is valid. ';
 
-  // connect to our database
-  $link = getLink();
-
-  // find the active tables
-  $tableNames = findActiveTable($link,'Preferences');
-  
-  $query = "insert into $tableNames[0] (Email,Pref1,Pref2,Pref3) values ('"
-    . $email . "','" . $_POST['pref1']. "','" . $_POST['pref2'] . "','" . $_POST['pref3'] . "')";
-  $statement = $link->prepare($query);
-  $rc = $statement->execute();
+  $sql = "insert into $preferencesTable (Email,Pref1,Pref2,Pref3) values ('"
+         . $email . "','" . $_POST['pref1']. "','" . $_POST['pref2']
+         . "','" . $_POST['pref3'] . "')";
+  $rc = $db->Exec($sql);
+  $errorArray = $db->errorInfo();
   if (!$rc) {
-    $errNum = mysqli_errno($link);
-    $errMsg = mysqli_error($link);
-    if ($errNum = 1062) {
-      $query = "update $tableNames[0] set Pref1='" . $_POST['pref1']
-	. "',Pref2='" . $_POST['pref2'] . "',Pref3='" . $_POST['pref3']
-	. "' where Email='" . $email ."'";
-      print "Existing preferences have been updated.</p>";
-      $statement = $link->prepare($query);
-      $rc = $statement->execute();
+    if ($errorArray[0] == 23000 && $errorArray[1] == 1062) {
+      print "<!-- WARNING -- duplicate entry.<br> --> \n";
+      $sql = "update $preferencesTable set Pref1='" . $_POST['pref1']
+           . "',Pref2='" . $_POST['pref2'] . "',Pref3='" . $_POST['pref3']
+           . "' where Email='" . $email ."'";
+      $rc = $db->Exec($sql);
       if (!$rc) {
-	$errNum = mysqli_errno($link);
-	$errMsg = mysqli_error($link);
-	print " ERROR - could not register selection: ErrNo=" . $errNum . ": " . $errMsg . "\n";
-	exit();
+        print "<br>\n ERROR -- PDO::errorInfo():\n";
+        print_r($db->errorInfo());
+        exit();
       }
+      else
+        print "Existing preferences have been updated.</p>";
+    }
+    else if ($errorArray[0] == 42 && $errorArray[1] == 1146) {
+      print "<br>\n ERROR - table ($preferencesTable) does not exist.\n";
     }
     else {
-      print " ERROR - could not register selection: ErrNo=" . mysqli_errno($link) . ": " .
-	mysqli_error($link) . "\n";
-      exit();
+      print "<br>\n ERROR -- PDO::errorInfo():\n";
+      print_r($db->errorInfo());
     }
   }
-  else {
+  else
     print 'Selection has been registered.</p>';
-  }
+
   print '</select></td></tr>';
 }
 else {

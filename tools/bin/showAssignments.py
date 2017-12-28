@@ -51,10 +51,10 @@ if rc != 0:
     sys.exit()
 
 # Make a new objects of faculties
-faculties = Database.Container()
-rc = faculties.fillWithTeachers(db.handle)
+teachers = Database.Container()
+rc = teachers.fillWithTeachers(db.handle)
 if rc != 0:
-    print " ERROR - filling faculties."
+    print " ERROR - filling teachers."
     # disconnect from server
     db.disco()
     sys.exit()
@@ -72,7 +72,7 @@ if rc != 0:
 # Prepare SQL query to select a record from the database.
 sql = "select * from Assignments" + period
 
-# Remember active courses, faculties and students
+# Remember active courses, teachers and students
 activeCourses  = Database.Container()
 activeTeachers = Database.Container()
 activeStudents = Database.Container()
@@ -120,7 +120,7 @@ try:
             
         # try if it is a techer in our teachers list
         try:
-            teacher = faculties.retrieveElement(email);
+            teacher = teachers.retrieveElement(email);
             activeTeachers.addElement(email,teacher)
             isTeacher = True
             # Add teaching teacher to the course

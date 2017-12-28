@@ -34,4 +34,16 @@ function makeEmail($email)
   return $email;
 }
 
+function getPostVariable($variableName)
+{
+  // read complete courses table
+  $variable = 'undefined';
+  if (array_key_exists($variableName,$_POST))
+    $variable = $_POST[$variableName];
+  else
+    $GLOBALS['COMPLETE'] = 0;
+
+  return $variable;
+}
+
 ?>

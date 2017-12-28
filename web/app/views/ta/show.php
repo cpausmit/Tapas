@@ -7,21 +7,25 @@ if (! (isTa() || isMaster())) {
   exitAccessError();
 }
 
+include("app/models/Dbc.php");
+include("app/models/Tables.php");
+include("app/models/TeachingTask.php");
+
+// get the db link
+$db = Dbc::getReader();
+$link = getLink();
+$email = strtolower($_SERVER['SSL_CLIENT_S_DN_Email']);
+
+// get all TAs and the possible full time assignments
+$planningTables = new Tables($db,'PlanningTables');
+$preferencesTable = $planningTables->getUniqueMatchingName('Preferences');
+
 print '<article class="page">'."\n";
 print '<h1>Selected TA Preferences</h1>';
-
-// connect to our database
-$link = getLink();
-
-// find the active tables
-$tableNames = findActiveTable($link,'Preferences');
-$activeTable = $tableNames[0];
-print "<p>Active table: $activeTable &nbsp;&nbsp;<br>\n";
+print "<p>Planning table: $preferencesTable &nbsp;&nbsp;<br>\n";
 
 // Now we know the table to use
-
-$email = strtolower($_SERVER['SSL_CLIENT_S_DN_Email']);
-$query = "select * from $activeTable where Email='$email'";
+$query = "select * from $preferencesTable where Email='$email'";
 $statement = $link->prepare($query);
 $rc = $statement->execute();
 if (!$rc) {
@@ -59,7 +63,6 @@ if ($empty) {
 }
 
 print '</article>'."\n";
-
 include("app/views/ta/footer.php");
 
 ?>

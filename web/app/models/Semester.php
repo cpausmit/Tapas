@@ -8,6 +8,46 @@
 // +---------+----------+------+-----+---------+-------+
 //
 
+class Semesters
+{
+  // Property declaration
+  public $list = '';
+
+  // Declare a public constructor
+  public function __construct() { }
+  public function __destruct() { }
+
+  public static function fresh()
+  {
+    // 'constructor' returns blank semesters
+    $instance = new self();
+    return $instance;
+  }
+
+  public static function fromDb($db)
+  {
+    // 'constructor' returns full list of courses
+    $instance = new self();
+    $semesterRows = $db->query("select * from Semesters order by Term");
+    foreach ($semesterRows as $key => $row) {
+      $semester = Semester::fromRow($row);
+      $instance->addSemester($semester);
+    }
+    
+    return $instance;
+  }
+
+  public function addSemester($semester)
+  {
+    if (!isset($this->list[$semester->term]))
+      $this->list[$semester->term] = $semester;
+    else
+      print " ERROR - trying to add a semester twice.<br>\n";
+    
+    return;
+  }
+}
+
 class Semester
 {
   // Property declaration

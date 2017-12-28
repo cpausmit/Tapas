@@ -59,7 +59,7 @@ class Course:
     def show(self):
         print " Course: %s: %s  -- version %d"%(self.number,self.name,self.version)
 
-class Teacher:
+class BaseTeacher:
     'Base class for any teaching Personnel.'
 
     def __init__(self, firstName,lastName,eMail):
@@ -70,11 +70,11 @@ class Teacher:
     def show(self):
         print " Name (Last, First): %s, %s (%s)"%(self.lastName,self.firstName,self.eMail)
 
-class Student(Teacher):
+class Student(BaseTeacher):
     'Students that fill the slots of Teaching Assistants in the department.'
 
     def __init__(self, firstName,lastName,eMail,advisorEmail,supervisorEmail,year,division,research):
-        Teacher.__init__(self, firstName,lastName,eMail)
+        BaseTeacher.__init__(self, firstName,lastName,eMail)
         self.advisorEmail    = advisorEmail
         self.supervisorEmail = supervisorEmail
         self.year            = year
@@ -82,7 +82,7 @@ class Student(Teacher):
         self.research        = research
 
     def show(self):
-        Teacher.show(self)
+        BaseTeacher.show(self)
         print "   Visors (Ad, Super): %s, %s  -- %4d %s %s"% \
               (self.advisorEmail,self.supervisorEmail,self.year,self.division,self.research)
 
@@ -92,16 +92,16 @@ class Student(Teacher):
                self.year,self.division,self.research)
         return string
 
-class Teacher(Teacher):
+class Teacher(BaseTeacher):
     'Teachers that are teacher and therefore either lecture or give recitations.'
 
     def __init__(self, firstName,lastName,eMail,position,status):
-        Teacher.__init__(self, firstName,lastName,eMail)
+        BaseTeacher.__init__(self, firstName,lastName,eMail)
         self.position        = position
         self.status          = status
 
     def show(self):
-        Teacher.show(self)
+        BaseTeacher.show(self)
         print "   Position: %s  Status, %s"%(self.position,self.status)
 
     def insertString(self):

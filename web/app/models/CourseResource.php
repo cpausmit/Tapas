@@ -17,6 +17,29 @@
 // alter table CourseResources add constraint onePerTerm unique(Term, Number);
 //
 
+function insertEmptySlot($db,$term,$slotId)
+{
+  // insert a particular slot id into the assignments table if it does not yet exist
+  $vals = sprintf("('%s','EMPTY')",$slotId);
+  $sql = "insert into Assignments$term values $vals;";
+  $rc = $db->Exec($sql);
+  if (!$rc) {
+    $errorArray = $db->errorInfo();
+    if ($errorArray[0] == 23000 && $errorArray[1] == 1062) {
+      print "<!-- WARNING -- duplicate entry.<br> --> \n";
+    }
+    else {
+      print "<br>\n ERROR -- PDO::errorInfo():\n";
+      print_r($db->errorInfo());
+    }
+  }
+  else
+    print "<br>Inserted new slot: $slotId ($sql)";
+
+  return;
+}
+
+
 class CourseResources
 {
   // Property declaration
@@ -63,10 +86,25 @@ class CourseResources
   public function printAssignments()
   {
     // loop through course resources and print the resulting assignments
+
     foreach ($this->list as $key => $courseResource) {
       print "<br> Course: <b>$courseResource->number </b>\n";
       $courseResource->printAssignments();
     }
+
+    return;
+  }
+
+  public function registerAssignments($db)
+  {
+    // loop through course resources and make missing empty slots in the database
+
+    foreach ($this->list as $key => $courseResource) {
+      //print "<br> Course: <b>$courseResource->number </b>\n";
+      $courseResource->registerAssignments($db);
+    }
+
+    return;
   }
 }
 
@@ -253,6 +291,29 @@ class CourseResource
     $sql = " update CourseResources set $vals where".
            " Term = '$this->term' and Number = '$this->number';";
     $db->Exec($sql);
+  }
+
+  public function registerAssignments($db)
+  {
+    // register all assignments: if empty, generate new slot, otherwise do nothing
+
+    for ($i=1; $i<=$this->numAdmins; $i++)
+      insertEmptySlot($db,$this->term,$this->term."-".$this->number."-Adm-".$i);
+    for ($i=1; $i<=$this->numLecturers; $i++)
+      insertEmptySlot($db,$this->term,$this->term."-".$this->number."-Lec-".$i);
+    for ($i=1; $i<=$this->numRecitators; $i++)
+      insertEmptySlot($db,$this->term,$this->term."-".$this->number."-Rec-".$i);
+    for ($i=1; $i<=$this->numFullRecTas; $i++)
+      insertEmptySlot($db,$this->term,$this->term."-".$this->number."-TaFR-".$i);
+    for ($i=1; $i<=$this->numFullUtilTas; $i++)
+      insertEmptySlot($db,$this->term,$this->term."-".$this->number."-TaFU-".$i);
+    for ($i=1; $i<=$this->numHalfRecTas; $i++)
+      insertEmptySlot($db,$this->term,$this->term."-".$this->number."-TaHR-".$i);
+    for ($i=1; $i<=$this->numHalfUtilTas; $i++)
+      insertEmptySlot($db,$this->term,$this->term."-".$this->number."-TaHU-".$i);
+    for ($i=1; $i<=$this->numPartUtilTas; $i++)
+      insertEmptySlot($db,$this->term,$this->term."-".$this->number."-TaPU-".$i);
+    return;
   }
 
 }

@@ -12,6 +12,46 @@
 // TODO: make course number unique
 //
 
+class Courses
+{
+  // Property declaration
+  public $list = '';
+
+  // Declare a public constructor
+  public function __construct() { }
+  public function __destruct() { }
+
+  public static function fresh()
+  {
+    // 'constructor' returns blank course
+    $instance = new self();
+    return $instance;
+  }
+
+  public static function fromDb($db)
+  {
+    // 'constructor' returns full list of courses
+    $instance = new self();
+    $courseRows = $db->query("select * from Courses order by Number");
+    foreach ($courseRows as $key => $row) {
+      $course = Course::fromRow($row);
+      $instance->addCourse($course);
+    }
+    
+    return $instance;
+  }
+
+  public function addCourse($course)
+  {
+    if (!isset($this->list[$course->number]))
+      $this->list[$course->number] = $course;
+    else
+      print " ERROR - trying to add a course resource twice.<br>\n";
+    
+    return;
+  }
+}
+
 class Course
 {
   // Property declaration

@@ -46,8 +46,23 @@ foreach ($tables as $key => $table) {
     $task->printTaskWithLink();
   }
 }
-
 print '</ul>';
+
+$link = getLink();
+$tables = findTables($link,'Evaluations');
+print '<ul>';
+foreach ($tables as $key => $table) {
+  $query = "select TeacherEmail, EvalText from " . $table . " where TaEmail='" . $email . "'";
+  $statement = $link->prepare($query);
+  $statement->execute();
+  $statement->bind_result($teacherEmail,$evalText);
+  while ($statement->fetch()) {
+    print '<li>';
+    print "<b>$table -- $teacherEmail</b>:<br> $evalText<br>";
+  }
+}
+print '</ul>';
+
 print '</article>'."\n";
 
 include("app/views/admin/footer.php");

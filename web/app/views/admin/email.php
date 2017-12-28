@@ -126,11 +126,11 @@ if (isMessageReady()) {
     print "<p>Mail was NOT sent. Feature disabled for now!</p>";
   }
   else {
-   //if (mail($list,$subject,$message,$headers))
-   //  print "<p>Mail accepted for delivery (does not guarantee delivery though).</p>";
-   //else
-   //  print "<p>Mail was NOT accepted for delivery.</p>";
-      print " MESSAGE NOT SEND.";
+   if (mail($list,$subject,$message,$headers))
+     print "<p>Mail accepted for delivery (does not guarantee delivery though).</p>";
+   else
+     print "<p>Mail was NOT accepted for delivery.</p>";
+   //print " MESSAGE NOT SEND.";
   }
 }
 print "<hr>\n";
