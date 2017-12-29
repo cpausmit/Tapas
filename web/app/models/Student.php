@@ -3,6 +3,46 @@
 include_once("app/models/Utils.php");
 include_once("app/models/Dbc.php");
 
+class Students
+{
+  // Property declaration
+  public $list = '';
+
+  // Declare a public constructor
+  public function __construct() { }
+  public function __destruct() { }
+
+  public static function fresh()
+  {
+    // 'constructor' returns blank student
+    $instance = new self();
+    return $instance;
+  }
+
+  public static function fromDb($db)
+  {
+    // 'constructor' returns full list of students
+    $instance = new self();
+    $studentRows = $db->query("select * from Students order by Email");
+    foreach ($studentRows as $key => $row) {
+      $student = Student::fromRow($row);
+      $instance->addStudent($student);
+    }
+    
+    return $instance;
+  }
+
+  public function addStudent($student)
+  {
+    if (!isset($this->list[$student->email]))
+      $this->list[$student->email] = $student;
+    else
+      print " ERROR - trying to add a student twice.<br>\n";
+    
+    return;
+  }
+}
+
 class Student
 {
   // Property declaration

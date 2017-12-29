@@ -11,6 +11,47 @@
 // | Citation     | text       | YES  |     | NULL    |       | 
 // +--------------+------------+------+-----+---------+-------+
 
+class Evaluations
+{
+  // Property declaration
+  public $list = '';
+
+  // Declare a public constructor
+  public function __construct() { }
+  public function __destruct() { }
+
+  public static function fresh()
+  {
+    // 'constructor' returns blank evaluation
+    $instance = new self();
+    return $instance;
+  }
+
+  public static function fromDb($db,$term)
+  {
+    // 'constructor' returns full list of evaluations
+    $instance = new self();
+    $evaluationRows = $db->query("select * from Evaluations$term");
+    foreach ($evaluationRows as $key => $row) {
+      $evaluation = Evaluation::fromRow($row);
+      $instance->addEvaluation($evaluation);
+    }
+    
+    return $instance;
+  }
+
+  public function addEvaluation($evaluation)
+  {
+    $key = "$evaluation->teacherEmail:$evaluation->taEmail";
+    if (!isset($this->list[$key]))
+      $this->list[$key] = $evaluation;
+    else
+      print " ERROR - trying to add a evaluation twice.<br>\n";
+    
+    return;
+  }
+}
+
 class Evaluation
 {
 

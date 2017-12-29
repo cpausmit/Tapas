@@ -14,6 +14,46 @@
 include_once("app/models/Utils.php");
 include_once("app/models/Dbc.php");
 
+class Teachers
+{
+  // Property declaration
+  public $list = '';
+
+  // Declare a public constructor
+  public function __construct() { }
+  public function __destruct() { }
+
+  public static function fresh()
+  {
+    // 'constructor' returns blank teacher
+    $instance = new self();
+    return $instance;
+  }
+
+  public static function fromDb($db)
+  {
+    // 'constructor' returns full list of teachers
+    $instance = new self();
+    $teacherRows = $db->query("select * from Teachers order by Email");
+    foreach ($teacherRows as $key => $row) {
+      $teacher = Teacher::fromRow($row);
+      $instance->addTeacher($teacher);
+    }
+    
+    return $instance;
+  }
+
+  public function addTeacher($teacher)
+  {
+    if (!isset($this->list[$teacher->email]))
+      $this->list[$teacher->email] = $teacher;
+    else
+      print " ERROR - trying to add a teacher twice.<br>\n";
+    
+    return;
+  }
+}
+
 class Teacher
 {
 
@@ -23,7 +63,7 @@ class Teacher
 
   public static function fresh()
   {
-    // 'constructor' returns blank student
+    // 'constructor' returns blank teacher
     $instance = new self();
     return $instance;
   }
@@ -104,7 +144,7 @@ class Teacher
 
 public function addToDb($db)
   {
-    // adding the given student instance to the database
+    // adding the given teacher instance to the database
 
     // make sure this is a valid new entry
     if ($this->isValid()) {
@@ -123,7 +163,7 @@ public function addToDb($db)
 
   public function updateDb($db)
   {
-    // adding the given student instance to the database
+    // adding the given teacher instance to the database
 
     // make sure this is a valid new entry
     if ($this->isValid()) {
@@ -146,7 +186,7 @@ public function addToDb($db)
 
   protected function isValid()
   {
-    // making sure student information is valid
+    // making sure teacher information is valid
 
     $valid = true;
 

@@ -5,45 +5,33 @@ include("app/views/admin/header.php");
 if (! isMaster()) { 
   exitAccessError();
 }
-// decode user email
-$email = strtolower($_SERVER['SSL_CLIENT_S_DN_Email']);
 
 include("app/models/Dbc.php");
+include("app/models/Tables.php");
 include("app/models/Teacher.php");
 include("app/models/Student.php");
 include("app/models/Evaluation.php");
 
 // connect to our database
 $db = Dbc::getReader();
+$students = Students::fromDb($db);
+$teachers = Teachers::fromDb($db);
+
+$activeTables = new Tables($db,'ActiveTables');
+$evalTable = $activeTables->getUniqueMatchingName('Evaluations');
+$term = substr($evalTable,-5,5);
+$evaluations = Evaluations::fromDb($db,$term);
 
 // get TA names
-$rows = $db->query("select * from Students order by lastName");
 $taNames = "";
-foreach ($rows as $key => $row) {
-  $student = Student::fromRow($row);
-  $taNames[$student->email] = "$student->lastName, $student->firstName";
+foreach ($students->list as $key => $student) {
+  $taNames[$key] = "$student->lastName, $student->firstName";
 }
 
-// get teacher names
-$rows = $db->query("select * from Teachers order by lastName");
+// get teachers names
 $teacherNames = "";
-foreach ($rows as $key => $row) {
-  $teacher = Teacher::fromRow($row);
+foreach ($teachers->list as $key => $teacher) {
   $teacherNames[$teacher->email] = "$teacher->lastName, $teacher->firstName";
-}
-
-// find active evaluations table
-$activeTables = new ActiveTables($db);
-$evalTable = $activeTables->getUniqueMatchingName('Evaluations');
-
-// get evaluations
-$i = 0;
-$evaluations = "";
-$rows = $db->query("select * from $evalTable order by TaEmail");
-foreach ($rows as $key => $row) {
-  $evaluation = Evaluation::fromRow($row);
-  $evaluations[$i] = $evaluation;
-  $i = $i + 1;
 }
  
 // Present the results
@@ -55,7 +43,9 @@ print ' '."\n";
 // loop through evaluations and print
 
 $empty = true;
-foreach ($evaluations as $key => $evaluation) {
+$n = sizeof($evaluations->list);
+print " $n evaluations found. <br>\n";
+foreach ($evaluations->list as $key => $evaluation) {
   $evaluation->printEvaluation($taNames,$teacherNames);
   $empty = false;
 }
