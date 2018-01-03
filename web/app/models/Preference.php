@@ -10,6 +10,44 @@
 // | Pref3 | text     | YES  |     | NULL    |       | 
 // +-------+----------+------+-----+---------+-------+
 
+class Preferences
+{
+  // Property declaration
+  public $list = '';
+
+  // Declare a public constructor
+  public function __construct() { }
+  public function __destruct() { }
+
+  public static function fresh()
+  {
+    // 'constructor' returns blank preference
+    $instance = new self();
+    return $instance;
+  }
+
+  public static function fromDb($db,$term)
+  {
+    // 'constructor' returns full list of preferences
+    $instance = new self();
+    $preferenceRows = $db->query("select * from Preferences$term order by Email");
+    foreach ($preferenceRows as $key => $row)
+      $instance->addPreference(Preference::fromRow($row));
+    
+    return $instance;
+  }
+
+  public function addPreference($preference)
+  {
+    if (!isset($this->list[$preference->email]))
+      $this->list[$preference->email] = $preference;
+    else
+      print " ERROR - trying to add a preference twice.<br>\n";
+    
+    return;
+  }
+}
+
 class Preference
 {
 

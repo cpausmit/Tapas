@@ -35,10 +35,8 @@ class Teachers
     // 'constructor' returns full list of teachers
     $instance = new self();
     $teacherRows = $db->query("select * from Teachers order by Email");
-    foreach ($teacherRows as $key => $row) {
-      $teacher = Teacher::fromRow($row);
-      $instance->addTeacher($teacher);
-    }
+    foreach ($teacherRows as $key => $row)
+      $instance->addTeacher(Teacher::fromRow($row));
     
     return $instance;
   }

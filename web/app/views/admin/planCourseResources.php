@@ -18,8 +18,9 @@ include("app/models/CourseResource.php");
 function findTerm($semesters)
 {
   $term = getPostVariable('term');
-
-  if (!$GLOBALS['COMPLETE']) {
+  $test = $GLOBALS['COMPLETE'];
+  
+  if ($test != 2) {
     print "<article class=\"page\">\n";
     print "<h1>Which Term?</h1>\n";
     print "<hr>\n";
@@ -53,14 +54,10 @@ function getPostVariable($variableName)
 {
   // read complete courses table
   $variable = 'undefined';
-  if (array_key_exists($variableName,$_POST)) {
+  if (array_key_exists($variableName,$_POST))
     $variable = $_POST[$variableName];
-    //print "COMPLETE remains TRUE: $variableName<br>";
-  }
-  else {
+  else
     $GLOBALS['COMPLETE'] = 0;
-    //print "COMPLETE is FALSE: $variableName<br>";
-  }
 
   return $variable;
 }
@@ -118,7 +115,8 @@ function printNum($min,$max)
 function printGenerateAssignments($term)
 {
   print '<table>';
-  print '<form  action="/generateAssignments?term='.$term.'" method="post">'."\n";
+  print '<form  action="/generateAssignments" method="post">'."\n";
+  print '<input type="hidden" name="term" value="'.$term.'" />';
   print '<tr>';
   print '<td align=center><select class="type" name="action">'."\n";
   print "<option value=\"\"> action ?</option>";
@@ -134,13 +132,14 @@ function printGenerateAssignments($term)
 // Generate the form for the courseResource planning
 function printForm($courses,$term)
 {
-  print '<form  action="/planCourseResources?term=$term" method="post">'."\n";
+  print '<form  action="/planCourseResources" method="post">'."\n";
+  print '<input type="hidden" name="term" value="'.$term.'" />';
   print '<tr>';
   print '<td align=center>';
   print '<input type="submit" value="submit" style="width:100%" />'."\n";
   print '</td>';
   print '<td align=center><select class="type" name="number">'."\n";
-  print "<option value=\"\">term ?</option>";
+  print "<option value=\"\">number ?</option>";
   foreach ($courses as $key => $course)
       print "<option value=\"$key\"> $key </option>";
   print '    </select></td>'."\n";
@@ -232,18 +231,19 @@ $numFullUtilTas = getPostVariable('numFullUtilTas');
 $numHalfUtilTas = getPostVariable('numHalfUtilTas');
 $numPartUtilTas = getPostVariable('numPartUtilTas');
 
-if ($GLOBALS['COMPLETE']) {
+if ($GLOBALS['COMPLETE']) {                 // All post variables are filled == ready to register
   if (! isset($semesters[$term])) {
     print "<h1>ERROR</h1>\n";
     print "This term is not in our database. \n";
   }
   else {
-    if (isset($courseResources->list[$number])) {
+    if (isset($courseResources->list[$number])) { // if course exists it will be overwritten with the new info
       removeFromDb($db,$term,$number);
       print "Removed course $term:$number from our list<br>\n";
     }
     
     // initialize a new courseResource
+    print " New resource $term:$number<br>\n";
     $courseResource = courseResource::fresh();
     $courseResource->term = $term;
     $courseResource->number = $number;

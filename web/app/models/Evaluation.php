@@ -32,10 +32,8 @@ class Evaluations
     // 'constructor' returns full list of evaluations
     $instance = new self();
     $evaluationRows = $db->query("select * from Evaluations$term");
-    foreach ($evaluationRows as $key => $row) {
-      $evaluation = Evaluation::fromRow($row);
-      $instance->addEvaluation($evaluation);
-    }
+    foreach ($evaluationRows as $key => $row)
+      $instance->addEvaluation(Evaluation::fromRow($row));
     
     return $instance;
   }

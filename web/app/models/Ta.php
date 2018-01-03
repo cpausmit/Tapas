@@ -1,7 +1,53 @@
 <?php
 
+//+----------+------------+------+-----+---------+-------+
+//| Field    | Type       | Null | Key | Default | Extra |
+//+----------+------------+------+-----+---------+-------+
+//| Email    | char(40)   | YES  | UNI | NULL    |       |
+//| FullTime | tinyint(4) | YES  |     | NULL    |       |
+//| PartTime | tinyint(4) | YES  |     | NULL    |       |
+//+----------+------------+------+-----+---------+-------+
+
 include_once("app/models/Utils.php");
 include_once("app/models/Dbc.php");
+
+class Tas
+{
+  // Property declaration
+  public $list = '';
+
+  // Declare a public constructor
+  public function __construct() { }
+  public function __destruct() { }
+
+  public static function fresh()
+  {
+    // 'constructor' returns blank ta
+    $instance = new self();
+    return $instance;
+  }
+
+  public static function fromDb($db,$term)
+  {
+    // 'constructor' returns full list of tas
+    $instance = new self();
+    $taRows = $db->query("select * from Tas$term order by Email");
+    foreach ($taRows as $key => $row)
+      $instance->addTa(Ta::fromRow($row));
+    
+    return $instance;
+  }
+
+  public function addTa($ta)
+  {
+    if (!isset($this->list[$ta->email]))
+      $this->list[$ta->email] = $ta;
+    else
+      print " ERROR - trying to add a ta twice.<br>\n";
+    
+    return;
+  }
+}
 
 class Ta
 {
@@ -66,14 +112,12 @@ class Ta
     
   public function addToDb($db,$table)
   {
-    // adding the given student instance to the database
+    // adding the given ta instance to the database
 
     // make sure this is a valid new entry
     if ($this->isValid()) {
-      //print '<br> Input is valid.Forming the SQL. <br>';
       $vals = sprintf("('%s',%d,%d)",$this->email,$this->fullTime,$this->partTime);
       $sql = " insert into $table values $vals";
-      //print "<br> SQL: $sql <br>";
       $db->Exec($sql);
     }
     else {

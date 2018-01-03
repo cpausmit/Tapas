@@ -13,8 +13,8 @@ EMPTY_EMAIL = "EMPTY@mit.edu"
 #---------------------------------------------------------------------------------------------------
 # H E L P E R
 #---------------------------------------------------------------------------------------------------
-def removeTable(table,flagging=True):
-    # remove the potentially existing table -- can be run nin flagging mode only
+def removeTable(cursor,table,flagging=True):
+    # remove the potentially existing table -- can be run in flagging mode only
 
     if not flagging:
         # Prepare SQL query to drop the existing table
@@ -34,12 +34,12 @@ def makeTable(cursor,tableType,semesterId="",execute="",remove=""):
     table = tableType + semesterId
 
     # remove potentially existing table
-    if remove == "yes":
+    if remove == "remove":
         flagging = False
         if execute != "exec":
             flagging = True
         print " FLAGGING : %d"%flagging
-        removeTable(table,flagging)
+        removeTable(cursor,table,flagging)
      
     # Prepare SQL query to test whether table exists
     sql = "describe " + table
@@ -107,11 +107,13 @@ def findAssignment(cursor,semesterId,task):
 #---------------------------------------------------------------------------------------------------
 # M A I N
 #---------------------------------------------------------------------------------------------------
-usage  = " usage:  addAssignments.py <semesterId>  [ <execute = no> ]\n\n"
+usage  = " usage:  addAssignments.py <semesterId>  [ <execute = no> [ <remove = no> ] ]\n\n"
 usage += "           semesterId      identification string for a specific semster\n"
 usage += "                           ex. F13 (Fall 2013), I13 (IAP 2013), S13 (Spring 2013)\n"
 usage += "           execute         should we execute the insertion into the database\n"
-usage += "                           activate by setting: execute = exec\n\n"
+usage += "                           activate by setting: execute = exec\n"
+usage += "           remove          if set this will remove all existing entries in the database\n"
+usage += "                           activate by setting: remove = remove\n\n"
 
 if len(sys.argv) < 2:
     print "\n ERROR - need to specify the semester id.\n"
@@ -123,7 +125,6 @@ semesterId = sys.argv[1]
 execute = "no"
 if len(sys.argv) > 2:
     execute = sys.argv[2]
-
 remove = "no"
 if len(sys.argv) > 3:
     remove = sys.argv[3]
@@ -175,7 +176,16 @@ for line in os.popen(cmd).readlines():
                     db.commit()
 
             except:
-                print ' ERROR - insert failed: ' + sql
+                try:
+                    # Execute the update SQL command
+                    sql = "update Assignments" + semesterId + \
+                          " set Person = '%s' where Task = '%s';"%(email,subtask)
+                    print " MYSQL> " + sql
+                    if execute == "exec":
+                        cursor.execute(sql)
+                        db.commit()
+                except:
+                    print ' ERROR - insert/update failed: ' + sql
 
 # Loop through TA candidate file and add them to our table
 os.chdir(os.getenv('TAPAS_TOOLS_DATA','./'))

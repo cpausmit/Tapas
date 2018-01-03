@@ -1,5 +1,18 @@
 <?php
 
+//+-----------------+----------+------+-----+---------+-------+
+//| Field           | Type     | Null | Key | Default | Extra |
+//+-----------------+----------+------+-----+---------+-------+
+//| FirstName       | char(40) | YES  |     | NULL    |       |
+//| LastName        | char(40) | YES  |     | NULL    |       |
+//| Email           | char(40) | YES  | UNI | NULL    |       |
+//| AdvisorEmail    | char(40) | YES  |     | NULL    |       |
+//| SupervisorEmail | char(40) | YES  |     | NULL    |       |
+//| Year            | int(11)  | YES  |     | NULL    |       |
+//| Division        | char(4)  | YES  |     | NULL    |       |
+//| Research        | char(6)  | YES  |     | NULL    |       |
+//+-----------------+----------+------+-----+---------+-------+
+
 include_once("app/models/Utils.php");
 include_once("app/models/Dbc.php");
 
@@ -24,10 +37,8 @@ class Students
     // 'constructor' returns full list of students
     $instance = new self();
     $studentRows = $db->query("select * from Students order by Email");
-    foreach ($studentRows as $key => $row) {
-      $student = Student::fromRow($row);
-      $instance->addStudent($student);
-    }
+    foreach ($studentRows as $key => $row)
+      $instance->addStudent(Student::fromRow($row));
     
     return $instance;
   }

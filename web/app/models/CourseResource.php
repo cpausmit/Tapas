@@ -271,6 +271,7 @@ class CourseResource
                     $this->numFullUtilTas,$this->numHalfUtilTas,
                     $this->numPartUtilTas);
     $sql = " insert into CourseResources values $vals";
+    print " ADDING TO THE DATABASE<br>\n";
     $db->Exec($sql);
   }
 
