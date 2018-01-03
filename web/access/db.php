@@ -220,54 +220,6 @@ function showTas($link,$table)
   print " ALL: $list<br>\n";
 }
 
-function updateAssignment($link,$table)
-{
-  // update assignments
-
-  $year = substr($table,-4,4);
-
-  $query = "select * from $table";
-  $statement = $link->prepare($query);
-  $rc = $statement->execute();
-  if (!$rc) {
-    $errNum = mysqli_errno($link);
-    $errMsg = mysqli_error($link);
-    print " ERROR - could not register selection: ErrNo=" . mysqli_errno($link) . ": " .
-      mysqli_error($link) . "\n";
-    exit();
-  }
-  $statement->bind_result($task,$person);
-
-  $i = 0;
-  $updates = "";
-  while ($statement->fetch()) {
-    $myTask = new TeachingTask($task);
-    $myTask->updateYear($year);
-    if  ($myTask->generateId() != $myTask->getId()) {
-      $updates[$i] = "update $table set Task='" . $myTask->generateId()
-	. "' where Task='" . $myTask->getId() . "'";
-      $i = $i + 1;
-    }
-  }
-
-  // Now perform the updates
-  foreach ($updates as $key => $update) {
-    print " execute update: $update <br>\n";
-    $statement = $link->prepare($update);
-    $rc = $statement->execute();
-    if (!$rc) {
-      $errNum = mysqli_errno($link);
-      $errMsg = mysqli_error($link);
-      print " ERROR - could not update assignments: ErrNo=" . mysqli_errno($link) . ": " .
-	mysqli_error($link) . "\n";
-      exit();
-    }
-    else {
-      print " INFO - entry updated.<br>\n";
-    }
-  }
-}
-
 function copyAssignment($link,$source,$target)
 {
   // copy the last assignment to the active one

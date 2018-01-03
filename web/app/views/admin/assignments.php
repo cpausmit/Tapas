@@ -22,8 +22,7 @@ print "<tr><th>Term</th><th>Actions</th>\n";
 foreach ($tables as $key => $table) {
   $term = substr($table,-5,5);
   print " <tr><td>&nbsp; $term\n";
-  print " </td><td>&nbsp; <a href=\"/showAssignments?term=$term\">show</a>,";
-  print "          &nbsp; <a href=\"/updateAssignments?term=$term\">update</a></td></tr>\n";
+  print " </td><td>&nbsp; <a href=\"/showAssignments?term=$term\">show</a></td></tr>\n";
 }
 print "</table>\n";
 

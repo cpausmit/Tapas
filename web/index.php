@@ -52,7 +52,6 @@ $f3->route('GET /showTaSummary',        'Main->showTaSummary');
 $f3->route('GET /showTeacherSummary',   'Main->showTeacherSummary');
 $f3->route('GET /showTaskSummary',      'Main->showTaskSummary');
 $f3->route('GET /showAssignments',      'Main->showAssignments');
-$f3->route('GET /updateAssignments',    'Main->updateAssignments');
 $f3->route('GET /showActiveAssignments','Main->showActiveAssignments');
 $f3->route('GET /showLastAssignments',  'Main->showLastAssignments');
 $f3->route('GET /copyLastAssignments',  'Main->copyLastAssignments');

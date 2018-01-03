@@ -166,11 +166,6 @@ class Main extends Controller {
     $view = new View;
     echo $view->render('admin/showAssignments.php');
   }
-  public function updateAssignments($f3) {
-    $f3->set('selected', 'admin');
-    $view = new View;
-    echo $view->render('admin/updateAssignments.php');
-  }
   public function assignments($f3) {
     $f3->set('selected', 'admin');
     $view = new View;
@@ -312,12 +307,12 @@ class Main extends Controller {
     echo $view->render('teacher/review.php');
   }
 
-	// Json functions
-	public function assignmentsPerSemester($f3) {
+  // Json functions
+  public function assignmentsPerSemester($f3) {
     $f3->set('selected', 'admin');
-		$view = new View;
-		include("app/json/assignmentsPerSemester.php");
-	}
+	$view = new View;
+	include("app/json/assignmentsPerSemester.php");
+  }
 
 }
 
