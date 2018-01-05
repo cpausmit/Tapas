@@ -6,10 +6,10 @@ if (! isMaster()) {
   exitAccessError();
 }
 
-include("app/models/Dbc.php");
-include("app/models/ActiveTables.php");
-include("app/models/Student.php");
-include("app/models/Preference.php");
+include_once("app/models/Dbc.php");
+include_once("app/models/ActiveTables.php");
+include_once("app/models/Student.php");
+include_once("app/models/Preference.php");
 
 // connect to our database
 $db = Dbc::getReader();
@@ -22,7 +22,6 @@ foreach ($rows as $key => $row) {
   $student = Student::fromRow($row);
   $students[$student->email] = $student;
 }
-
 
 // find active preference table
 $activeTables = new ActiveTables($db);

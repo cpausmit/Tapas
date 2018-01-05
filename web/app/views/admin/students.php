@@ -7,8 +7,8 @@ if (! (isAdmin() || isMaster())) {
 }
 
 // load database and models
-include("app/models/Dbc.php");
-include("app/models/Student.php");
+include_once("app/models/Dbc.php");
+include_once("app/models/Student.php");
 
 // create an instance
 $db = Dbc::getReader();
