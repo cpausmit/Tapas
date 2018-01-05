@@ -1,16 +1,20 @@
 <?php
 
 include("app/views/admin/header.php");
+
+//// global variable to manage the result of the form input
+//$GLOBALS['DB_CREATIONS'] = 0;
+
 // make sure we have a registered TA
 if (! isMaster()) { 
   exitAccessError();
 }
 
-include("app/models/Dbc.php");
-include("app/models/Tables.php");
-include("app/models/Teacher.php");
-include("app/models/Student.php");
-include("app/models/Evaluation.php");
+include_once("app/models/Dbc.php");
+include_once("app/models/Evaluation.php");
+include_once("app/models/Student.php");
+include_once("app/models/Tables.php");
+include_once("app/models/Teacher.php");
 
 // connect to our database
 $db = Dbc::getReader();

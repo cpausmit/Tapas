@@ -19,7 +19,7 @@ include_once("app/models/Dbc.php");
 class Students
 {
   // Property declaration
-  public $list = '';
+  public $list = array();
 
   // Declare a public constructor
   public function __construct() { }

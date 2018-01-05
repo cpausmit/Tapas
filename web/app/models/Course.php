@@ -15,7 +15,7 @@
 class Courses
 {
   // Property declaration
-  public $list = '';
+  public $list = array[];
 
   // Declare a public constructor
   public function __construct() { }

@@ -9,12 +9,11 @@
 //+----------+------------+------+-----+---------+-------+
 
 include_once("app/models/Utils.php");
-include_once("app/models/Dbc.php");
 
 class Tas
 {
   // Property declaration
-  public $list = '';
+  public $list = array();
 
   // Declare a public constructor
   public function __construct() { }
@@ -44,6 +43,25 @@ class Tas
       $this->list[$ta->email] = $ta;
     else
       print " ERROR - trying to add a ta twice.<br>\n";
+    
+    return;
+  }
+
+  public function printTable()
+  {
+    if (sizeof($this->list) != 0) {
+      print "<table>\n";
+      $first = true;
+      foreach ($this->list as $key => $ta) {
+        if ($first)
+          $ta->printTableHeader(false);
+        $ta->printTableRow(false);
+        $first = false;
+      }
+      print "\n</table>\n";
+    }
+    else
+      print " Ta list is empty.<br>\n";
     
     return;
   }
@@ -108,6 +126,36 @@ class Ta
     }
 
     return $valid;
+  }
+
+  public function printTableRow($open)
+  {
+    // print one row of a table with the relevant infromation
+
+    print "<tr>\n";
+    print "<td>&nbsp;" . $this->email . "&nbsp;</td>";
+    print "<td>&nbsp;" . $this->fullTime . "&nbsp;</td>";
+    print "<td>&nbsp;" . $this->partTime . "&nbsp;</td>";
+    if (!$open)
+      print "</tr>\n";
+  }
+
+  public function printTableHeader($open)
+  {
+    // print header of the table
+
+    print "<tr>\n";
+    print "<th>&nbsp;";
+    print " TA Email";
+    print "&nbsp;</th>";
+    print "<th>&nbsp;";
+    print " Fulltime";
+    print "&nbsp;</th>";
+    print "<th>&nbsp;";
+    print " Parttime";
+    print "&nbsp;</th>";
+    if (!$open)
+      print "</tr>\n";
   }
     
   public function addToDb($db,$table)

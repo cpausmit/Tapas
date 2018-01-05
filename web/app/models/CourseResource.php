@@ -1,6 +1,5 @@
 <?php
 
-//
 // create table CourseResources (
 //   Term           char(5)  not NULL,
 //   Number         char(10) not NULL,
@@ -13,9 +12,8 @@
 //   NumHalfUtilTas int      default 0,
 //   NumPartUtilTas int      default 0
 // );
-//
 // alter table CourseResources add constraint onePerTerm unique(Term, Number);
-//
+
 
 function insertEmptySlot($db,$term,$slotId)
 {
@@ -39,11 +37,10 @@ function insertEmptySlot($db,$term,$slotId)
   return;
 }
 
-
 class CourseResources
 {
   // Property declaration
-  public $list = '';
+  public $list = array();
   public $nTeachers = '';
   public $nFullTas = '';
   public $nPartTas = '';
@@ -99,10 +96,8 @@ class CourseResources
   {
     // loop through course resources and make missing empty slots in the database
 
-    foreach ($this->list as $key => $courseResource) {
-      //print "<br> Course: <b>$courseResource->number </b>\n";
+    foreach ($this->list as $key => $courseResource)
       $courseResource->registerAssignments($db);
-    }
 
     return;
   }
@@ -316,7 +311,6 @@ class CourseResource
       insertEmptySlot($db,$this->term,$this->term."-".$this->number."-TaPU-".$i);
     return;
   }
-
 }
 
 ?>

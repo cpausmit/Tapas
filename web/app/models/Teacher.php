@@ -12,7 +12,6 @@
 // +-----------+----------+------+-----+---------+-------+
 
 include_once("app/models/Utils.php");
-include_once("app/models/Dbc.php");
 
 class Teachers
 {
@@ -47,6 +46,25 @@ class Teachers
       $this->list[$teacher->email] = $teacher;
     else
       print " ERROR - trying to add a teacher twice.<br>\n";
+    
+    return;
+  }
+
+  public function printTable()
+  {
+    if (sizeof($this->list) != 0) {
+      print "<table>\n";
+      $first = true;
+      foreach ($this->list as $key => $teacher) {
+        if ($first)
+          $teacher->printTableHeader(false);
+        $teacher->printTableRow(false);
+        $first = false;
+      }
+      print "\n</table>\n";
+    }
+    else
+      print " Teacher list is empty.<br>\n";
     
     return;
   }

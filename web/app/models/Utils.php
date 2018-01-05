@@ -1,5 +1,44 @@
 <?php
 
+function findAccessParameters()
+{
+  //$GLOBALS['DB_CREATIONS'] = $GLOBALS['DB_CREATIONS']+1;
+  $pars = "";
+  $on = 0;
+  $host = "";
+  $user = "";
+  $passwd = "";
+
+  $handle = fopen('/etc/myTapas.cnf','r');
+  while(!feof($handle)) {
+    $tmp = fgets($handle);
+    $tmp = substr_replace($tmp,"",-1);
+    if ($tmp == "[mysql-tapas]") {
+      $on = 1;
+    }
+    if ($on == 1 && ($host == "" || $user == "" || $passwd == "")) {
+      if (strpos($tmp,'host=') !== false) {
+        $a = explode('=',$tmp);
+        $host = $a[1];
+      }
+      if (strpos($tmp,'user=') !== false) {
+        $a = explode('=',$tmp);
+        $user = $a[1];
+      }
+      if (strpos($tmp,'password=') !== false) {
+        $a = explode('=',$tmp);
+        $passwd = $a[1];
+      }
+    }
+  }
+  $status = fclose($handle);
+
+  // add the parameters to the array
+  $pars = array($host,$user,$passwd);
+
+  return $pars;
+}
+
 function isName($name)
 {
   $result = false;

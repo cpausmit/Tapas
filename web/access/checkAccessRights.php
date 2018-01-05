@@ -1,47 +1,24 @@
 <?php
+
 include("access/db.php");
-
-function readAccessFile($file)
-{
-  $handle = @fopen($file,"r");
-  if ($handle) {
-    $i = 0;
-    $users = "";
-    while (($buffer = fgets($handle, 4096)) !== false) {
-      $buffer = chop($buffer);
-      $buffer = strtolower($buffer);
-      if ($buffer != "")  {
-        $users[$i] = chop($buffer);
-        $i = $i + 1;
-      }
-    }
-    if (!feof($handle)) {
-      print "Error: unexpected fgets() fail\n";
-    }
-    fclose($handle);
-  }
-  return $users;
-}
-
-function readAdminTable()
-{
-  $levels = "";
-  $link = getLink();
-  if ($link)
-    $levels = readAdmins($link);
-
-  return $levels;
-}
+include("app/models/Admin.php");
+include("app/models/Ta.php");
+include("app/models/Tables.php");
 
 function isMaster()
 {
-  // see whether the email is in the access list
+  // see whether the email is in the access list and what level is given
+
+  // find ssl client email id
   $email = strtolower(strtolower($_SERVER['SSL_CLIENT_S_DN_Email']));
-  // open file with access list
-  $levels = readAdminTable();
+
+  // initialize to no access
   $level = -1;
-  if (array_key_exists($email,$levels))
-    $level = $levels[$email];
+
+  // get admins from database
+  $admins = Admins::fromDb(Dbc::getReader());
+  if (array_key_exists($email,$admins->list))
+    $level = $admins->list[$email]->level;
 
   if ($level > 0)
     return true;
@@ -54,12 +31,14 @@ function isAdmin()
   // see whether the email is in the access list
   $email = strtolower(strtolower($_SERVER['SSL_CLIENT_S_DN_Email']));
 
-  // open file with access list
-  $levels = readAdminTable();
+  // initialize to no access
   $level = -1;
-  if (array_key_exists($email,$levels))
-    $level = $levels[$email];
 
+  // get admins from database
+  $admins = Admins::fromDb(Dbc::getReader());
+  if (array_key_exists($email,$admins->list))
+    $level = $admins->list[$email]->level;
+  
   if ($level > -1)
     return true;
 
@@ -69,17 +48,19 @@ function isAdmin()
 function isTa()
 {
   // read TA table
-  $link = getLink();
-  $tas = readFullTaTable($link);
 
-  // make sure table is not empty
-  if ($tas == '')
+  // get the active tables to consider
+  $activeTables = new Tables(Dbc::getReader(),'ActiveTables');
+  $term = substr($activeTables->getUniqueMatchingName('Tas'),-5,5);
+  $tas = Tas::fromDb(Dbc::getReader(),$term);
+
+  // out if the list is empty
+  if (sizeof($tas->list) == 0)
     return false;
-  
+
   // see whether the email is in the access list
   $email = strtolower($_SERVER['SSL_CLIENT_S_DN_Email']);
-  $find =  array_search($email,$tas);
-  if ($tas[$find] == $email)
+  if (array_key_exists($email,$tas->list))
     return true;
 
   return false;
@@ -88,13 +69,13 @@ function isTa()
 function isTeacher()
 {
   // read Teacher table
-  $link = getLink();
-  $teachers = readTeacherTable($link);
+  $activeTables = new Tables(Dbc::getReader(),'ActiveTables');
+  $term = substr($activeTables->getUniqueMatchingName('Assignments'),-5,5);
+  $teachers = Tas::fromDb(Dbc::getReader(),$term);
   
   // see whether the email is in the access list
   $email = strtolower($_SERVER['SSL_CLIENT_S_DN_Email']);
-  $find =  array_search($email,$teachers);
-  if ($teachers[$find] == $email)
+  if (array_key_exists($email,$teachers->list))
     return true;
 
   return false;
@@ -102,17 +83,17 @@ function isTeacher()
 
 function allowed()
 {
-  if (isMaster() || isAdmin() || isTa() || isTeacher()) {
+  if (isMaster() || isAdmin() || isTa() || isTeacher())
     return true;
-  }
+
   return false;
 }
 
 function forbidden()
 {
-  if (! allowed()) {
+  if (! allowed())
     return true;
-  }
+
   return false;
 }
 
