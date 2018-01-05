@@ -17,7 +17,7 @@ if len(sys.argv) != 2:
     sys.exit(0)
 
 # Read command line arguments
-email    = sys.argv[1]
+email = sys.argv[1]
    
 # Open database connection
 db = Database.DatabaseHandle()
@@ -69,7 +69,7 @@ except:
     sys.exit()
 
 if nMatches == 0:    # now we just add the new student
-    sql = "insert into %s (Email,FullTime,PartTime) values ('%s',1,0)"%(activeTaTable,email)
+    sql = "insert into Teaching.%s (Email,FullTime,PartTime) values ('%s',1,0)"%(activeTaTable,email)
     print " SQL> " + sql
     try:
         # Execute the SQL command
@@ -87,7 +87,7 @@ else:
         sys.exit()
 
     # delete the existing recrod from the table
-    sql = " delete from %s where Email = '%s'"%(activeTaTable,email)
+    sql = " delete from Teaching.%s where Email = '%s'"%(activeTaTable,email)
     print " SQL> " + sql
     try:
         # Execute the SQL command
