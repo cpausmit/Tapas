@@ -7,10 +7,10 @@ if (! (isTeacher() || isMaster())) {
   exitAccessError();
 }
 
-include("app/models/Dbc.php");
-include("app/models/Semester.php");
-include("app/models/Tables.php");
-include("app/models/TeachingTask.php");
+include_once("app/models/Dbc.php");
+include_once("app/models/Semester.php");
+include_once("app/models/Tables.php");
+include_once("app/models/TeachingTask.php");
 
 function getNamesFromDb($db,$term)
 {

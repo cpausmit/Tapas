@@ -11,24 +11,21 @@ if (! (isMaster() || isAdmin())) {
 $email = $_GET['email'];
 
 // load database and models
-include("app/models/Dbc.php");
-include("app/models/TeachingTask.php");
-include("app/models/Student.php");
+include_once("app/models/Dbc.php");
+include_once("app/models/TeachingTask.php");
+include_once("app/models/Student.php");
+
+$db = Dbc::getReader();
 
 // create an instance
-$db = Dbc::getReader();
-$students = $db->query("select * from Students where Email = '$email'");
-$student = '';
-foreach ($students as $key => $row)
-  $student = Student::fromRow($row);
+$students = Students::fromDb($db);
+$student = $students->list[$email];
 
 // connect to our database
-$link = getLink();
-$tables = findTables($link,'Assignments');
+$tables = getTables($db,'Assignments_____');
 
 print '<article class="page">'."\n";
 print "<hr>\n";
-//print "<h1>TA Summary Page</h1>\n";
 $student->printSummary();
 print "\n";
 print "<hr>\n";
@@ -36,11 +33,11 @@ print "<hr>\n";
 // loop through all assignment tables and find our candidate
 print '<ul>';
 foreach ($tables as $key => $table) {
-  $query = "select * from " . $table . " where Person='" . $email . "'";
-  $statement = $link->prepare($query);
-  $statement->execute();
-  $statement->bind_result($taskId,$person);
-  while ($statement->fetch()) {
+  $sql = "select * from " . $table . " where Person='" . $email . "'";
+  $rows = $db->query($sql);
+  foreach ($rows as $key => $row) {
+    $taskId = $row[0];
+    $person = $row[1];
     print '<li>';
     $task = new TeachingTask($taskId);
     $task->printTaskWithLink();
@@ -48,15 +45,14 @@ foreach ($tables as $key => $table) {
 }
 print '</ul>';
 
-$link = getLink();
-$tables = findTables($link,'Evaluations');
+$tables = getTables($db,'Evaluations_____');
 print '<ul>';
 foreach ($tables as $key => $table) {
-  $query = "select TeacherEmail, EvalText from " . $table . " where TaEmail='" . $email . "'";
-  $statement = $link->prepare($query);
-  $statement->execute();
-  $statement->bind_result($teacherEmail,$evalText);
-  while ($statement->fetch()) {
+  $sql = "select TeacherEmail, EvalText from " . $table . " where TaEmail='" . $email . "'";
+  $rows = $db->query($sql);
+  foreach ($rows as $key => $row) {
+    $teacherEmail = $row[0];
+    $evalText = $row[1];
     print '<li>';
     print "<b>$table -- $teacherEmail</b>:<br> $evalText<br>";
   }

@@ -1,5 +1,5 @@
 <?php
-include("access/checkAccessRights.php");
+include_once("access/checkAccessRights.php");
 
 // Standard Menu
 print '<!DOCTYPE HTML>'."\n";
@@ -26,8 +26,6 @@ print '      <link rel="stylesheet" href="/css/skel-noscript.css" />'."\n";
 print '      <link rel="stylesheet" href="/css/style.css" />'."\n";
 print '      <link rel="stylesheet" href="/css/style-wide.css" />'."\n";
 print '    </noscript>'."\n";
-print '    <check if="isset({{@css_bundle}})"><link href="{{@css_bundle}}"'.
-      ' rel="stylesheet" media="screen"></check>'."\n";
 print '  </head>'."\n";
 print '  <body>'."\n";
 

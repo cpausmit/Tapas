@@ -1,16 +1,16 @@
 <?php
 
-  // test access rights
+// test access rights
 include("app/views/admin/header.php");
 if (! isMaster()) { 
   exitAccessError();
 }
 
-// connect to our database
-$link = getLink();
+include_once("app/models/Utils.php");
+include_once("app/models/Dbc.php");
 
 // find the active tables and the last non active table
-$tables = findTables($link,'Evaluations');
+$tables = getTables(Dbc::GetReader(),'Evaluations_____');
 
 print '<article class="page">'."\n";
 print '<h1>Show All TA Evaluations</h1>';

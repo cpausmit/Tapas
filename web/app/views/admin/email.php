@@ -1,10 +1,15 @@
 <?php
 
 include("app/views/admin/header.php");
-include("app/models/Dbc.php");
+
+$debug = true;
+
 if (! isMaster()) { 
   exitAccessError();
 }
+
+include_once("app/models/Dbc.php");
+include_once("app/models/Tables.php");
 
 function findRecipientList($db,$targetString,$email)
 {
@@ -23,14 +28,18 @@ function findRecipientList($db,$targetString,$email)
     }
   } 
   else if ($targetString == "Teachers") {
-    $link = getLink();
+    // find evaluations teachers
+    $activeTables = new Tables($db,"ActiveTables");
+    $teachersTable = $activeTables->getUniqueMatchingName('Evaluations');
+    $term = substr($teachersTable,-5,5);
+    $query = "select Person from Assignments$term where Task like '%Lec%'";
     // do the query
-    $rows = readTeacherTable($link);
+    $rows = $db->query($query);
     foreach ($rows as $key => $row) {
       if ($list == "")
-        $list = "$row";
+        $list = "$row[0]";
       else
-        $list = "$list,$row";
+        $list = "$list,$row[0]";
     }
   } 
   else if ($targetString == "Myself") {
@@ -126,11 +135,14 @@ if (isMessageReady()) {
     print "<p>Mail was NOT sent. Feature disabled for now!</p>";
   }
   else {
-   if (mail($list,$subject,$message,$headers))
-     print "<p>Mail accepted for delivery (does not guarantee delivery though).</p>";
-   else
-     print "<p>Mail was NOT accepted for delivery.</p>";
-   //print " MESSAGE NOT SEND.";
+    if ($debug)
+      print " MESSAGE NOT SEND. DEBUGGING = $debug";
+    else{
+      if (mail($list,$subject,$message,$headers))
+        print "<p>Mail accepted for delivery (does not guarantee delivery though).</p>";
+      else
+        print "<p>Mail was NOT accepted for delivery.</p>";
+    }
   }
 }
 print "<hr>\n";

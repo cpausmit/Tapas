@@ -1,20 +1,33 @@
 <?php
 
-// global variable to manage the result of the form input
-$GLOBALS['COMPLETE'] = 2;
-
 // make sure we are dealing with a administrator
 include("app/views/admin/header.php");
 if (! (isMaster() || isAdmin())) { 
   exitAccessError();
 }
 
-include("app/models/Dbc.php");
-include("app/models/Semester.php");
-include("app/models/Course.php");
-include("app/models/CourseResource.php");
+include_once("app/models/Dbc.php");
+include_once("app/models/Semester.php");
+include_once("app/models/Course.php");
+include_once("app/models/CourseResource.php");
+
+// global variable to manage the result of the form input
+$GLOBALS['COMPLETE'] = 2;
+
+function getPostVariable($variableName)
+{
+  // read complete courses table
+  $variable = 'undefined';
+  if (array_key_exists($variableName,$_POST))
+    $variable = $_POST[$variableName];
+  else
+    $GLOBALS['COMPLETE'] = 0;
+
+  return $variable;
+}
 
 // Find the term we want to plan
+
 function findTerm($semesters)
 {
   $term = getPostVariable('term');
@@ -24,7 +37,7 @@ function findTerm($semesters)
     print "<article class=\"page\">\n";
     print "<h1>Which Term?</h1>\n";
     print "<hr>\n";
-    printTermForm($semesters);
+    printTermForm("term ?",$semesters);
     // footer
     print "<hr>\n";
     print '</article>'."\n";
@@ -32,7 +45,7 @@ function findTerm($semesters)
     exit("");
   }
   else {
-    if (! isset($semesters[$term])) {
+    if (! isset($semesters->list[$term])) {
       print "<article class=\"page\">\n";
       print "<h1>ERROR</h1>\n";
       print "<hr>\n";
@@ -49,64 +62,10 @@ function findTerm($semesters)
   return $term;
 }
 
-// Get a post variable and indicate whether there was an access error
-function getPostVariable($variableName)
-{
-  // read complete courses table
-  $variable = 'undefined';
-  if (array_key_exists($variableName,$_POST))
-    $variable = $_POST[$variableName];
-  else
-    $GLOBALS['COMPLETE'] = 0;
-
-  return $variable;
-}
-
-// Get all courses from the database
-function getCoursesFromDb($db)
-{
-  // read complete courses table
-  $courses = "";
-  $rows = $db->query("select * from Courses order by Number");
-  foreach ($rows as $key => $row) {
-    $course = Course::fromRow($row);
-    $courses[$course->number] = $course;
-  }
-
-  return $courses;
-}
-
-// Get all semesters from the database
-function getSemestersFromDb($db)
-{
-  // read complete courses table
-  $semesters = "";
-  $rows = $db->query("select * from Semesters order by Term");
-  foreach ($rows as $key => $row) {
-    $semester = Semester::fromRow($row);
-    $semesters[$semester->term] = $semester;
-  }
-
-  return $semesters;
-}
-
-// Get all course resources that are in the given term
-function getCourseResourcesFromDb($db,$term)
-{
-  // do the query
-  $rows = $db->query("select * from CourseResources where Term = '$term'");
-  $courseResources = CourseResources::fresh();
-  foreach ($rows as $key => $row) {
-    $courseResource = CourseResource::fromRow($row);
-    $courseResources->addCourseResource($courseResource);
-  }
-
-  return $courseResources;
-}
-
-// Generate the number option pannel from minimum to maximum
 function printNum($min,$max)
 {
+  // Generate the number option pannel from minimum to maximum
+
   for ($i=$min; $i<=$max; $i++) {
     print "<option value=\"$i\"> $i </option>";
   }
@@ -129,9 +88,10 @@ function printGenerateAssignments($term)
   print '</form>'."\n";
 }
 
-// Generate the form for the courseResource planning
 function printForm($courses,$term)
 {
+  // Generate the form for the courseResource planning
+
   print '<form  action="/planCourseResources" method="post">'."\n";
   print '<input type="hidden" name="term" value="'.$term.'" />';
   print '<tr>';
@@ -140,7 +100,7 @@ function printForm($courses,$term)
   print '</td>';
   print '<td align=center><select class="type" name="number">'."\n";
   print "<option value=\"\">number ?</option>";
-  foreach ($courses as $key => $course)
+  foreach ($courses->list as $key => $course)
       print "<option value=\"$key\"> $key </option>";
   print '    </select></td>'."\n";
   print '<td align=center><select style="width:100%;text-align-last:center" class="type" name="numAdmins">'."\n";
@@ -167,28 +127,22 @@ function printForm($courses,$term)
   print '<td align=center><select style="width:100%;text-align-last:center" class="type" name="numPartUtilTas">'."\n";
   printNum(0,6);
   print '    </select></td>'."\n";
-//  print '<td align=center><select style="width:100%;text-align-last:center" class="type" name="term">'."\n";
-//  print "<option value=\"$term\"></option>";
-//  print '    </select></td>'."\n";
   print '</tr>';
   print '</form>'."\n";
 }
 
-function printTermForm($semesters)
+function printTermForm($term,$semesters)
 {
   print '<table>';
   print '<form  action="/planCourseResources" method="post">'."\n";
   print '<tr>';
-  print '<td>';
-  print '  Term:&nbsp;'."\n";
-  print '</td>';
   print '<td align=center><select class="type" name="term">'."\n";
-  print "<option value=\"\">term ?</option>";
-  foreach ($semesters as $key => $semester)
+  print "<option value=\"\">".$term."</option>";
+  foreach ($semesters->list as $key => $semester)
     print "<option value=\"$key\"> $key </option>";
   print '    </select></td>'."\n";
   print '</td>';
-  print '<td><input type="submit" value="select" />'."\n";
+  print '<td><input type="submit" value="select term" />'."\n";
   print '</td></tr>';
   print '</table>';
   print '</form>'."\n";
@@ -196,7 +150,7 @@ function printTermForm($semesters)
 
 function removeFromDb($db,$term,$number)
 {
-  // remove an existing student from the database
+  // remove an existing course number from the course resource table in the database
   $sql = " delete from CourseResources where Term = '$term' and Number = '$number'";
   $db->Exec($sql);
 }
@@ -209,16 +163,16 @@ function removeFromDb($db,$term,$number)
 $db = Dbc::getReader();
 
 // get a full list of available semesters
-$semesters = getSemestersFromDb($db);
+$semesters = Semesters::fromDb($db);
 
 // which term are we talking about?
 $term = findTerm($semesters);
 
 // get a full list of courses
-$courses = getCoursesFromDb($db);
+$courses = Courses::fromDb($db);
 
 // get list of CourseResources for the given semester (term)
-$courseResources = getCourseResourcesFromDb($db,$term);
+$courseResources = CourseResources::fromDb($db,$term);
 $nEntries = sizeof($courseResources->list);
 
 $number = getPostVariable('number');
@@ -231,13 +185,13 @@ $numFullUtilTas = getPostVariable('numFullUtilTas');
 $numHalfUtilTas = getPostVariable('numHalfUtilTas');
 $numPartUtilTas = getPostVariable('numPartUtilTas');
 
-if ($GLOBALS['COMPLETE']) {                 // All post variables are filled == ready to register
-  if (! isset($semesters[$term])) {
+if ($GLOBALS['COMPLETE'] == 2) {                  // All post variables are filled == ready to register
+  if (! isset($semesters->list[$term])) {
     print "<h1>ERROR</h1>\n";
     print "This term is not in our database. \n";
   }
   else {
-    if (isset($courseResources->list[$number])) { // if course exists it will be overwritten with the new info
+    if (isset($courseResources->list[$number])) { // if course exists it will be overwritten
       removeFromDb($db,$term,$number);
       print "Removed course $term:$number from our list<br>\n";
     }
@@ -268,12 +222,9 @@ if ($GLOBALS['COMPLETE']) {                 // All post variables are filled == 
 
 // start the html page
 print "<article class=\"page\">\n";
-print "<h1>Different Term?</h1>\n";
-print "<hr>\n";
-printTermForm($semesters);
-print "<hr>\n";
 print "<h1>CourseResource List (Term: $term)</h1>\n";
 print "<hr>\n";
+printTermForm($term,$semesters);
   
 print "<table>\n";
 

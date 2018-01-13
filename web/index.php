@@ -54,7 +54,6 @@ $f3->route('GET /showTaskSummary',      'Main->showTaskSummary');
 $f3->route('GET /showAssignments',      'Main->showAssignments');
 $f3->route('GET /showActiveAssignments','Main->showActiveAssignments');
 $f3->route('GET /showLastAssignments',  'Main->showLastAssignments');
-$f3->route('GET /copyLastAssignments',  'Main->copyLastAssignments');
 $f3->route('GET /showActiveTas',        'Main->showActiveTas');
 $f3->route('GET|POST /planTas',         'Main->planTas');
 $f3->route('GET /findTas',              'Main->findTas');
@@ -92,8 +91,7 @@ $f3->route('GET /assignmentsPerSemester','Main->assignmentsPerSemester');
 $f3->set('ONERROR',function($f3) {
   $err_code = $f3->get('ERROR.code');
   error_log("$err_code ERROR: " . $f3->get("URI"));
-  $f3->set("css_bundle", "//" . $_SERVER['SERVER_NAME']
-           . "/min/?f=/css/style.css,/css/timeline.css");
+  $f3->set("css_bundle", "//".$_SERVER['SERVER_NAME']."/min/?f=/css/style.css,/css/timeline.css");
   
   if ($err_code == 404) {
     $f3->set("title", "404 Not found");

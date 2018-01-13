@@ -7,15 +7,15 @@ if (!isMaster()) {
   exitAccessError();
 }
 
+include_once("app/models/Utils.php");
+include_once("app/models/Dbc.php");
+
 print '<article class="page">'."\n";
 print '<h1>Show All TA Assignments</h1>';
 print ' ';
 
-// connect to our database
-$link = getLink();
-
 // find the active tables and the last non active table
-$tables = findTables($link,'Assignments');
+$tables = getTables(Dbc::GetReader(),'Assignments_____');
 
 print "<table>\n";
 print "<tr><th>Term</th><th>Actions</th>\n";

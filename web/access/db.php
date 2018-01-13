@@ -1,6 +1,6 @@
 <?php
-include_once("app/models/Dbc.php");
 include_once("app/models/Utils.php");
+include_once("app/models/Dbc.php");
 
 function getLink()
 {
@@ -14,58 +14,6 @@ function getLink()
     or die('Error ' . mysqli_error($link));
   
   return $link;
-}
-
-function readFullTaTable($link)
-{
-  $tas = "";
-
-  // first find active tables
-  $tables = findActiveTable($link,'Tas');
-  
-  if ($tables == '')
-    return $tas;
-  
-  // the one place where we load the tas
-  $i = 0;
-  $query = "select * from $tables[0] where FullTime=1";
-
-  try {
-    $statement = $link->prepare($query);
-    $statement->execute();
-    $statement->bind_result($email,$fullTime,$partTime);
-    while ($statement->fetch()) {
-      $tas[$i] = $email;
-      $i = $i + 1;
-    }
-  }
-  catch (Exception $e) {
-    echo 'Caught exception: ',  $e->getMessage(), "\n";
-  }
-  
-  return $tas;
-}
-
-function readTeacherTable($link)
-{
-  // first find active tables
-  $tables = findActiveTable($link,'Evaluations');
-  $term = substr($tables[0],-5,5);
-
-  $query = "select Person from Assignments$term where Task like '%Lec%'";
-  $statement = $link->prepare($query);
-  $rc = $statement->execute();
-
-  // the one place where we load the active teachers
-  $teachers = "";
-  $i = 0;
-  $statement->bind_result($email);
-  while ($statement->fetch()) {
-    $teachers[$i] = $email;
-    $i = $i + 1;
-  }
-
-  return $teachers;
 }
 
 function showAssignment($link,$table,$option = "ALL")
@@ -166,97 +114,6 @@ function showTas($link,$table)
   print "<p> total identified active TAs: $i.</p> \n";
 
   print " ALL: $list<br>\n";
-}
-
-function copyAssignment($link,$source,$target)
-{
-  // copy the last assignment to the active one
-
-  print "<h2> copy $source to $target</h2><hr>\n";
-
-  // Check if target exists
-  $tables = findTables($link,$target);
-  if (sizeof($tables) == 0) {
-    $query = "create table $target like $source";
-    $statement = $link->prepare($query);
-    $rc = $statement->execute();
-    if (!$rc) {
-      $errNum = mysqli_errno($link);
-      $errMsg = mysqli_error($link);
-      print " ERROR - could not read source ErrNo=" . mysqli_errno($link) . ": " .
-	mysqli_error($link) . "\n";
-      exit();
-    }
-  }
-
-  // collect all inserts
-  $query = "select * from $source";
-  $statement = $link->prepare($query);
-  $rc = $statement->execute();
-  if (!$rc) {
-    $errNum = mysqli_errno($link);
-    $errMsg = mysqli_error($link);
-    print " ERROR - could not read source ErrNo=" . mysqli_errno($link) . ": " .
-      mysqli_error($link) . "\n";
-    exit();
-  }
-  $statement->bind_result($task,$person);
-  $inserts = '';
-  $i = 0;
-  while ($statement->fetch()) {
-    $myTask = new TeachingTask($task);
-    $inserts[$i] = "insert into $target (Task) values ('$task')";
-    print " $inserts[$i]<br>";
-    $i = $i + 1;
-  }
-
-  // Now perform the inserts
-  foreach ($inserts as $key => $insert) {
-    print " execute update: $insert <br>\n";
-    $statement = $link->prepare($insert);
-    $rc = $statement->execute();
-    if (!$rc) {
-      $errNum = mysqli_errno($link);
-      $errMsg = mysqli_error($link);
-      print " ERROR - could not insert assignment: ErrNo=" . mysqli_errno($link) . ": " .
-	mysqli_error($link) . "\n";
-      exit();
-    }
-    else
-      print " INFO - entry inserted.<br>\n";
-  }
-}
-
-function findCourseName($link,$number)
-{
-  $query = "select * from Courses where Number='$number'";
-  $statement = $link->prepare($query);
-  $statement->execute();
-  $statement->bind_result($number,$name,$version);
-  while ($statement->fetch()) {
-    $courseName = $name;
-  }
-  return $courseName;
-}
-
-function findStudentNames($link)
-{
-  $names = "";
-  $query = "select * from Students";
-  $statement = $link->prepare($query);
-  $statement->execute();
-  $statement->bind_result($firstName,$lastName,$email,$advisorEmail,$supervisorEmail,$year,$divison,
-			  $research);
-  while ($statement->fetch()) {
-    $names[$email] = $firstName . ' ' . $lastName;
-  }
-  return $names;
-}
-
-function findStudentName($link,$email)
-{
-  $names = findStudentNames($link);
-  return $names[$email];
 }
 
 function findTeacherNames($link)
@@ -368,23 +225,6 @@ function printTeachers($link,$table,$courses)
   
   return;
 }
-
-function findTables($link,$pattern)
-{
-  $i = 0;
-  $tables = "";
-  $query = 'show tables';
-  $statement = $link->prepare($query);
-  $statement->execute();
-  $statement->bind_result($table);
-  while ($statement->fetch()) {
-    if (preg_match("/" . $pattern . "/",$table)) {
-      $tables[$i] = $table;
-      $i = $i + 1;
-    }
-  }
-  return $tables;
-}  
 
 function findActiveTable($link,$pattern)
 {

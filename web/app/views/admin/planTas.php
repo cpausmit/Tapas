@@ -6,10 +6,10 @@ if (! (isMaster() || isAdmin())) {
   exitAccessError();
 }
 
-include("app/models/Dbc.php");
-include("app/models/Tables.php");
-include("app/models/Student.php");
-include("app/models/Ta.php");
+include_once("app/models/Dbc.php");
+include_once("app/models/Tables.php");
+include_once("app/models/Student.php");
+include_once("app/models/Ta.php");
 
 // Make sure the email parameter is properly expanded into a valid email address
 function findEmail($email)
@@ -50,7 +50,10 @@ function getPlanningTable($db)
 function getTasFromDb($db)
 {
   // see whether this student is already a planned TA
+
   $taTable = getPlanningTable($db);
+
+  print " Planning table: $taTable";
 
   // do the query
   $rows = $db->query("select Email, Fulltime, PartTime from $taTable order by Email");

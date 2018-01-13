@@ -1,7 +1,9 @@
 <?php
 
-include("access/db.php");
-include("app/models/TeachingTask.php");
+include_once("access/db.php");
+include_once("app/models/Dbc.php");
+include_once("app/models/Utils.php");
+include_once("app/models/TeachingTask.php");
 
 function getDivisions($link)
 {
@@ -77,7 +79,7 @@ function getAssignments($link,$table,$divisions)
 //=========================================
 
 // connect to our database
-$link = getLink();
+$link = getLink(); // obsolete but not yet replaced
 
 // create the empty structure
 //===========================
@@ -98,7 +100,7 @@ foreach ($divisions as $division) {
 
 // find all matching tables and fill per table
 $nSemester = 0;
-$tables = findTables($link,'Assignments');
+$tables = getTables(Dbc::GetReader(),'Assignments_____');
 foreach ($tables as $key => $table) {
     $semester = substr($table,-5,5);
     if (substr($semester,0,1) != 'I') {
@@ -111,7 +113,7 @@ foreach ($tables as $key => $table) {
             $averages[$division] += $semesterData[$division];
             $totals += $semesterData[$division];
 
-	    //print " Semester: ".$semester." Division: ".$division." N: ".$semesterData[$division]; 
+            //print " Semester: ".$semester." Division: ".$division." N: ".$semesterData[$division]; 
         }
         $data['totals'][] = $totals;
     }

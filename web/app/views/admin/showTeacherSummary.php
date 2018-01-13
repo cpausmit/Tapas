@@ -11,20 +11,19 @@ if (! (isMaster() || isAdmin())) {
 $email = $_GET['email'];
 
 // load database and models
-include("app/models/Dbc.php");
-include("app/models/TeachingTask.php");
-include("app/models/Teacher.php");
+include_once("app/models/Dbc.php");
+include_once("app/models/Teacher.php");
+include_once("app/models/TeachingTask.php");
 
 // create an instance
 $db = Dbc::getReader();
-$teachers = $db->query("select * from Teachers where Email = '$email'");
-$teacher = '';
-foreach ($teachers as $key => $row)
-  $teacher = Teacher::fromRow($row);
+
+// find the stuff we need from the database
+$teachers = Teachers::fromDb($db);
+$teacher = $teachers->list[$email];
 
 // connect to our database
-$link = getLink();
-$tables = findTables($link,'Assignments');
+$tables = getTables($db,'Assignments_____');
 
 print '<article class="page">'."\n";
 print "<hr>\n";
@@ -35,11 +34,11 @@ print "<hr>\n";
 // loop through all assignment tables and find our candidate
 print '<ul>';
 foreach ($tables as $key => $table) {
-  $query = "select * from " . $table . " where Person='" . $email . "'";
-  $statement = $link->prepare($query);
-  $statement->execute();
-  $statement->bind_result($taskId,$person);
-  while ($statement->fetch()) {
+  $sql = "select * from " . $table . " where Person='" . $email . "'";
+  $rows = $db->query($sql);
+  foreach ($rows as $key => $row) {
+    $taskId = $row[0];
+    $person = $row[1];
     print '<li>';
     $task = new TeachingTask($taskId);
     $task->printTaskWithLink();

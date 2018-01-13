@@ -1,6 +1,5 @@
 <?php
 
-// mysql> describe Courses;
 // +---------+----------+------+-----+---------+-------+
 // | Field   | Type     | Null | Key | Default | Extra |
 // +---------+----------+------+-----+---------+-------+
@@ -8,14 +7,11 @@
 // | Name    | char(80) | YES  |     | NULL    |       | 
 // | Version | int(11)  | YES  |     | NULL    |       | 
 // +---------+----------+------+-----+---------+-------+
-//
-// TODO: make course number unique
-//
 
 class Courses
 {
   // Property declaration
-  public $list = array[];
+  public $list = array();
 
   // Declare a public constructor
   public function __construct() { }
@@ -32,11 +28,9 @@ class Courses
   {
     // 'constructor' returns full list of courses
     $instance = new self();
-    $courseRows = $db->query("select * from Courses order by Number");
-    foreach ($courseRows as $key => $row) {
-      $course = Course::fromRow($row);
-      $instance->addCourse($course);
-    }
+    $rows = $db->query("select * from Courses order by Number");
+    foreach ($rows as $key => $row)
+      $instance->addCourse(Course::fromRow($row));
     
     return $instance;
   }

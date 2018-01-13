@@ -21,7 +21,7 @@ echo "export TAPAS_TOOLS_PYTHON="`pwd`/python                      >> setup.sh
 echo "export TAPAS_TOOLS_TEMPLATES="`pwd`/templates                >> setup.sh
 echo "export TAPAS_TOOLS_DATA=$DATA"                               >> setup.sh
 echo ""                                                            >> setup.sh
-echo "export TAPAS_TOOLS_DEPEML=paus@mit.edu,sahughes@mit.edu,cmodica@mit.edu,phys-finance@mit.edu,ktanaka@mit.edu,kariukit@mit.edu,nboyce@mit.edu" \
+echo "export TAPAS_TOOLS_DEPEML=paus@mit.edu,sahughes@mit.edu,cmodica@mit.edu,phys-finance@mit.edu,phys-gradappts@mit.edu,ktanaka@mit.edu,nboyce@mit.edu" \
                                                                    >> setup.sh
 echo ""                                                            >> setup.sh
 echo "export PATH=\"\${PATH}:\${TAPAS_TOOLS_BIN}\""                >> setup.sh

@@ -73,16 +73,20 @@ function makeEmail($email)
   return $email;
 }
 
-function getPostVariable($variableName)
+function getTables($db,$pattern)
 {
-  // read complete courses table
-  $variable = 'undefined';
-  if (array_key_exists($variableName,$_POST))
-    $variable = $_POST[$variableName];
-  else
-    $GLOBALS['COMPLETE'] = 0;
+  // find all tables that match a given pattern (WARNING - there cannot be a printout here)
 
-  return $variable;
-}
+  $tables = array(); // start with an empty array
+  
+  // query and go through the results
+  $query = "show tables like '".$pattern."'";
+  $tableRows = $db->query($query);
+  foreach ($tableRows as $key => $row) {
+    $tables[] = $row[0];
+  }
+
+  return $tables;
+}  
 
 ?>

@@ -56,6 +56,19 @@ class CourseResources
     return $instance;
   }
 
+  public static function fromDb($db,$term)
+  {
+    // 'constructor' returns full list of courses
+
+    $instance = new self();
+    $sql = "select * from CourseResources where Term = '$term' order by Number";
+    $rows = $db->query($sql);
+    foreach ($rows as $key => $row)
+      $instance->addCourseResource(CourseResource::fromRow($row));
+
+    return $instance;
+  }
+
   public function addCourseResource($courseResource)
   {
     if (!isset($list[$courseResource->number])) {
@@ -234,7 +247,9 @@ class CourseResource
     // print header of the table
 
     print "<tr>\n";
-    print "<th>&nbsp Term &nbsp;</th>";
+    print "<th>&nbsp;";
+    print "Term";
+    print "&nbsp;</th>";
     print "<th>&nbsp Number &nbsp;</th>";
     print "<th>&nbsp Admins &nbsp;</th>";
     print "<th>&nbsp Lecturers &nbsp;</th>";

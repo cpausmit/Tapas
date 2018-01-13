@@ -57,6 +57,13 @@ class Evaluation
   public function __construct() { }
   public function __destruct() { }
 
+  public static function fresh()
+  {
+    // 'constructor' returns blank student
+    $instance = new self();
+    return $instance;
+  }
+
   public static function fromRow(array $row)   // 'constructor' using db query row
   {
     $instance = new self();

@@ -1,22 +1,63 @@
 <?php
 
 include("app/views/admin/header.php");
-include("app/models/TeachingTask.php");
 
 // make sure we are dealing with a registered TA
 if (! (isMaster() || isAdmin())) { 
   exitAccessError();
 }
 
+include_once("app/models/Utils.php");
+include_once("app/models/Dbc.php");
+include_once("app/models/Course.php");
+include_once("app/models/Student.php");
+include_once("app/models/TeachingTask.php");
+
+function getStudentName($students,$email)
+{
+  // Find the name for the person matching the email address
+
+  $name = "";
+  if (! isset($students->list[$email])) {
+    if ($email == '')
+      $name = 'NOT ASSIGNED';
+    else
+      print " person not found: $email<br>\n";
+  }
+  else {
+    $student = $students->list[$email];
+    $name = $student->lastName.", ".$student->firstName;
+  }
+  
+  return $name;
+}
+
+function getCourseName($courses,$number)
+{
+  // Find the name for the course matching the course number
+
+  $name = "";
+  if (! isset($courses->list[$number])) {
+    if ($number == '')
+      $name = 'NOT ASSIGNED';
+    else
+      print " course number not found: $number<br>\n";
+  }
+  else
+    $name = $courses->list[$number]->name;
+  
+  return $name;
+}
+
 // command line arguments
 $number = $_GET['number'];  // this is the input course number
 
-// conncet with our database
-$link = getLink();
+$db = Dbc::GetReader();
+$tables = getTables($db,'Assignments_____');
+$students = Students::fromDb($db);
+$courses = Courses::fromDb($db);
 
-$tables = findTables($link,'Assignments');
-$names = findStudentNames($link);
-$courseName = findCourseName($link,$number);
+$courseName = getCourseName($courses,$number);
 
 print '<article class="page">'."\n";
 print "<hr>\n";
@@ -25,23 +66,13 @@ print "<hr>\n";
 
 print '<table>';
 foreach ($tables as $key => $table) {
-  $query = "select * from " . $table . " where Task like '%-" . $number . "-Ta%'";
-  $statement = $link->prepare($query);
-  $statement->execute();
-  $statement->bind_result($taskId,$person);
-  while ($statement->fetch()) {
-
-    $name = "";
-    if (! isset($names[$person])) {
-      if ($person == '')
-	$name = 'NOT ASSIGNED';
-      else
-	print " person not found: $person<br>\n";
-    }
-    else
-      $name = $names[$person];
-
-    // print the result
+  $sql = "select * from " . $table . " where Task like '%-" . $number . "-Ta%'";
+  $rows = $db->query($sql);
+  foreach ($rows as $key => $row) {
+    $taskId = $row[0];
+    $person = $row[1];
+    $name = getStudentName($students,$person);
+    // print result
     print '<tr><td>' . $name . '&nbsp;</td><td>&nbsp;'
       . '<a href="/showTaSummary?email=' . $person . '">' . $person . '</a>&nbsp;</td><td>';
     $task = new TeachingTask($taskId);

@@ -8,10 +8,10 @@ if (! isMaster()) {
 // command line parameters
 $term = $_GET['term'];
 
-include("app/models/Dbc.php");
-include("app/models/Teacher.php");
-include("app/models/Student.php");
-include("app/models/Evaluation.php");
+include_once("app/models/Dbc.php");
+include_once("app/models/Teacher.php");
+include_once("app/models/Student.php");
+include_once("app/models/Evaluation.php");
 
 // connect to our database
 $db = Dbc::getReader();
