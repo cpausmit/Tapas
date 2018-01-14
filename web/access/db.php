@@ -116,53 +116,6 @@ function showTas($link,$table)
   print " ALL: $list<br>\n";
 }
 
-function findTeacherNames($link)
-{
-  $names = "";
-  $query = "select * from Teachers";
-  $statement = $link->prepare($query);
-  $statement->execute();
-  $statement->bind_result($firstName,$lastName,$email,$position,$status);
-  while ($statement->fetch()) {
-    $names[$email] = $firstName . ' ' . $lastName;
-  }
-  return $names;
-}
-
-function findTeacherName($link,$email)
-{
-  $names = findTeacherNames($link);
-  return $names[$email];
-}
-
-function findTaNames($link,$table)
-{
-  // show all assignments
-  $query = "select Students.FirstName, Students.LastName, $table.Person, $table.Task"
-    . " from $table,Students where Students.Email = $table.Person order by Students.LastName";
-  $statement = $link->prepare($query);
-  $rc = $statement->execute();
-  if (!$rc) {
-    $errNum = mysqli_errno($link);
-    $errMsg = mysqli_error($link);
-    print " ERROR - could not register selection: ErrNo=" . mysqli_errno($link) . ": " .
-      mysqli_error($link) . "\n";
-    exit();
-  }
-  $statement->bind_result($firstName,$lastName,$email,$task);
-
-  $i = 0;
-  $names = "";
-  while ($statement->fetch()) {
-    $myTask = new TeachingTask($task);
-    $description = $myTask->getTaTask();
-    $names[$email] = $lastName . ', ' . $firstName . '  Task: ' . $description;
-    $i = $i + 1;
-  }
-
-  return $names;
-}
-
 function findCourseNumbers($link,$table)
 {
   // show all assignments
@@ -210,15 +163,13 @@ function printTeachers($link,$table,$courses)
     $number = $myTask->getCourse();
     foreach ($courses as $key => $course) {
       if ($course == $number) {
-	print " $course --> $email<br>\n";
-	if ($list == "")
-	  $list = "$email";
-	else
-	  $list = "$list,$email";
-	break;
+        print " $course --> $email<br>\n";
+        if ($list == "")
+          $list = "$email";
+        else
+          $list = "$list,$email";
+        break;
       }
-      //else
-      //  print " NO MATCH -- Course: $course --> $email<br>\n";
     }
   }
   print " ALL: $list<br>\n";

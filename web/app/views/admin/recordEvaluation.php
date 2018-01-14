@@ -7,6 +7,13 @@ if (! (isMaster())) {
   exitAccessError();
 }
 
+include_once("app/models/Utils.php");
+include_once("app/models/Dbc.php");
+include_once("app/models/Teacher.php");
+include_once("app/models/Ta.php");
+
+$db = Dbc::getReader();
+
 print '<article class="page">'."\n";
 print '<h1>Recorded Evaluation</h1>';
 
@@ -33,18 +40,12 @@ print '<p>';
 print "<b>AwardProposed:</b> $awardProposed<br>\n";
 print "<b>Proposed Citation:</b> $citation</p>\n";
 
-// connect to our database
-$link = getLink();
-
-// find term
+// find terms
 $i = 0;
-$terms = "";
-$query = "show tables like 'Assignments%'";
-$statement = $link->prepare($query);
-$statement->execute();
-$statement->bind_result($table);
-while ($statement->fetch()) {
-  $t = substr($table,-5,5);
+$index = array();
+$rows = $db->query("show tables like 'Assignments%'");
+foreach ($rows as $key => $row) {
+  $t = substr($row[0],-5,5);
   $index[$t] = $i;
   $i = $i + 1;
 }
@@ -59,58 +60,46 @@ $evaluationsTable = 'Evaluations'.$term; //print " Evaluations from $evaluations
 $assignmentsTable = 'Assignments'.$term; //print " Assignments from $assignmentsTable.<br>";
 
 // find teacher and TA
-$teachers = findTeacherNames($link);
-if (! isset($teachers[$teacherEmail])) {  // check if this is a valid teacher (Teachers table)
-  print ' EXIT - teacher email is not valid.';
+$teachers = Teachers::fromDb($db);
+if (! isset($teachers->list[$teacherEmail])) {  // check if this is a valid teacher (Teachers table)
+  print " EXIT - teacher email is not valid.<br>";
   exitParameterError($teacherMail);
 }
+$teacher = $teachers->list[$teacherEmail];
 print ' Teacher valid.<br>';
 
-$tas = findTaNames($link,$assignmentsTable);
-if (! isset($tas[$taEmail])) {
-  print ' EXIT - ta email is not valid.';
+$tas = Tas::fromDb($db,$term);
+if (! isset($tas->list[$taEmail])) {
+  print " EXIT - ta email is not valid.<br>";
   exitParameterError($taMail);
 }
+$ta = $tas->list[$taEmail];
 print ' TA valid.<br>';
- 
+
 // test whether evaluation is valid
 if ($teacherEmail != "" && $taEmail != "" && $evaluation != "") {
   print '<p>Evaluation is valid.<br>';
-
+  
   // do we update or is it a new entry
-  $query = "select TeacherEmail,TaEmail from $evaluationsTable "
-    . "where TeacherEmail='$teacherEmail' and TaEmail='$taEmail'";
-  $statement = $link->prepare($query);
-  $rc = $statement->execute();
-  if (! $rc) {
-    $errNum = mysqli_errno($link); $errMsg = mysqli_error($link);
-    print " ERROR - could not register selection: ErrNo=$errNum: $errMsg\n";
-    exit();
-  }
-  $statement->bind_result($teacherEmail,$taEmail);
-  $empty = true;
-  while ($statement->fetch()) {
-    $empty = false;
-  }
-
-  if ($empty)
-    $query = "insert into $evaluationsTable (TeacherEmail,TaEmail,EvalText,Award,Citation) values"
+  $sql = "select TeacherEmail,TaEmail from $evaluationsTable "
+    . " where TeacherEmail='$teacherEmail' and TaEmail='$taEmail'";
+  $rows = $db->query($sql);
+  if ($rows->rowCount() < 1) { // no entry yet
+    $sql = "insert into $evaluationsTable (TeacherEmail,TaEmail,EvalText,Award,Citation) values"
       . "('$teacherEmail','$taEmail','$evaluation',$awardProposed,'$citation')";
-  else
-    $query = "update $evaluationsTable set EvalText='$evaluation', Award=$awardProposed,"
+  }
+  else {                   // need to update existing entry
+    $sql = "update $evaluationsTable set EvalText='$evaluation', Award=$awardProposed,"
       . " Citation='$citation' where "
       . " TeacherEmail='$teacherEmail' and TaEmail='$taEmail'";
-
-  $statement = $link->prepare($query);
-  $rc = $statement->execute();
-  if (! $rc) {
-    print " ERROR - could not register selection\n";
-    $errNum = mysqli_errno($link); $errMsg = mysqli_error($link);
-    print " ERROR - could not register selection: ErrNo=$errNum: $errMsg</p>\n";
-    exit();
   }
-  else {
+  // execute
+  try {
+    $db->exec($sql);
     print 'Evaluation has been registered.</p>';
+  }
+  catch (PDOException $e) {
+    print " ERROR - could not register selection: ".$e->getMessage()."<br>\n";
   }
 }
 else {
