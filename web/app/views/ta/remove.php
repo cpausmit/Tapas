@@ -7,18 +7,21 @@ if (! (isTa() || isMaster())) {
   exitAccessError();
 }
 
-print '<article class="page">'."\n";
-print '<h1>TA Preference Removal</h1>';
+include_once("app/models/Utils.php");
+include_once("app/models/Dbc.php");
 
 // connect to our database
 $link = getLink();
 
 // find the active tables
-$tableNames = findActiveTable($link,'Preferences');
-$activeTable = $tableNames[0];
+$activeTables = new Tables(Dbc::getReader(),"ActiveTables");
+$preferencesTable = $activeTables->getUniqueMatchingName('Preferences');
+
+print '<article class="page">'."\n";
+print '<h1>TA Preference Removal</h1>';
 
 $email = strtolower($_SERVER['SSL_CLIENT_S_DN_Email']);
-$query = "delete from $activeTable where Email = '" . $email . "'";
+$query = "delete from $preferencesTable where Email = '" . $email . "'";
 $statement = $link->prepare($query);
 $rc = $statement->execute();
 if (!$rc) {

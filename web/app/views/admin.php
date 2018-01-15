@@ -38,7 +38,6 @@ if (isMaster()) {
   print '&nbsp;&nbsp; <a href="/showPreferences">preferences</a>'."\n";
   print "<br>\n";
   print "&nbsp;&nbsp; assignments:";
-  print '&nbsp;&nbsp; <a href="/showLastAssignments">show last</a>'."\n";
   print "<br>\n";
   print "&nbsp;&nbsp; course resources:";
   print '&nbsp;&nbsp; <a href="/planCourseResources">planning</a>'."\n";

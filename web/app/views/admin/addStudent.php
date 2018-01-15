@@ -1,12 +1,14 @@
 <?php
 
 include("app/views/admin/header.php");
-include("app/models/Utils.php");
 
 // make sure we have an admin
 if (! (isAdmin() || isMaster())) { 
   exitAccessError();
 }
+
+include_once("app/models/Utils.php");
+include_once("app/models/Dbc.php");
 
 function printEmptyForm()
 {

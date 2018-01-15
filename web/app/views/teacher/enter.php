@@ -46,12 +46,13 @@ $assignmentsTable = 'Assignments'.$term;
 $names = getNamesFromDb($db,$term);
 
 print '<article class="page">'."\n";
+
 print '<h1>Select the TA</h1>'."\n";
 print ' '."\n";
 print "Active evaluations table: $evaluationsTable (assignments: $assignmentsTable)<br>\n";
+
 print '<p>';
 print '<form action="/enterEvaluation" method="post">'."\n";
-// Select TA
 print 'Select the student to evaluate.';
 print '  <select class="ta" name="ta">'."\n";
 print '  <option value="">Select student to evaluate</option>'."\n";

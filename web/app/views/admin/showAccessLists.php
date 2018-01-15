@@ -7,6 +7,7 @@ include("app/views/admin/header.php");
 
 include_once("app/models/Admin.php");
 include_once("app/models/Ta.php");
+include_once("app/models/Teacher.php");
 include_once("app/models/Tables.php");
 
 // make sure we are dealing with a registered TA
@@ -22,7 +23,7 @@ $teacherTerm = substr($activeTables->getUniqueMatchingName('Assignments'),-5,5);
 // get admins, tas and teachers from database
 $admins = Admins::fromDb(Dbc::getReader());
 $tas = Tas::fromDb(Dbc::getReader(),$taTerm);
-$teachers = Tas::fromDb(Dbc::getReader(),$teacherTerm);
+$teachers = Teachers::fromDb(Dbc::getReader(),$teacherTerm);
 
 print '<article class="page">'."\n";
 print "<h1>Admins</h1><p>";

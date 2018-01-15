@@ -2,8 +2,8 @@
 
 include("app/views/admin/header.php");
 
-include("app/models/Dbc.php");
-include("app/models/Teacher.php");
+include_once("app/models/Dbc.php");
+include_once("app/models/Teacher.php");
 
 // make sure we have an admin
 if (! (isAdmin() || isMaster())) { 
@@ -11,13 +11,7 @@ if (! (isAdmin() || isMaster())) {
 }
 
 // Pick up the email from the form
-$email = $_POST['email'];
-
-// Make sure that the email makes sense (add '@mit.edu' if not provided)
-$pos = strpos($email,'@');
-if ($pos === false) {             // careful triple '='
-   $email = $email . '@mit.edu';
-}
+$email = makeEmail($_POST['email']);
 
 // See whether this is a known teacher
 $db = Dbc::getReader();

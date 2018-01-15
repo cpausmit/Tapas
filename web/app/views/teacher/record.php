@@ -59,7 +59,7 @@ if ($email != "" && $studentEmail != "" && $evaluation != "") {
   // execute
   try {
     $db->exec($sql);
-    print 'Evaluation has been registered.</p>';
+    print "Evaluation has been registered. ($sql)</p>";
   }
   catch (PDOException $e) {
     print " ERROR - could not register selection: ".$e->getMessage()."<br>\n";

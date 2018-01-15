@@ -7,6 +7,13 @@ if (! (isTeacher() || isMaster())) {
   exitAccessError();
 }
 
+include_once("app/models/Utils.php");
+include_once("app/models/Dbc.php");
+include_once("app/models/Evaluation.php");
+include_once("app/models/Student.php");
+include_once("app/models/Teacher.php");
+include_once("app/models/Tables.php");
+
 print '<article class="page">'."\n";
 print '<h1>Review TA Evaluations</h1>'."\n";
 print ' '."\n";
@@ -14,34 +21,38 @@ print ' '."\n";
 $email = strtolower($_SERVER['SSL_CLIENT_S_DN_Email']);
 
 // connect to our database
-$link = getLink();
-$active = findActiveTable($link,'Evaluations');
-print "Active evaluations table: $active[0]</p>";
-$query = "select TeacherEmail,TaEmail,EvalText,Award,Citation from $active[0] "
-  . "where TeacherEmail='$email'";
-$statement = $link->prepare($query);
-$rc = $statement->execute();
-if (! $rc) {
-  $errNum = mysqli_errno($link);
-  $errMsg = mysqli_error($link);
-  print " ERROR - could not get evaluations: ErrNo=$errNum: $errMsg\n";
+$db = Dbc::getReader();
+
+$students = Students::fromDb($db);
+$teachers = Teachers::fromDb($db);
+$activeTables = new Tables($db,"ActiveTables");
+$evaluationsTable = $activeTables->getUniqueMatchingName('Evaluations');
+
+$sql = "select TeacherEmail,TaEmail,Award,EvalText,Citation from $evaluationsTable "
+    . "where TeacherEmail='$email'";
+$rows = $db->query($sql);
+if ($rows->rowCount() < 1) {
+  print " ERROR - could not find evaluation for sql: $sql\n";
   exit();
 }
-$statement->bind_result($teacherEmail,$taEmail,$evalText,$award,$citation);
-$empty = true;
-while ($statement->fetch()) {
-  $empty = false;
-  print '<hr>';
-  print '<p>';
-  print "<b>Evaluee:  </b> $taEmail<br>\n";
-  print "<b>AwardProposed:</b> $award<br>\n";
-  print "<b>Proposed Citation:</b> $citation<br>\n";
-  print "<b>Evaluation:</b><br> $evalText</p>\n";
-  print '<p>';
+else if ($rows->rowCount() > 1) {
+  print " ERROR - more evaluation than one registered for sql: $sql\n";
+  exit();
 }
 
-if ($empty)
+$evaluation = null;
+foreach ($rows as $key => $row)
+  $evaluation = Evaluation::fromRow($row);
+
+if ($evaluation == null)
   print ' No evaluations found in this term.';
+else {
+  $student = $students->list[$evaluation->taEmail];
+  $teacher = $teachers->list[$evaluation->teacherEmail];
+  $taNames[$evaluation->taEmail] = $student->firstName." ".$student->lastName;
+  $teacherNames[$evaluation->teacherEmail] = $teacher->firstName." ".$teacher->lastName;
+  $evaluation->printEvaluation($taNames,$teacherNames);
+}
   
 print '</article>'."\n";
 

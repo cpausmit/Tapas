@@ -6,35 +6,11 @@ if (! (isMaster() || isAdmin())) {
   exitAccessError();
 }
 
+include_once("app/models/Utils.php");
 include_once("app/models/Dbc.php");
 include_once("app/models/Tables.php");
 include_once("app/models/Student.php");
 include_once("app/models/Ta.php");
-
-// Make sure the email parameter is properly expanded into a valid email address
-function findEmail($email)
-{
-  // Make sure that the email makes sense (add '@mit.edu' if not provided)
-  $pos = strpos($email,'@');
-  if ($pos === false)                 // careful triple '='
-    $email = $email . '@mit.edu';
-
-  return $email;
-}
-
-// Get all students from the database
-function getStudentsFromDb($db)
-{
-  // read complete students table
-  $students = "";
-  $rows = $db->query("select * from Students order by lastName");
-  foreach ($rows as $key => $row) {
-    $student = Student::fromRow($row);
-    $students[$student->email] = $student;
-  }
-
-  return $students;
-}
 
 // Get all TAs that are in the planning table
 function getPlanningTable($db)
@@ -103,7 +79,7 @@ print '<article class="page">'."\n";
 $db = Dbc::getReader();
 
 // get a full list of students
-$students = getStudentsFromDb($db);
+$students = Students::fromDb($db);
 
 // the planning TA table
 $taTable = getPlanningTable($db);
@@ -121,9 +97,9 @@ if (array_key_exists('email',$_POST) &&
   $partTime =  $_POST['partTime'];
 
   // Make sure that the email makes sense (add '@mit.edu' if not provided)
-  $email = findEmail($email);
+  $email = makeEmail($email);
 
-  if (! isset($students[$email])) {
+  if (! isset($students->list[$email])) {
     print "<h1>ERROR</h1>\n";
     print "This email is not in our database. \n";
     print "<h3><a href=\"/updateStudent?email=$email\">Please first add the student here.";
@@ -159,8 +135,8 @@ print "<table>\n";
 if ($nTas > 0 && $tas != "") {
   $first = true;
   foreach ($tas as $key => $ta) {
-    if (isset($students[$ta->email])) {
-      $student = $students[$ta->email];
+    if (isset($students->list[$ta->email])) {
+      $student = $students->list[$ta->email];
       if ($first) {
         $first = false;
         printForm();
@@ -176,7 +152,6 @@ if ($nTas > 0 && $tas != "") {
   }
   print "</table>\n";
   print "<p> &nbsp;&nbsp;&nbsp;&nbsp; $nTas unique entries (in: $taTable).</p>";
-  print "<hr>\n";
 }
 
 // footer

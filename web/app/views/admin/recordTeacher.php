@@ -2,8 +2,9 @@
 
 include("app/views/admin/header.php");
 
-include("app/models/Dbc.php");
-include("app/models/Teacher.php");
+include_once("app/models/Utils.php");
+include_once("app/models/Dbc.php");
+include_once("app/models/Teacher.php");
 
 // make sure this is the master
 if (! (isMaster())) { 

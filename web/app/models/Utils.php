@@ -52,7 +52,7 @@ function isName($name)
   return $result;
 }
 
-function isEmail($email)
+function isEmail($email,$quiet=false)
 {
   $result = false;
   if (preg_match("/^[a-zA-Z0-9\_\-@.]+$/", $email) && preg_match("/@/i", $email)) {
@@ -60,7 +60,8 @@ function isEmail($email)
     print ''; // print " String is an email: $email" ;
   }
   else {
-    print " String is a not an email: $email" ;
+    if (!$quiet)
+      print " String is a not an email: $email" ;
   }
   return $result;
 }
@@ -68,7 +69,7 @@ function isEmail($email)
 function makeEmail($email)
 {
   // Make sure that the email makes sense (add '@mit.edu' if not provided)
-  if (!isEmail($email))
+  if (!isEmail($email,true))
     $email = $email . '@mit.edu';
   return $email;
 }

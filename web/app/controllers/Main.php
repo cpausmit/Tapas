@@ -136,16 +136,6 @@ class Main extends Controller {
     $view = new View;
     echo $view->render('admin/recordTeacher.php');
   }
-  public function addActiveTa($f3) {
-    $f3->set('selected', 'admin');
-    $view = new View;
-    echo $view->render('admin/addActiveTa.php');
-  }
-  public function updateActiveTas($f3) {
-    $f3->set('selected', 'admin');
-    $view = new View;
-    echo $view->render('admin/updateActiveTas.php');
-  }
   public function showTaSummary($f3) {
     $f3->set('selected', 'admin');
     $view = new View;
@@ -175,11 +165,6 @@ class Main extends Controller {
     $f3->set('selected', 'admin');
     $view = new View;
     echo $view->render('admin/showActiveAssignments.php');
-  }
-  public function showLastAssignments($f3) {
-    $f3->set('selected', 'admin');
-    $view = new View;
-    echo $view->render('admin/showLastAssignments.php');
   }
   public function generateAssignments($f3) {
     $f3->set('selected', 'admin');
