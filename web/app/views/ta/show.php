@@ -31,9 +31,6 @@ if (isset($preferences->list[$email])) {
 print '<article class="page">'."\n";
 print '<h1>Selected TA Preferences</h1>';
 print "<p>Planning table: $preferencesTable &nbsp;&nbsp;<br>\n";
-
-// Now we know the table to use
-
 print 'Your registered TA preferences are:';
 print ' ';
 

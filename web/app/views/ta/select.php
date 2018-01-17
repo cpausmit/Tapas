@@ -15,7 +15,7 @@ include_once("app/models/TeachingTask.php");
 
 function generateOptions($db,$assignmentTable,$courses)
 {
-  // generate the options
+  // generate the options for all teaching assignment
 
   $options = array();
   $sql = "select * from $assignmentTable order by Task";
@@ -65,24 +65,24 @@ print '<p>'."\n";
 print '<table>'."\n";
 
 // First preference
-print '<tr><td>What is your first preference?</td><td><select class="ta" name="pref1">'."\n";
-print '  <option value="">Select Preference 1</option>'."\n";
+print '<tr><td>First preference?</td><td><select class="ta" name="pref1">'."\n";
+print '  <option value="">Select</option>'."\n";
 foreach ($options as $key => $option) {
   print "<option value=\"" . $key . "\"> $option </option>";
 }
 print '</select></td></tr>'."\n";
 
 // Second preference
-print '<tr><td>What is your second preference?&nbsp;&nbsp;</td><td><select class="ta" name="pref2">'."\n";
-print '  <option value="">Select Preference 2</option>'."\n";
+print '<tr><td>Second preference?&nbsp;&nbsp;</td><td><select class="ta" name="pref2">'."\n";
+print '  <option value="">Select</option>'."\n";
 foreach ($options as $key => $option) {
   print "<option value=\"" . $key . "\"> $option </option>";
 }
 print '</select></td></tr>'."\n";
 
 // Third preference
-print '<tr><td>What is your third preference?</td><td><select class="ta" name="pref3">'."\n";
-print '  <option value="">Select Preference 3</option>'."\n";
+print '<tr><td>Third preference?</td><td><select class="ta" name="pref3">'."\n";
+print '  <option value="">Select</option>'."\n";
 foreach ($options as $key => $option) {
   print "<option value=\"" . $key . "\"> $option </option>";
 }
