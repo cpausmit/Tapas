@@ -1,15 +1,11 @@
 <?php
 
 include("app/views/admin/header.php");
-include("app/models/TeachingTask.php");
 
 // make sure we are dealing with a registered TA
 if (! (isMaster() || isAdmin())) {
   exitAccessError();
 }
-
-// command line arguments
-//$option = $_GET['option'];  // this is the input course number
 
 print '<article class="page">'."\n";
 print '<h1>Assignment History</h1>';

@@ -13,7 +13,7 @@
 class Preferences
 {
   // Property declaration
-    public $list = array();
+  public $list = array();
 
   // Declare a public constructor
   public function __construct() { }
@@ -32,12 +32,12 @@ class Preferences
     $instance = new self();
     $preferenceRows = $db->query("select * from Preferences$term order by Email");
     foreach ($preferenceRows as $key => $row)
-      $instance->addPreference(Preference::fromRow($row));
+      $instance->add(Preference::fromRow($row));
     
     return $instance;
   }
 
-  public function addPreference($preference)
+  public function add($preference)
   {
     if (!isset($this->list[$preference->email]))
       $this->list[$preference->email] = $preference;

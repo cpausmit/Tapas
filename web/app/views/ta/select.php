@@ -7,10 +7,11 @@ if (! (isTa() || isMaster())) {
   exitAccessError();
 }
 
-include("app/models/Dbc.php");
-include("app/models/TeachingTask.php");
-include("app/models/Course.php");
-include("app/models/Tables.php");
+include_once("app/models/Utils.php");
+include_once("app/models/Dbc.php");
+include_once("app/models/Course.php");
+include_once("app/models/Tables.php");
+include_once("app/models/TeachingTask.php");
 
 function generateOptions($db,$assignmentTable,$courses)
 {
@@ -39,7 +40,6 @@ function generateOptions($db,$assignmentTable,$courses)
 // get the list of courses
 $db = Dbc::getReader();
 $courses = Courses::fromDb($db);
-//print_r($courses);
 
 // get all TAs and the possible full time assignments
 $planningTables = new Tables($db,'PlanningTables');

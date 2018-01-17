@@ -1,9 +1,8 @@
 <?php
 
-include("access/db.php");
-include("app/models/Admin.php");
-include("app/models/Ta.php");
-include("app/models/Tables.php");
+include_once("app/models/Admin.php");
+include_once("app/models/Ta.php");
+include_once("app/models/Tables.php");
 
 function isMaster()
 {

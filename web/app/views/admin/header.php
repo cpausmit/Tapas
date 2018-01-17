@@ -91,7 +91,6 @@ if (isMaster()) {
   print "       <ul>";
   print "          <li><a href='/email'><span>email</span></a></li>";
   print "          <li><a href='/showAccessLists'><span>access lists</span></a></li>";
-  print "          <li><a href='/findTas'><span>find Tas</span></a></li>";
   print "          <li><a href='/plots'><span>plots</span></a></li>";
   print "       </ul>";
   print "    </li>";

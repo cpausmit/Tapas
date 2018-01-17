@@ -1,7 +1,6 @@
 <?php
 
 include("app/views/admin/header.php");
-include("app/models/TeachingTask.php");
 
 // make sure we are dealing with a registered TA
 if (! (isMaster() || isAdmin())) { 
@@ -10,28 +9,26 @@ if (! (isMaster() || isAdmin())) {
 
 include_once("app/models/Utils.php");
 include_once("app/models/Dbc.php");
+include_once("app/models/Assignment.php");
+include_once("app/models/Tables.php");
 
 // command line arguments
 $option = $_GET['option'];  // this is the input course number
-
-// connect to our database
-$link = getLink();
+$db = Dbc::getReader();
 
 // find the active tables and the last non-active table
-$activeTables = new Tables(Dbc::getReader(),"ActiveTables");
+$activeTables = new Tables($db,"ActiveTables");
 $assignmentsTable = $activeTables->getUniqueMatchingName('Assignments');
+$term = substr($assignmentsTable,-5,5);
+$assignments = Assignments::fromDb($db,$term);
 
 print '<article class="page">'."\n";
 print '<h1>Show Active Assignments</h1>';
 print ' ';
-
-// show unassigned slots
 print "Unassigned slots from $assignmentsTable</p>";
-showAssignment($link,$assignmentTable,"Unassigned");
-
-// show all TA slots
-print "Active Assignments from $active[0]</p>";
-showAssignment($link,$assignmentTable,$option);
+$assignments->show("Unassigned");
+print "Active Assignments from $assignmentsTable</p>";
+$assignments->show($option);
 
 print '</article>'."\n";
 

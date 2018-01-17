@@ -9,29 +9,30 @@ if (! (isAdmin() || isMaster())) {
   exitAccessError();
 }
 
+include_once("app/models/Utils.php");
+include_once("app/models/Dbc.php");
+include_once("app/models/Course.php");
+
+$courses = Courses::fromDb(Dbc::getReader());
+
+
 print '<article class="page">';
 print '<hr>';
 print '<h1>Course Listing</h1>';
 
-$link = getLink();
-
-$query = 'select * from Courses';
-$statement = $link->prepare($query);
-$statement->execute();
-$statement->bind_result($number,$name,$version);
 print '<p>';
 print '<table>';
-while ($statement->fetch()) {
-  print '<tr><td><a href="showTaskSummary?number=' . $number . '">' .$number .
+
+foreach ($courses->list as $number => $course) {
+  print '<tr><td><a href="showTaskSummary?number=' . $course->number . '">' .$course->number .
     '</a></td><td>&nbsp;&nbsp;'
-    . $name . "</td></tr>";
+    . $course->name . "</td></tr>";
 }
 print '</table>';
 print '</p>';
 
 print '<hr>';
 print '</article>';
-
 
 include("app/views/admin/footer.php");
 

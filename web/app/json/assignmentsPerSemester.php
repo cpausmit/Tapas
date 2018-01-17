@@ -1,52 +1,38 @@
 <?php
 
-include_once("access/db.php");
 include_once("app/models/Dbc.php");
 include_once("app/models/Utils.php");
 include_once("app/models/TeachingTask.php");
 
-function getDivisions($link)
+function getDivisions($db)
 {
     $divisions = array();
-    $query = "select distinct Division from Students order by Division";
-    $statement = $link->prepare($query);
-    $rc = $statement->execute();
-    if (!$rc) {
-        $errNum = mysqli_errno($link);
-        $errMsg = mysqli_error($link);
-        print " ERROR - could not register selection: ErrNo=" . mysqli_errno($link) . ": " .
-                                                              mysqli_error($link) . "\n";
-        exit();
-    }
-    $statement->bind_result($division);
-    while ($statement->fetch()) {
-        $divisions[] = $division;
-    }
-    $statement->close();
+    
+    $sql = "select distinct Division from Students order by Division";
+    $rows = $db->query($sql);
+    foreach ($rows as $key => $row)
+        $divisions[] = $row[0];
+    
     return $divisions;
 }
 
-function getAssignments($link,$table,$divisions)
+function getAssignments($db,$table,$divisions)
 {
     // initialize data
     $semesterData = array();
     foreach ($divisions as $index => $division) {
         $semesterData[$division] = 0;
     }
-
+    
     // show all assignments
-    $query = "select t.Task, t.Person, s.Division from $table as t inner join Students as s on s.Email = t.Person order by t.Task";
-    $statement = $link->prepare($query);
-    $rc = $statement->execute();
-    if (!$rc) {
-        $errNum = mysqli_errno($link);
-        $errMsg = mysqli_error($link);
-        print " ERROR - could not register selection: ErrNo=" . mysqli_errno($link) . ": " .
-                                                              mysqli_error($link) . "\n";
-        exit();
-    }
-    $statement->bind_result($task,$person,$division);
-    while ($statement->fetch()) {
+    $sql = "select t.Task, t.Person, s.Division from $table as t".
+           " inner join Students as s on s.Email = t.Person order by t.Task";
+    $rows = $db->query($sql);
+    foreach ($rows as $key => $row) {
+        $task = $row[0];
+        $person = $row[1];
+        $division = $row[2];
+        
         $weight = 0;
         $myTask = new TeachingTask($task);
         if ($myTask->isTa() && $myTask->getEffort() == 'full')
@@ -55,7 +41,7 @@ function getAssignments($link,$table,$divisions)
             $weight = 0.5;      
         $semesterData[$division] += $weight;
     }
-    $statement->close();
+
     return $semesterData;
 }
 
@@ -79,7 +65,7 @@ function getAssignments($link,$table,$divisions)
 //=========================================
 
 // connect to our database
-$link = getLink(); // obsolete but not yet replaced
+$db = Dbc::getReader();
 
 // create the empty structure
 //===========================
@@ -89,7 +75,7 @@ $data = array('legend' => array(),'totals' => array(), 'data' => array());
 $averages = array();
 
 // add the names of the divisions and the empty result array stub
-$divisions = getDivisions($link);
+$divisions = getDivisions($db);
 foreach ($divisions as $division) {
     $data['data'][] = array('division' => $division, 'numbers' => array(), 'average' => 0);
     $averages[$division] = 0;
@@ -106,7 +92,7 @@ foreach ($tables as $key => $table) {
     if (substr($semester,0,1) != 'I') {
         $nSemester += 1;
         $data['legend'][] = $semester;
-        $semesterData = getAssignments($link, $table, $divisions);
+        $semesterData = getAssignments($db, $table, $divisions);
         $totals = 0;
         foreach ($divisions as $index => $division) {
             $data['data'][$index]['numbers'][] = $semesterData[$division];

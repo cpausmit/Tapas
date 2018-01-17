@@ -7,9 +7,9 @@ if (! (isTa() || isMaster())) {
   exitAccessError();
 }
 
-include("app/models/Dbc.php");
-include("app/models/Course.php");
-include("app/models/Tables.php");
+include_once("app/models/Dbc.php");
+include_once("app/models/Course.php");
+include_once("app/models/Tables.php");
 
 function testSelection($p1,$p2,$p3) {
   $valid = false;

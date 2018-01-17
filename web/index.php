@@ -53,7 +53,6 @@ $f3->route('GET /showAssignments',      'Main->showAssignments');
 $f3->route('GET /showActiveAssignments','Main->showActiveAssignments');
 $f3->route('GET /showActiveTas',        'Main->showActiveTas');
 $f3->route('GET|POST /planTas',         'Main->planTas');
-$f3->route('GET /findTas',              'Main->findTas');
 $f3->route('GET /showPreferences',      'Main->showPreferences');
 $f3->route('GET /showAccessLists',      'Main->showAccessLists');
 $f3->route('GET /evaluations',          'Main->evaluations');
@@ -79,8 +78,6 @@ $f3->route('GET /review',               'Main->review');
 
 // Json routes
 $f3->route('GET /assignmentsPerSemester','Main->assignmentsPerSemester');
-
-
 
 ////////////////////////////////////////////////////////////////////////////////
 // Error handler

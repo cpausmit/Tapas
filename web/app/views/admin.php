@@ -43,7 +43,6 @@ if (isMaster()) {
   print '&nbsp;&nbsp; <a href="/planCourseResources">planning</a>'."\n";
   print "<br>\n";
   print "&nbsp;&nbsp; TAs:";
-  print '&nbsp;&nbsp; <a href="/findTas">find Tas</a>'."\n";
   print "<br>\n";
   print "&nbsp;&nbsp; access:";
   print '&nbsp;&nbsp; <a href="/showAccessLists">access lists</a>'."\n";

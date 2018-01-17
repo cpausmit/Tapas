@@ -22,26 +22,6 @@ function getPlanningTable($db)
   return $taTable;
 }
 
-// Get all TAs that are in the planning table
-function getTasFromDb($db)
-{
-  // see whether this student is already a planned TA
-
-  $taTable = getPlanningTable($db);
-
-  print " Planning table: $taTable";
-
-  // do the query
-  $rows = $db->query("select Email, Fulltime, PartTime from $taTable order by Email");
-  $tas = "";
-  foreach ($rows as $key => $row) {
-    $ta = Ta::fromRow($row);
-    $tas[$ta->email] = $ta;
-  }
-
-  return $tas;
-}
-
 function printForm()
 {
   print '<form  action="/planTas" method="post">'."\n";
@@ -78,19 +58,16 @@ print '<article class="page">'."\n";
 // connect to our database
 $db = Dbc::getReader();
 
-// get a full list of students
+// get input from the database
 $students = Students::fromDb($db);
-
-// the planning TA table
 $taTable = getPlanningTable($db);
-
-// get list of TAs in our planning table
-$tas = getTasFromDb($db);
-$nTas = sizeof($tas);
+$term = substr($taTable,-5,5);
+$tas = Tas::fromDb($db,$term);
 
 // pick up email, effort and action from the form
 if (array_key_exists('email',$_POST) &&
-    array_key_exists('fullTime',$_POST) && array_key_exists('partTime',$_POST)  ) {
+    array_key_exists('fullTime',$_POST) &&
+    array_key_exists('partTime',$_POST)    ) {
 
   $email = $_POST['email'];
   $fullTime =  $_POST['fullTime'];
@@ -102,7 +79,7 @@ if (array_key_exists('email',$_POST) &&
   if (! isset($students->list[$email])) {
     print "<h1>ERROR</h1>\n";
     print "This email is not in our database. \n";
-    print "<h3><a href=\"/updateStudent?email=$email\">Please first add the student here.";
+    print "<h3><a href=\"/addStudent?email=$email\">Please first add the student here.";
     print "</a></h3><br>\n";
   }
   else {
@@ -119,8 +96,7 @@ if (array_key_exists('email',$_POST) &&
       print "<p>Added new TA to our list: $email</p>\n";
     }
     // update the TA list in memory
-    $tas = getTasFromDb($db);
-    $nTas = sizeof($tas);
+    $tas = Tas::fromDb($db);
   }
 }
 
@@ -128,31 +104,29 @@ print "<article class=\"page\">\n";
 
 print "<h1>TA List ($taTable)</h1>\n";
 print "<hr>\n";
-
 print "<table>\n";
 
-// loop through all TAs
-if ($nTas > 0 && $tas != "") {
-  $first = true;
-  foreach ($tas as $key => $ta) {
-    if (isset($students->list[$ta->email])) {
-      $student = $students->list[$ta->email];
-      if ($first) {
-        $first = false;
-        printForm();
-        $student->printTableHeader(true);
-        print "<th>&nbsp; FullTime &nbsp;</th><th>&nbsp; PartTime &nbsp;</th></tr>";
-      }
+printForm();
+$student = Student::fresh();
+$student->printTableHeader(true);
+print "<th>&nbsp; FullTime &nbsp;</th><th>&nbsp; PartTime &nbsp;</th></tr>";
 
-      $student->printTableRow(true);
-      print "<td align=center>&nbsp;$ta->fullTime</td><td align=center>&nbsp;$ta->partTime</td></tr>";
-    }
-    else                                     // should never happen, but checking is better
-      print "<br><b> ERROR -- student not found in database: $ta->email</b><br>";
+// loop through all TAs
+
+foreach ($tas->list as $key => $ta) {
+  if (isset($students->list[$ta->email])) {
+    $student = $students->list[$ta->email];
+    $student->printTableRow(true);
+    print "<td align=center>&nbsp;$ta->fullTime</td><td align=center>&nbsp;$ta->partTime</td></tr>";
   }
-  print "</table>\n";
-  print "<p> &nbsp;&nbsp;&nbsp;&nbsp; $nTas unique entries (in: $taTable).</p>";
+  else                                     // should never happen, but checking is better
+    print "<br><b> ERROR -- student not found in database: $ta->email</b><br>";
 }
+
+$nTas = sizeof($tas->list);
+print "</table>\n";
+print "<p> &nbsp;&nbsp;&nbsp;&nbsp; $nTas unique entries (in: $taTable).</p>";
+
 
 // footer
 print "<hr>\n";
