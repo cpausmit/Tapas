@@ -3,10 +3,12 @@
 //+----------+------------+------+-----+---------+-------+
 //| Field    | Type       | Null | Key | Default | Extra |
 //+----------+------------+------+-----+---------+-------+
-//| Email    | char(40)   | YES  | UNI | NULL    |       |
+//| Term     | char(5)    | YES  | MUL | NULL    |       |
+//| Email    | char(40)   | YES  |     | NULL    |       |
 //| FullTime | tinyint(4) | YES  |     | NULL    |       |
 //| PartTime | tinyint(4) | YES  |     | NULL    |       |
 //+----------+------------+------+-----+---------+-------+
+// alter table Tas add constraint onePerTerm unique(Term, Email);
 
 include_once("app/models/Utils.php");
 
@@ -30,7 +32,7 @@ class Tas
   {
     // 'constructor' returns full list of tas
     $instance = new self();
-    $taRows = $db->query("select * from Tas$term order by Email");
+    $taRows = $db->query("select * from Tas where Term='$term' order by Email");
     foreach ($taRows as $key => $row)
       $instance->addTa(Ta::fromRow($row));
     
@@ -93,9 +95,10 @@ class Ta
   {
     // here we fill the content
 
-    $this->email = $row[0];
-    $this->fullTime = $row[1];
-    $this->partTime = $row[2];
+    $this->term = $row[0];
+    $this->email = $row[1];
+    $this->fullTime = $row[2];
+    $this->partTime = $row[3];
   }
 
   protected function isValid()
@@ -103,8 +106,6 @@ class Ta
     // making sure TA information is valid
 
     $valid = true;
-
-    //print '<br> validating TA information ....<br>';
     
     if (isEmail($this->email))
       print ""; //print " -- Email valid.<br>\n";
@@ -133,6 +134,7 @@ class Ta
     // print one row of a table with the relevant infromation
 
     print "<tr>\n";
+    print "<td>&nbsp;" . $this->term . "&nbsp;</td>";
     print "<td>&nbsp;" . $this->email . "&nbsp;</td>";
     print "<td>&nbsp;" . $this->fullTime . "&nbsp;</td>";
     print "<td>&nbsp;" . $this->partTime . "&nbsp;</td>";
@@ -146,6 +148,9 @@ class Ta
 
     print "<tr>\n";
     print "<th>&nbsp;";
+    print " Term";
+    print "&nbsp;</th>";
+    print "<th>&nbsp;";
     print " TA Email";
     print "&nbsp;</th>";
     print "<th>&nbsp;";
@@ -158,14 +163,15 @@ class Ta
       print "</tr>\n";
   }
     
-  public function addToDb($db,$table)
+  public function addToDb($db)
   {
     // adding the given ta instance to the database
 
     // make sure this is a valid new entry
     if ($this->isValid()) {
-      $vals = sprintf("('%s',%d,%d)",$this->email,$this->fullTime,$this->partTime);
-      $sql = " insert into $table values $vals";
+      $vals = sprintf("('%s','%s',%d,%d)",
+                      $this->term,$this->email,$this->fullTime,$this->partTime);
+      $sql = " insert into Tas values $vals";
       $db->Exec($sql);
     }
     else {
@@ -174,6 +180,7 @@ class Ta
   }
     
   // Property declaration
+  public $term = '';
   public $email = 'EMPTY@mit.edu';
   public $fullTime = 0;
   public $partTime = 0;

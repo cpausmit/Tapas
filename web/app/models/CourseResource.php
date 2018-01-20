@@ -147,9 +147,9 @@ class CourseResource
     $instance = new self();
     $sql = "select * from CourseResources where Term = '".$term."' and Number = '".$number."'";
     $courseResources = $db->query($sql);
-    foreach ($courseResources as $key => $row) {
+    foreach ($courseResources as $key => $row)
       $instance->fill($row);
-    }
+
     return $instance;
   }
 

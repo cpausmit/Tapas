@@ -14,10 +14,10 @@ include_once("app/models/TeachingTask.php");
 
 function getNamesFromDb($db,$term)
 {
-  $table = 'Assignments';
-  $sql = "select Students.FirstName, Students.LastName, $table.Person, $table.Task"
-    . " from $table,Students where $table.Term = '$term' and Students.Email = $table.Person"
-    . " order by Students.LastName";
+  $sql = "select Students.FirstName, Students.LastName, Assignments.Person, Assignments.Task"
+      . " from Assignments,Students "
+      . " where Assignments.Term = 'Assignmentserm' and Students.Email = Assignments.Person"
+      . " order by Students.LastName";
   $taskRows = $db->query($sql);
 
   $names = "";

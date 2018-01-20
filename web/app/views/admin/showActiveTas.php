@@ -15,39 +15,25 @@ include_once("app/models/Ta.php");
 $db = Dbc::getReader();
 
 // read complete students table
-$students = "";
-$rows = $db->query("select * from Students order by lastName");
-foreach ($rows as $key => $row) {
-  $student = Student::fromRow($row);
-  $students[$student->email] = $student;
-}
-
+$students = Students::fromDb($db);
 // find active Ta table
 $activeTables = new Tables($db,"ActiveTables");
-$taTable = $activeTables->getUniqueMatchingName('Tas');
-// do the query
-$rows = $db->query("select Email, Fulltime, PartTime from $taTable order by Email");
-$i = 0;
-$tas = "";
-foreach ($rows as $key => $row) {
-  $ta = Ta::fromRow($row);
-  $tas[$i] = $ta;
-  $i = $i + 1;
-}
-$nTas = $i;
+$term = substr($activeTables->getUniqueMatchingName('Tas')-5,5);
+$tas = Tas::fromDb($db,$term);
+$nTas = sizeof($tas->list);
 
 print "<article class=\"page\">\n";
 print "<h1>Show Active TAs</h1>\n";
-print "<p>Active TA table: $taTable";
+print "<p>Active TA term: $term";
 print " with $nTas entries.</p>";
 print "<hr>\n";
 print "<table>\n";
 
 // loop through all active TAs
 $first = true;
-foreach ($tas as $key => $ta) {
-  if (isset($students[$ta->email])) {
-    $student = $students[$ta->email];
+foreach ($tas->list as $key => $ta) {
+  if (isset($students->list[$ta->email])) {
+    $student = $students->list[$ta->email];
     if ($first) {
       $student->printTableHeader(true);
       print "<th>&nbsp; FullTime &nbsp;</th><th>&nbsp; PartTime &nbsp;</th></tr>";

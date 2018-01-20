@@ -89,10 +89,11 @@ if (array_key_exists('email',$_POST) &&
     }
     else {
       $ta = Ta::fresh();
+      $ta->term = $term;
       $ta->email = $email;
       $ta->fullTime = $fullTime;
       $ta->partTime = $partTime;
-      $ta->addToDb($db,$taTable);
+      $ta->addToDb($db);
       print "<p>Added new TA to our list: $email</p>\n";
     }
     // update the TA list in memory
@@ -102,7 +103,7 @@ if (array_key_exists('email',$_POST) &&
 
 print "<article class=\"page\">\n";
 
-print "<h1>TA List ($taTable)</h1>\n";
+print "<h1>TA List (term: $term)</h1>\n";
 print "<hr>\n";
 print "<table>\n";
 
@@ -125,7 +126,7 @@ foreach ($tas->list as $key => $ta) {
 
 $nTas = sizeof($tas->list);
 print "</table>\n";
-print "<p> &nbsp;&nbsp;&nbsp;&nbsp; $nTas unique entries (in: $taTable).</p>";
+print "<p> &nbsp;&nbsp;&nbsp;&nbsp; $nTas unique entries (term: $term).</p>";
 
 
 // footer

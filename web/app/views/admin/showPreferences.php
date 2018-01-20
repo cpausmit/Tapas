@@ -22,7 +22,6 @@ $students = Students::fromDb($db);
 $activeTables = new ActiveTables($db);
 $term = substr($preferenceTable = $activeTables->getUniqueMatchingName('Preferences'),-5,5);
 // do the query
-$nTas = 0;
 $preferences = Preferences::fromDb($db,$term);
 $nTas = sizeof($preferences->list);
 
