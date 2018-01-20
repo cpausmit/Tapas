@@ -4,6 +4,7 @@
 //+--------+----------+------+-----+---------+-------+
 //| Field  | Type     | Null | Key | Default | Extra |
 //+--------+----------+------+-----+---------+-------+
+//| Trm    | char(5)  | YES  | UNI | NULL    |       |
 //| Task   | char(40) | YES  | UNI | NULL    |       |
 //| Person | char(40) | YES  |     | NULL    |       |
 //+--------+----------+------+-----+---------+-------+
@@ -30,7 +31,13 @@ class Assignments
   {
     // 'constructor' returns full list of assignments
     $instance = new self();
-    $rows = $db->query("select * from Assignments$term");
+    //$rows = $db->query("select * from Assignments$term");
+
+    if ($term == 'ALL')
+      $rows = $db->query("select * from Assignments");
+    else
+      $rows = $db->query("select * from Assignments where Term='$term'");
+
     foreach ($rows as $key => $row)
       $instance->add(Assignment::fromRow($row));
     
@@ -107,25 +114,29 @@ class Assignment
   {
     // here we fill the content
 
-    $this->task = $row[0];
-    $this->person = $row[1];
+    $this->term = $row[0];
+    $this->task = $row[1];
+    $this->person = $row[2];
   }
 
-  public function show()
+  public function show($option='full')
   {
-//    print "<tr><td> $this->task <a href=\"/showTaSummary?email=$this->person\">$this->person</a></td></tr>";
-
     // print the full assignment
     $myTask = new TeachingTask($this->task);
     print "<tr><td> "
-        . "<a href=\"/showTaskSummary?number=" . $myTask->getCourse(). "\">"
-        . $myTask->getCourse()
-        . "</a>"
-        . "&nbsp;</td><td>"
-        . $myTask->getType()    . "&nbsp;</td><td>"
-        . $myTask->getEffort()  . "&nbsp;</td><td>"
-        . $myTask->getTaType()  . "&nbsp;</td><td>"
-        . "<a href=\"/showTaSummary?email=" . $this->person . "\">"
+      . $this->term . ": &nbsp;</td><td>"
+      . "<a href=\"/showTaskSummary?number=" . $myTask->getCourse(). "\">"
+      . $myTask->getCourse()
+      . "</a>"
+      . "&nbsp;</td><td>"
+      . $myTask->getType()    . "&nbsp;</td><td>"
+      . $myTask->getEffort()  . "&nbsp;</td><td>"
+      . $myTask->getTaType()  . "&nbsp;</td><td>";
+
+    if ($option == 'simple')
+      print "&nbsp;</td></tr>\n";
+    else
+      print "<a href=\"/showTaSummary?email=" . $this->person . "\">"
         . $this->person
         . "</a>"
         . "&nbsp;</td><td>"
@@ -133,6 +144,7 @@ class Assignment
   }
 
   // Property declaration
+  public $term = '';
   public $task = '';
   public $person = '';
 

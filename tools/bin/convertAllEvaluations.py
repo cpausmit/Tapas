@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # --------------------------------------------------------------------------------------------------
-# Convert all assignments from many separate tables per semester to a single table with additional
+# Convert all Evaluations from many separate tables per semester to a single table with additional
 # semester Id.
 #
 #---------------------------------------------------------------------------------------------------
@@ -11,23 +11,24 @@ import Database
 #---------------------------------------------------------------------------------------------------
 # H E L P E R
 #---------------------------------------------------------------------------------------------------
-def makeAssignmentsTable(cursor,execute):
+def makeEvaluationsTable(cursor,execute):
     # test whether requested table exists already and if not make the table
 
     # Prepare SQL query to test whether table exists
-    sql = "describe Assignments;"
+    sql = "describe Evaluations;"
     try:
         # Execute the SQL command
         print " MYSQL> " + sql
         if execute == "exec":
             cursor.execute(sql)
-            print ' INFO -- table (Assignments) exists already.\n'
+            print ' INFO -- table (Evaluations) exists already.\n'
     except:
-        print ' INFO - table (Assignments) does not yet exist.\n'
+        print ' INFO - table (Evaluations) does not yet exist.\n'
 
         # Prepare SQL query to create the new table
-        sql = "create table Assignments(Term char(5), Task char(40), Person char(40));" + \
-              " alter table Assignments add unique idTask(Task);"
+        sql = "create table Evaluations" +\
+              "(Term char(5), TeacherEmail char(40), TaEmail char(40)," +\
+              " Award tinyint(4), EvalText text, Citation text);"
         try:
             # Execute the SQL command
             print " MYSQL> " + sql
@@ -36,12 +37,12 @@ def makeAssignmentsTable(cursor,execute):
         except:
             print ' ERROR - table creation failed.'
 
-def findAllAssignmentTables(cursor):
+def findAllEvaluationsTables(cursor):
 
     tables = []
     results = []
 
-    sql = "show tables like 'Assignments_____'"
+    sql = "show tables like 'Evaluations_____'"
     try:
         # Execute the SQL command
         cursor.execute(sql)
@@ -55,7 +56,7 @@ def findAllAssignmentTables(cursor):
         
     return tables
 
-def convertAssignmentTable(cursor,table,execute):
+def convertEvaluationsTable(cursor,table,execute):
     # convert all entries in the given table
 
     # Prepare SQL query to insert record into the existing table
@@ -70,23 +71,36 @@ def convertAssignmentTable(cursor,table,execute):
         return
         
     for row in results:
-        task = row[0]
-        person = row[1]
-        sql = "insert into Assignments values ('" + term + "','" + task + "','" + person + "');"
+        teacherEmail = row[0]
+        taEmail = row[1]
+        award = int(row[2])
+        evalText = re.escape(row[3])
+        citation = re.escape(row[4])
+
+        sql = "insert into Evaluations values ('" + \
+              term + "','" + \
+              teacherEmail + "','" + \
+              taEmail + "'," + \
+              "%d"%award + ",'" + \
+              evalText + "','" + \
+              citation + "');"
         try:
             # Execute the SQL command
-            print " MYSQL> " + sql
+            #print " MYSQL> " + sql
             if execute == "exec":
                 cursor.execute(sql)
         except:
             print ' ERROR - insert failed: ' + sql
 
-    return
+    print ' -->  %d  in  %s.\n'%(len(results),table)
+
+
+    return len(results)
         
 #---------------------------------------------------------------------------------------------------
 # M A I N
 #---------------------------------------------------------------------------------------------------
-usage  = " usage:  convertAllAssignments.py [ <execute = no> ]\n\n"
+usage  = " usage:  convertAllEvaluations.py [ <execute = no> ]\n\n"
 usage += "           execute         should we execute the insertion into the database\n"
 usage += "                           activate by setting: execute = exec\n\n"
 
@@ -100,16 +114,20 @@ db = Database.DatabaseHandle()
 # Prepare a cursor object using cursor() method
 cursor = db.getCursor()
 
-# Make the new summary table
-makeAssignmentsTable(cursor,execute)
+# Create the new summary table
+makeEvaluationsTable(cursor,execute)
 
 # Find all tables to be converted
-tables = findAllAssignmentTables(cursor)
+tables = findAllEvaluationsTables(cursor)
 
-# Loop through the relevant tables
+# Loop over all old tables and convert
+nEntries = 0
 for table in tables:
-    print ' Convert table: ' + table
-    convertAssignmentTable(cursor,table,execute)
+    #print ' Convert table: ' + table
+    nEntries += convertEvaluationsTable(cursor,table,execute)
+
+
+print '\n Converted %d entries in total.\n'%(nEntries)
 
 # make sure to commit all changes
 db.commit()

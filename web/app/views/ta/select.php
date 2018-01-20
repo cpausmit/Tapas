@@ -13,16 +13,17 @@ include_once("app/models/Course.php");
 include_once("app/models/Tables.php");
 include_once("app/models/TeachingTask.php");
 
-function generateOptions($db,$assignmentTable,$courses)
+function generateOptions($db,$term,$courses)
 {
   // generate the options for all teaching assignment
 
   $options = array();
-  $sql = "select * from $assignmentTable order by Task";
+  $sql = "select * from Assignments where Term='$term' order by Task";
   $results = $db->query($sql);
   foreach ($results as $key => $row) {
-    $task = $row[0];
-    $email = $row[1];
+    $term = $row[0];
+    $task = $row[1];
+    $email = $row[2];
     $myTask = new TeachingTask($task);
     if ($myTask->isTa() && $myTask->getEffort() == 'full') {
       $number = $myTask->getCourse();
@@ -44,10 +45,10 @@ $courses = Courses::fromDb($db);
 // get all TAs and the possible full time assignments
 $planningTables = new Tables($db,'PlanningTables');
 $tasTable = $planningTables->getUniqueMatchingName('Tas');
-$assignmentTable = $planningTables->getUniqueMatchingName('Assignments');
+$term = substr($planningTables->getUniqueMatchingName('Assignments'),-5,5);
 
 // select all possible options for the full time TAs
-$options = generateOptions($db,$assignmentTable,$courses);
+$options = generateOptions($db,$term,$courses);
 
 // start the page
 print '<article class="page">'."\n";

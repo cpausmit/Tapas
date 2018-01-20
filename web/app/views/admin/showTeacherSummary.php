@@ -11,6 +11,7 @@ if (! (isMaster() || isAdmin())) {
 $email = $_GET['email'];
 
 // load database and models
+include_once("app/models/Assignment.php");
 include_once("app/models/Dbc.php");
 include_once("app/models/Teacher.php");
 include_once("app/models/TeachingTask.php");
@@ -22,9 +23,6 @@ $db = Dbc::getReader();
 $teachers = Teachers::fromDb($db);
 $teacher = $teachers->list[$email];
 
-// connect to our database
-$tables = getTables($db,'Assignments_____');
-
 print '<article class="page">'."\n";
 print "<hr>\n";
 $teacher->printSummary();
@@ -32,20 +30,16 @@ print "\n";
 print "<hr>\n";
 
 // loop through all assignment tables and find our candidate
+$assignments = Assignments::fromDb($db,'ALL');
 print '<ul>';
-foreach ($tables as $key => $table) {
-  $sql = "select * from " . $table . " where Person='" . $email . "'";
-  $rows = $db->query($sql);
-  foreach ($rows as $key => $row) {
-    $taskId = $row[0];
-    $person = $row[1];
+foreach ($assignments->list as $key => $assignment) {
+  if ($assignment->person == $email) {
     print '<li>';
-    $task = new TeachingTask($taskId);
-    $task->printTaskWithLink();
+    $assignment->show('simple');
   }
 }
-
 print '</ul>';
+
 print '</article>'."\n";
 
 include("app/views/admin/footer.php");

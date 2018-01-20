@@ -1,6 +1,7 @@
 <?php
 
 include_once("app/models/Admin.php");
+include_once("app/models/Dbc.php");
 include_once("app/models/Ta.php");
 include_once("app/models/Tables.php");
 

@@ -7,21 +7,7 @@ if (! (isAdmin() || isMaster())) {
   exitAccessError();
 }
 
-include("app/models/Semester.php");
-
-// Get all semesters from the database
-function getSemestersFromDb($db)
-{
-  // read complete courses table
-  $semesters = "";
-  $rows = $db->query("select * from Semesters order by Term");
-  foreach ($rows as $key => $row) {
-    $semester = Semester::fromRow($row);
-    $semesters[$semester->term] = $semester;
-  }
-
-  return $semesters;
-}
+include_once("app/models/Semester.php");
 
 //==================================================================================================
 // M A I N
@@ -31,7 +17,7 @@ function getSemestersFromDb($db)
 $db = Dbc::getReader();
 
 // get a full list of available semesters
-$semesters = getSemestersFromDb($db);
+$semesters = Semesters::fromDb($db);
 
 print '<article class="page">';
 print '<hr>';
@@ -40,7 +26,7 @@ print '<hr>';
 print '<p>';
 print '<table>';
 print "<tr><th> Semester ID </th></tr>";
-foreach ($semesters as $key => $semester)
+foreach ($semesters->list as $key => $semester)
   print "<tr><td> $key </td></tr>";
 print '</table>';
 print '<hr>';

@@ -65,20 +65,6 @@ function getSemestersFromDb($db)
   return $semesters;
 }
 
-// Get all course resources that are in the given term
-function getCourseResourcesFromDb($db,$term)
-{
-  // do the query
-  $rows = $db->query("select * from CourseResources where Term = '$term'");
-  $courseResources = CourseResources::fresh();
-  foreach ($rows as $key => $row) {
-    $courseResource = CourseResource::fromRow($row);
-    $courseResources->addCourseResource($courseResource);
-  }
-
-  return $courseResources;
-}
-
 function printTermForm($semesters)
 {
   print '<table>';
@@ -107,11 +93,10 @@ function printTermForm($semesters)
 $db = Dbc::getReader();
 
 // get all relevant info from the database
-$semesters = getSemestersFromDb($db);
-$courses = getCoursesFromDb($db);
+$semesters = Semesters::fromDb($db);
+$courses = CourseResources::fromDb($db);
 $term = getPostVariable('term');
-//$term = findTerm($semesters);                // which term are we talking about?
-$courseResources = getCourseResourcesFromDb($db,$term);
+$courseResources = CourseResources::fromDb($db,$term);
 
 if (!$GLOBALS['COMPLETE']) {                // term parameter was not available
   print "<article class=\"page\">\n";
@@ -137,10 +122,8 @@ else {                                     // term was set
   print "<hr>\n";
   print "<h1>Adding the following Assignments (Term: $term)</h1>\n";
   print "<hr>\n";
-  if (isset($semesters[$term])) {
-    //$courseResources->printAssignments();
+  if (isset($semesters[$term]))
     $courseResources->registerAssignments($db);
-  }
 }
 
 // footer

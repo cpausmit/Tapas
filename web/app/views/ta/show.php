@@ -18,8 +18,7 @@ $email = strtolower($_SERVER['SSL_CLIENT_S_DN_Email']);
 
 // get all TAs and the possible full time assignments
 $planningTables = new Tables($db,'PlanningTables');
-$preferencesTable = $planningTables->getUniqueMatchingName('Preferences');
-$term = substr($preferencesTable,-5,5);
+$term = substr($planningTables->getUniqueMatchingName('Preferences'),-5,5);
 $preferences = Preferences::fromDb($db,$term);
 
 $empty = true;
@@ -30,7 +29,7 @@ if (isset($preferences->list[$email])) {
 
 print '<article class="page">'."\n";
 print '<h1>Selected TA Preferences</h1>';
-print "<p>Planning table: $preferencesTable &nbsp;&nbsp;<br>\n";
+print "<p>Planning term: $term &nbsp;&nbsp;<br>\n";
 print 'Your registered TA preferences are:';
 print ' ';
 

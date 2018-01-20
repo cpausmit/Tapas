@@ -15,13 +15,13 @@ $db = Dbc::getReader();
 
 // find the active tables
 $activeTables = new Tables(Dbc::getReader(),"ActiveTables");
-$preferencesTable = $activeTables->getUniqueMatchingName('Preferences');
+$term = substr($activeTables->getUniqueMatchingName('Preferences'),-5,5);
 
 print '<article class="page">'."\n";
 print '<h1>TA Preference Removal</h1>';
 
 $email = strtolower($_SERVER['SSL_CLIENT_S_DN_Email']);
-$sql = "delete from $preferencesTable where Email = '" . $email . "'";
+$sql = "delete from Preferences where Term='$term' and Email = '$email'";
 
 $rc = $db->exec($sql);
 if (!$rc) {

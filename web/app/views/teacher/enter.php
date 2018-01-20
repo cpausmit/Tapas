@@ -14,9 +14,10 @@ include_once("app/models/TeachingTask.php");
 
 function getNamesFromDb($db,$term)
 {
-  $table = 'Assignments'.$term;
+  $table = 'Assignments';
   $sql = "select Students.FirstName, Students.LastName, $table.Person, $table.Task"
-    . " from $table,Students where Students.Email = $table.Person order by Students.LastName";
+    . " from $table,Students where $table.Term = '$term' and Students.Email = $table.Person"
+    . " order by Students.LastName";
   $taskRows = $db->query($sql);
 
   $names = "";
@@ -42,14 +43,13 @@ $semesters = Semesters::fromDb($db);
 $activeTables = new Tables($db,"ActiveTables");
 $evaluationsTable = $activeTables->getUniqueMatchingName('Evaluations');
 $term = substr($evaluationsTable,-5,5);
-$assignmentsTable = 'Assignments'.$term;
 $names = getNamesFromDb($db,$term);
 
 print '<article class="page">'."\n";
 
 print '<h1>Select the TA</h1>'."\n";
 print ' '."\n";
-print "Active evaluations table: $evaluationsTable (assignments: $assignmentsTable)<br>\n";
+print "Active evaluations term: $term (assignments)<br>\n";
 
 print '<p>';
 print '<form action="/enterEvaluation" method="post">'."\n";

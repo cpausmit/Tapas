@@ -2,9 +2,6 @@
 
 include("app/views/admin/header.php");
 
-//// global variable to manage the result of the form input
-//$GLOBALS['DB_CREATIONS'] = 0;
-
 // make sure we have a registered TA
 if (! isMaster()) { 
   exitAccessError();

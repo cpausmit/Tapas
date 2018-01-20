@@ -32,7 +32,7 @@ function findRecipientList($db,$targetString,$email)
     $activeTables = new Tables($db,"ActiveTables");
     $teachersTable = $activeTables->getUniqueMatchingName('Evaluations');
     $term = substr($teachersTable,-5,5);
-    $query = "select Person from Assignments$term where Task like '%Lec%'";
+    $query = "select Person from Assignments where Term='$term' and Task like '%Lec%'";
     // do the query
     $rows = $db->query($query);
     foreach ($rows as $key => $row) {

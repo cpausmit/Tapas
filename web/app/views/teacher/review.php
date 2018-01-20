@@ -27,9 +27,10 @@ $students = Students::fromDb($db);
 $teachers = Teachers::fromDb($db);
 $activeTables = new Tables($db,"ActiveTables");
 $evaluationsTable = $activeTables->getUniqueMatchingName('Evaluations');
+$term = substr($evaluationsTable,-5,5);
 
-$sql = "select TeacherEmail,TaEmail,Award,EvalText,Citation from $evaluationsTable "
-    . "where TeacherEmail='$email'";
+$sql = "select Term,TeacherEmail,TaEmail,Award,EvalText,Citation from Evaluations "
+    . "where Term='$term' and TeacherEmail='$email'";
 $rows = $db->query($sql);
 if ($rows->rowCount() < 1) {
   print " ERROR - could not find evaluation for sql: $sql\n";

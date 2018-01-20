@@ -41,23 +41,16 @@ print "<b>AwardProposed:</b> $awardProposed<br>\n";
 print "<b>Proposed Citation:</b> $citation</p>\n";
 
 // find terms
-$i = 0;
-$index = array();
-$rows = $db->query("show tables like 'Assignments%'");
-foreach ($rows as $key => $row) {
-  $t = substr($row[0],-5,5);
-  $index[$t] = $i;
-  $i = $i + 1;
-}
-if (! isset($index[$term])) {  // check if this is a valid term
+$semesters = Semesters::fromDb($db);
+if (! isset($semesters->list[$term])) {  // check if this is a valid term
   print ' EXIT - term is not valid.';
   exitParameterError($term);
 }
 print ' Term valid.<br>';
 
 // find the tables
-$evaluationsTable = 'Evaluations'.$term; //print " Evaluations from $evaluationsTable.<br>";
-$assignmentsTable = 'Assignments'.$term; //print " Assignments from $assignmentsTable.<br>";
+$evaluationsTable = 'Evaluations'; //print " Evaluations from $evaluationsTable.<br>";
+//$assignmentsTable = 'Assignments'; //print " Assignments from $assignmentsTable.<br>";
 
 // find teacher and TA
 $teachers = Teachers::fromDb($db);
@@ -82,16 +75,16 @@ if ($teacherEmail != "" && $taEmail != "" && $evaluation != "") {
   
   // do we update or is it a new entry
   $sql = "select TeacherEmail,TaEmail from $evaluationsTable "
-    . " where TeacherEmail='$teacherEmail' and TaEmail='$taEmail'";
+    . " where Term='$term' and TeacherEmail='$teacherEmail' and TaEmail='$taEmail'";
   $rows = $db->query($sql);
   if ($rows->rowCount() < 1) { // no entry yet
-    $sql = "insert into $evaluationsTable (TeacherEmail,TaEmail,EvalText,Award,Citation) values"
-      . "('$teacherEmail','$taEmail','$evaluation',$awardProposed,'$citation')";
+    $sql = "insert into $evaluationsTable (Term,TeacherEmail,TaEmail,EvalText,Award,Citation) values"
+      . "('$term','$teacherEmail','$taEmail','$evaluation',$awardProposed,'$citation')";
   }
   else {                   // need to update existing entry
     $sql = "update $evaluationsTable set EvalText='$evaluation', Award=$awardProposed,"
       . " Citation='$citation' where "
-      . " TeacherEmail='$teacherEmail' and TaEmail='$taEmail'";
+      . " Term='$term' and TeacherEmail='$teacherEmail' and TaEmail='$taEmail'";
   }
   // execute
   try {

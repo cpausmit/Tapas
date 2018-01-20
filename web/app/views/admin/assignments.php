@@ -7,20 +7,20 @@ if (!isMaster()) {
   exitAccessError();
 }
 
-include_once("app/models/Utils.php");
 include_once("app/models/Dbc.php");
+include_once("app/models/Semester.php");
+include_once("app/models/Utils.php");
 
 print '<article class="page">'."\n";
 print '<h1>Show All TA Assignments</h1>';
 print ' ';
 
-// find the active tables and the last non active table
-$tables = getTables(Dbc::GetReader(),'Assignments_____');
+// get a full list of available semesters
+$semesters = Semesters::fromDb(Dbc::getReader());
 
 print "<table>\n";
 print "<tr><th>Term</th><th>Actions</th>\n";
-foreach ($tables as $key => $table) {
-  $term = substr($table,-5,5);
+foreach ($semesters->list as $term => $semester) {
   print " <tr><td>&nbsp; $term\n";
   print " </td><td>&nbsp; <a href=\"/showAssignments?term=$term\">show</a></td></tr>\n";
 }

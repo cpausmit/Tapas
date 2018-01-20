@@ -2,6 +2,7 @@
 
 include_once("app/models/Dbc.php");
 include_once("app/models/Utils.php");
+include_once("app/models/Semester.php");
 include_once("app/models/TeachingTask.php");
 
 function getDivisions($db)
@@ -16,7 +17,7 @@ function getDivisions($db)
     return $divisions;
 }
 
-function getAssignments($db,$table,$divisions)
+function getAssignments($db,$term,$divisions)
 {
     // initialize data
     $semesterData = array();
@@ -25,9 +26,11 @@ function getAssignments($db,$table,$divisions)
     }
     
     // show all assignments
-    $sql = "select t.Task, t.Person, s.Division from $table as t".
-           " inner join Students as s on s.Email = t.Person order by t.Task";
+    $sql = "select t.Task, t.Person, s.Division from Assignments as t".
+           " inner join Students as s on s.Email=t.Person where t.Term='$term' order by t.Task";
     $rows = $db->query($sql);
+    //print " SQL: ".$sql."<br>";
+    //print " LENGTH: ".sizeof($rows)."<br>";
     foreach ($rows as $key => $row) {
         $task = $row[0];
         $person = $row[1];
@@ -84,21 +87,22 @@ foreach ($divisions as $division) {
 // fill the values from the database semester by semester
 //=======================================================
 
-// find all matching tables and fill per table
+// loop through all semesters (excluding IAP)
+$semesters = Semesters::fromDb($db);
 $nSemester = 0;
-$tables = getTables(Dbc::GetReader(),'Assignments_____');
-foreach ($tables as $key => $table) {
-    $semester = substr($table,-5,5);
-    if (substr($semester,0,1) != 'I') {
+
+foreach ($semesters->list as $term => $semester) {
+    //print "$term<br>";
+    if (substr($term,0,1) != 'I') {
         $nSemester += 1;
-        $data['legend'][] = $semester;
-        $semesterData = getAssignments($db, $table, $divisions);
+        $data['legend'][] = $term;
+        $semesterData = getAssignments($db, $term, $divisions);
         $totals = 0;
         foreach ($divisions as $index => $division) {
             $data['data'][$index]['numbers'][] = $semesterData[$division];
             $averages[$division] += $semesterData[$division];
             $totals += $semesterData[$division];
-
+            
             //print " Semester: ".$semester." Division: ".$division." N: ".$semesterData[$division]; 
         }
         $data['totals'][] = $totals;

@@ -16,25 +16,15 @@ $db = Dbc::getReader();
 
 // read complete students table
 $empty = true;
-$students = "";
-$rows = $db->query("select * from Students order by lastName");
-foreach ($rows as $key => $row) {
-  $student = Student::fromRow($row);
-  $students[$student->email] = $student;
-}
+$students = Students::fromDb($db);
 
 // find active preference table
 $activeTables = new ActiveTables($db);
-$preferenceTable = $activeTables->getUniqueMatchingName('Preferences');
+$term = substr($preferenceTable = $activeTables->getUniqueMatchingName('Preferences'),-5,5);
 // do the query
 $nTas = 0;
-$preferences = "";
-$rows = $db->query("select * from $preferenceTable");
-foreach ($rows as $key => $row) {
-  $preference = Preference::fromRow($row);
-  $preferences[$preference->email] = $preference;
-  $nTas = $nTas + 1;
-}
+$preferences = Preferences::fromDb($db,$term);
+$nTas = sizeof($preferences->list);
 
 // start page
 print '<article class="page">'."\n";
@@ -53,15 +43,15 @@ print "<th>&nbsp; Preference 3 &nbsp;</th>";
 print "</tr>\n";
 
 $empty = true;
-foreach ($preferences as $email => $preference) {
+foreach ($preferences->list as $key => $preference) {
   $empty = false;
-  if (array_key_exists($email,$students)) {
-    $student = $students[$email];
+  if (array_key_exists($preference->email,$students->list)) {
+    $student = $students->list[$preference->email];
     $name = "$student->lastName, $student->firstName";
   }
   else {
     $student = Student::fresh();
-    $student->email = $email;
+    $student->email = $preference->email;
     $student->lastName = "<b>NO NAME FOUND IN DATABASE - FIX IT!</b>";
   }
 
@@ -83,7 +73,7 @@ foreach ($preferences as $email => $preference) {
 print "</table>\n";
 
 if ($empty)
-  print ' No preferences found in this term.';
+  print "<br> No preferences found in this term ($term).";
   
 print '</article>'."\n";
 

@@ -11,50 +11,53 @@ if (! (isMaster() || isAdmin())) {
 $email = $_GET['email'];
 
 // load database and models
+include_once("app/models/Assignment.php");
+include_once("app/models/Utils.php");
 include_once("app/models/Dbc.php");
-include_once("app/models/TeachingTask.php");
+include_once("app/models/Evaluation.php");
 include_once("app/models/Student.php");
+include_once("app/models/Teacher.php");
+include_once("app/models/TeachingTask.php");
 
 $db = Dbc::getReader();
-
+//
 // create an instance
 $students = Students::fromDb($db);
-$student = $students->list[$email];
+$ta = $students->list[$email];
+$teachers = Teachers::fromDb($db);
 
-// connect to our database
-$tables = getTables($db,'Assignments_____');
+$taNames = array();
+foreach ($students->list as $key => $student)
+  $taNames[$student->email] = "$student->firstName $student->lastName";
+
+$teacherNames = array();
+foreach ($teachers->list as $key => $teacher)
+  $teacherNames[$teacher->email] = "$teacher->firstName $teacher->lastName";
 
 print '<article class="page">'."\n";
 print "<hr>\n";
-$student->printSummary();
+$ta->printSummary();
 print "\n";
 print "<hr>\n";
 
 // loop through all assignment tables and find our candidate
+$assignments = Assignments::fromDb($db,'ALL');
 print '<ul>';
-foreach ($tables as $key => $table) {
-  $sql = "select * from " . $table . " where Person='" . $email . "'";
-  $rows = $db->query($sql);
-  foreach ($rows as $key => $row) {
-    $taskId = $row[0];
-    $person = $row[1];
+foreach ($assignments->list as $key => $assignment) {
+  if ($assignment->person == $email) {
     print '<li>';
-    $task = new TeachingTask($taskId);
-    $task->printTaskWithLink();
+    $assignment->show('simple');
   }
 }
 print '</ul>';
 
-$tables = getTables($db,'Evaluations_____');
+// loop through evaluation table and find our candidate
+$evaluations = Evaluations::fromDb($db,'ALL');
 print '<ul>';
-foreach ($tables as $key => $table) {
-  $sql = "select TeacherEmail, EvalText from " . $table . " where TaEmail='" . $email . "'";
-  $rows = $db->query($sql);
-  foreach ($rows as $key => $row) {
-    $teacherEmail = $row[0];
-    $evalText = $row[1];
+foreach ($evaluations->list as $key => $evaluation) {
+  if ($evaluation->taEmail == $email) {
     print '<li>';
-    print "<b>$table -- $teacherEmail</b>:<br> $evalText<br>";
+    $evaluation->printEvaluation($taNames,$teacherNames);
   }
 }
 print '</ul>';

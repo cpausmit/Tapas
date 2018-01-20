@@ -13,10 +13,6 @@ include_once("app/models/Evaluation.php");
 include_once("app/models/Student.php");
 include_once("app/models/Tables.php");
 
-print '<article class="page">'."\n";
-print '<h1>Enter TA Evaluation</h1>'."\n";
-print ' '."\n";
-
 $email = strtolower($_SERVER['SSL_CLIENT_S_DN_Email']);
 $studentEmail = 'undefined';
 if (isset($_POST['ta']))
@@ -34,23 +30,34 @@ $name = $student->lastName.", ".$student->firstName;
 $activeTables = new Tables($db,"ActiveTables");
 $term = substr($activeTables->getUniqueMatchingName('Evaluations'),-5,5);
 $evaluations = Evaluations::fromDb($db,$term);
-$key = "$email:$studentEmail";
+
+// not nice - key needs to be contructed somewhere else
+$key = "$term:$email:$studentEmail";
+
 if (isset($evaluations->list[$key]))
   $evaluation = $evaluations->list[$key];
 else
   $evaluation = Evaluation::fresh();
 
+print '<article class="page">'."\n";
+print '<h1>Enter TA Evaluation</h1>'."\n";
+print ' '."\n";
+
 // start the form
 print '<p>';
 print "<form action=\"/record?ta=$studentEmail\" method=\"post\">\n";
 print "Write your evaluation for $name below.\n";
-print '<textarea  style="font-family: arial, verdana, sans-serif; font-size: 20px; color: black; background-color: white" name="Evaluation" rows=8 cols=80>'. $evaluation->evalText .'</textarea>';
+print '<textarea  style="font-family: arial, verdana, sans-serif; font-size: 20px;'
+    . ' color: black; background-color: white" name="Evaluation" rows=8 cols=80>'
+    . $evaluation->evalText .'</textarea>';
 if ($evaluation->award == 0)
   print '<input type="checkbox" name="Award" value="1"> Propose award?';
 else
   print '<input type="checkbox" name="Award" value="1"checked> Propose award?';
 print '&nbsp; if yes, please add a short citation for the potential award below.<br>';
-print '<textarea style="font-family: arial, verdana, sans-serif; font-size: 20px; color: black; background-color: white" name="Citation" rows=1 cols=40>' . $evaluation->citation . '</textarea>';
+print '<textarea style="font-family: arial, verdana, sans-serif; font-size: 20px;'
+    . ' color: black; background-color: white" name="Citation" rows=1 cols=40>'
+    . $evaluation->citation . '</textarea>';
 print '<input type="submit" value="submit your evaluation" />'."\n";
 print '</form>'."\n";
 print '</p>'."\n";

@@ -27,8 +27,7 @@ $courses = Courses::fromDb($db);
 
 // get all TAs and the possible full time assignments
 $planningTables = new Tables($db,'PlanningTables');
-$preferencesTable = $planningTables->getUniqueMatchingName('Preferences');
-
+$term = substr($planningTables->getUniqueMatchingName('Preferences'),-5,5);
 $email = strtolower($_SERVER['SSL_CLIENT_S_DN_Email']);
 
 print '<article class="page">'."\n";
@@ -46,17 +45,17 @@ print '</p>';
 if (testSelection($_POST['pref1'],$_POST['pref2'],$_POST['pref3'])) {
   print '<p>Selection is valid. ';
 
-  $sql = "insert into $preferencesTable (Email,Pref1,Pref2,Pref3) values ('"
-         . $email . "','" . $_POST['pref1']. "','" . $_POST['pref2']
-         . "','" . $_POST['pref3'] . "')";
+  $sql = "insert into Preferences (Term,Email,Pref1,Pref2,Pref3) values"
+      . " ('" . $term . "','" . $email . "','" . $_POST['pref1']. "','" . $_POST['pref2']
+      . "','" . $_POST['pref3'] . "')";
   $rc = $db->Exec($sql);
   $errorArray = $db->errorInfo();
   if (!$rc) {
     if ($errorArray[0] == 23000 && $errorArray[1] == 1062) {
       print "<!-- WARNING -- duplicate entry.<br> --> \n";
-      $sql = "update $preferencesTable set Pref1='" . $_POST['pref1']
+      $sql = "update Preferences set Pref1='" . $_POST['pref1']
            . "',Pref2='" . $_POST['pref2'] . "',Pref3='" . $_POST['pref3']
-           . "' where Email='" . $email ."'";
+           . "' where Term='$term' and Email='" . $email ."'";
       $rc = $db->Exec($sql);
       if (!$rc) {
         print "<br>\n ERROR -- PDO::errorInfo():\n";
@@ -67,7 +66,7 @@ if (testSelection($_POST['pref1'],$_POST['pref2'],$_POST['pref3'])) {
         print "Existing preferences have been updated.</p>";
     }
     else if ($errorArray[0] == 42 && $errorArray[1] == 1146) {
-      print "<br>\n ERROR - table ($preferencesTable) does not exist.\n";
+      print "<br>\n ERROR - table (Preferences) does not exist.\n";
     }
     else {
       print "<br>\n ERROR -- PDO::errorInfo():\n";

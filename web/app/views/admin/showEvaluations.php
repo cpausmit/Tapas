@@ -32,34 +32,18 @@ foreach ($rows as $key => $row) {
   $teacherNames[$teacher->email] = "$teacher->lastName, $teacher->firstName";
 }
 
-// find active evaluations table
-$evalTable = 'Evaluations'.$term;
-
 // get evaluations
-$i = 0;
-$evaluations = "";
-$rows = $db->query("select * from $evalTable order by TaEmail");
-foreach ($rows as $key => $row) {
-  $evaluation = Evaluation::fromRow($row);
-  $evaluations[$i] = $evaluation;
-  $i = $i + 1;
-}
+$evaluations = Evaluations::fromDb(Dbc::getReader(),$term);
+$n = sizeof($evaluations->list);
  
 // Present the results
-
 print '<article class="page">'."\n";
 print "<h1>All TA Evaluations for Term $term</h1>\n";
 print "\n";
+print " $n evaluations found. <br>\n";
+foreach ($evaluations->list as $key => $evaluation)
+  $evaluation->printEvaluation($taNames,$teacherNames);
 
-// loop through evaluations and print
-
-if ($evaluations == "") 
-  print " No evaluations found in this term ($term).";
-else
-  foreach ($evaluations as $key => $evaluation) {
-    $evaluation->printEvaluation($taNames,$teacherNames);
-  }
-  
 print '</article>'."\n";
 
 include("app/views/admin/footer.php");

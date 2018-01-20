@@ -47,15 +47,15 @@ $term = substr($evaluationsTable,-5,5);
 if ($email != "" && $studentEmail != "" && $evaluation != "") {
   print '<p>Evaluation is valid. ';
 
-  $sql = "select TeacherEmail,TaEmail from $evaluationsTable "
-    . " where TeacherEmail='$email' and TaEmail='$studentEmail'";
+  $sql = "select TeacherEmail,TaEmail from Evaluations "
+      . " where Term='$term' and TeacherEmail='$email' and TaEmail='$studentEmail'";
   $rows = $db->query($sql);
   if ($rows->rowCount() < 1)   // no entry yet
-    $sql = "insert into $evaluationsTable (TeacherEmail,TaEmail,EvalText,Award,Citation) values"
-      . "('$email','$studentEmail','$evaluation',$awardProposed,'$citation')";
+    $sql = "insert into Evaluations (Term,TeacherEmail,TaEmail,EvalText,Award,Citation) values"
+      . "('$term','$email','$studentEmail','$evaluation',$awardProposed,'$citation')";
   else                     // need to update existing entry
-    $sql = "update $evaluationsTable set EvalText='$evaluation', Award=$awardProposed, Citation='$citation' where "
-      . " TeacherEmail='$email' and TaEmail='$studentEmail'";
+    $sql = "update Evaluations set EvalText='$evaluation', Award=$awardProposed, Citation='$citation' where "
+      . " Term='$term' and TeacherEmail='$email' and TaEmail='$studentEmail'";
   // execute
   try {
     $db->exec($sql);

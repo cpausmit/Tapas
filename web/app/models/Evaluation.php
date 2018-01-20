@@ -4,6 +4,7 @@
 // +--------------+------------+------+-----+---------+-------+
 // | Field        | Type       | Null | Key | Default | Extra |
 // +--------------+------------+------+-----+---------+-------+
+// | Term         | char(5)    | YES  |     | NULL    |       | 
 // | TeacherEmail | char(40)   | YES  |     | NULL    |       | 
 // | TaEmail      | char(40)   | YES  |     | NULL    |       | 
 // | Award        | tinyint(4) | YES  |     | 0       |       | 
@@ -31,20 +32,24 @@ class Evaluations
   {
     // 'constructor' returns full list of evaluations
     $instance = new self();
-    $evaluationRows = $db->query("select * from Evaluations$term");
-    foreach ($evaluationRows as $key => $row)
-      $instance->addEvaluation(Evaluation::fromRow($row));
+
+    if ($term == 'ALL')
+      $rows = $db->query("select * from Evaluations");
+    else
+      $rows = $db->query("select * from Evaluations where Term='$term'");
+    
+    foreach ($rows as $key => $row)
+      $instance->add(Evaluation::fromRow($row));
     
     return $instance;
   }
 
-  public function addEvaluation($evaluation)
+  public function add($evaluation)
   {
-    $key = "$evaluation->teacherEmail:$evaluation->taEmail";
-    if (!isset($this->list[$key]))
-      $this->list[$key] = $evaluation;
+    if (!isset($this->list[$evaluation->key()]))
+      $this->list[$evaluation->key()] = $evaluation;
     else
-      print " ERROR - trying to add a evaluation twice.<br>\n";
+      print " ERROR - trying to add an evaluation twice.<br>\n";
     
     return;
   }
@@ -75,11 +80,19 @@ class Evaluation
   {
     // here we fill the content
 
-    $this->teacherEmail = $row[0];
-    $this->taEmail = $row[1];
-    $this->award = intval($row[2]);
-    $this->evalText = $row[3];
-    $this->citation = $row[4];
+    $this->term = $row[0];
+    $this->teacherEmail = $row[1];
+    $this->taEmail = $row[2];
+    $this->award = intval($row[3]);
+    $this->evalText = $row[4];
+    $this->citation = $row[5];
+  }
+
+  public function key()
+  {
+    // print the full evaluation
+    $key = "$this->term:$this->teacherEmail:$this->taEmail";
+    return $key;
   }
 
   public function printEvaluation($taNames,$teacherNames)
@@ -97,7 +110,7 @@ class Evaluation
       $teacherName = "<b>NO NAME FOUND IN DATABASE - FIX IT!</b>";
 
     print '<hr>';
-    print "<h2>Evaluation for $taName ($this->taEmail)</h2>";
+    print "<h2>Evaluation for $taName (Eml: $this->taEmail, Term: $this->term)</h2>";
     print "<p>\n";
     print "<b>Evaluated by:</b>";
     print " $teacherName ($this->teacherEmail)<br>\n";
@@ -106,14 +119,8 @@ class Evaluation
     print "<b>Evaluation:</b><br> $this->evalText</p>\n";
   }
 
-  // Simple accessors
-  public function getTeacherEmail() { return $this->teacherEmail; }
-  public function getTaEmail() { return $this->taEmail; }
-  public function getAward() { return $this->award; }
-  public function getEvalText() { return $this->evalText; }
-  public function getCitation() { return $this->citation; }
-
   // Property declaration
+  public $term = '';
   public $teacherEmail = 'EMPTY@mit.edu';
   public $taEmail = 'EMPTY@mit.edu';
   public $award = 0;

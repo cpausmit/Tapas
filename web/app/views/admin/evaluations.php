@@ -8,9 +8,10 @@ if (! isMaster()) {
 
 include_once("app/models/Utils.php");
 include_once("app/models/Dbc.php");
+include_once("app/models/Semester.php");
 
 // find the active tables and the last non active table
-$tables = getTables(Dbc::GetReader(),'Evaluations_____');
+$semesters = Semesters::fromDb(Dbc::getReader());
 
 print '<article class="page">'."\n";
 print '<h1>Show All TA Evaluations</h1>';
@@ -18,8 +19,8 @@ print ' ';
 
 print "<table>\n";
 print "<tr><th>Term</th><th>Actions</th>\n";
-foreach ($tables as $key => $table) {
-  $term = substr($table,-5,5);
+foreach ($semesters->list as $key => $semester) {
+  $term = $semester->term;
   print " <tr><td>&nbsp; $term\n";
   print " </td><td>&nbsp; <a href=\"/showEvaluations?term=$term\">show</a></td></tr>\n";
 }

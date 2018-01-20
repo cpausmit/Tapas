@@ -18,8 +18,8 @@
 function insertEmptySlot($db,$term,$slotId)
 {
   // insert a particular slot id into the assignments table if it does not yet exist
-  $vals = sprintf("('%s','EMPTY')",$slotId);
-  $sql = "insert into Assignments$term values $vals;";
+  $vals = sprintf("('%s','%s','EMPTY')",$term,$slotId);
+  $sql = "insert into Assignments values $vals;";
   $rc = $db->Exec($sql);
   if (!$rc) {
     $errorArray = $db->errorInfo();
@@ -64,12 +64,12 @@ class CourseResources
     $sql = "select * from CourseResources where Term = '$term' order by Number";
     $rows = $db->query($sql);
     foreach ($rows as $key => $row)
-      $instance->addCourseResource(CourseResource::fromRow($row));
+      $instance->add(CourseResource::fromRow($row));
 
     return $instance;
   }
 
-  public function addCourseResource($courseResource)
+  public function add($courseResource)
   {
     if (!isset($list[$courseResource->number])) {
       $this->list[$courseResource->number] = $courseResource;
