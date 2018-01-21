@@ -7,6 +7,9 @@ import sys,os,re
 import MySQLdb
 import Database
 
+print " UNTESTED -- CAREFUL NEW SUMMARY TABLES -- Assignments etc."
+sys.exit(0)
+
 EMPTY_EMAIL = "EMPTY@mit.edu"
 
 #---------------------------------------------------------------------------------------------------
@@ -19,7 +22,7 @@ def findAssignment(cursor,semesterId,task):
     results = []
     
     # Prepare SQL query to insert record into the existing table
-    sql = "select * from Assignments" + semesterId + " where Task = '" + task + "';"
+    sql = "select * from Assignments where Term = '" + semesterId + "' and Task = '" + task + "';"
     try:
         # Execute the SQL command
         cursor.execute(sql)
@@ -63,8 +66,8 @@ db = Database.DatabaseHandle()
 cursor = db.getCursor()
 
 # Prepare SQL query to insert record into the existing table
-sql = "update Assignments" + semesterId + \
-      " set Person = '%s' where Task = '%s';"%(EMPTY_EMAIL,taskId)
+sql = "update Assignments" + \
+      " set Person = '%s' where Term = '%s' and Task = '%s';"%(EMPTY_EMAIL,semesterId,taskId)
 try:
     # Execute the SQL command
     print " MYSQL> " + sql

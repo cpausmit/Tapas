@@ -7,6 +7,9 @@ import sys,re,os
 import MySQLdb
 import Database
 
+print " UNTESTED -- CAREFUL NEW SUMMARY TABLES -- Assignments etc."
+sys.exit(0)
+
 debug = False
 
 usage  = " usage:  checkAssignment.py  <semesterId>\n\n"
@@ -18,7 +21,7 @@ if len(sys.argv) < 1:
     print usage
     sys.exit(0)
     
-period = sys.argv[1]
+semesterId = sys.argv[1]
 
 # Open database connection
 db = Database.DatabaseHandle()
@@ -36,12 +39,12 @@ if rc != 0:
     sys.exit()
 #courses.show()
     
-# Make a new objects of faculties
-faculties = Database.Container()
+# Make a new objects of teachers
+teachers = Database.Container()
 activeTeachers = Database.Container()
-rc = faculties.fillWithTeachers(db.handle)
+rc = teachers.fillWithTeachers(db.handle)
 if rc != 0:
-    print " ERROR - filling faculties."
+    print " ERROR - filling teachers."
     # disconnect from server
     db.disco()
     sys.exit()
@@ -58,7 +61,7 @@ if rc != 0:
 
 
 # Prepare SQL query to select a record from the database.
-sql = "SELECT * FROM Assignments" + period
+sql = "SELECT * FROM Assignments where Term = '" + semesterId + "';"
 
 tasks = []
 assignments = {}
@@ -68,8 +71,9 @@ try:
     # Fetch results
     results = cursor.fetchall()
     for row in results:
-        task    = row[0]
-        email   = row[1]
+        term    = row[0]
+        task    = row[1]
+        email   = row[2]
 
         ## make sure to exclude useless lines
         #if email == "EMPTY@mit.edu":
@@ -89,17 +93,17 @@ try:
             db.disco()
             sys.exit()
             
-        # find the faculty in our faculties list
+        # find the teacher in our teachers list
         try:
-            faculty = faculties.retrieveElement(email);
-            activeTeachers.addElement(email,faculty)
-            # Add teaching faculty to the course
+            teacher = teachers.retrieveElement(email);
+            activeTeachers.addElement(email,teacher)
+            # Add teaching teacher to the course
             if task.split('-')[2] == 'Lec' and task.split('-')[3] == '1':
                 course = activeCourses.retrieveElement(number);
-                course.setFaculty(email)
+                course.setTeacher(email)
         except:
-            #print " Not a faculty (%s)"%(email)
-            faculty = 0
+            #print " Not a teacher (%s)"%(email)
+            teacher = 0
         # find the student in our students list
         try:
             student = students.retrieveElement(email)
@@ -114,8 +118,8 @@ try:
             print ' Already found: ' + task
         else:
             tasks.append(task)
-            print "insert into Assignments" + period + " (Task,Person) values ('" + task + \
-                "','" + email + "');"
+            print "insert into Assignments (Term,Task,Person) values" + \
+                " ('" + term + "','" + task + "','" + email + "');"
             
         try:
             tmp = assignments[email]

@@ -48,7 +48,8 @@ if nMatches != 1:  # make sure there is one uniquely matching table
     sys.exit()
 
 # Prepare SQL query to select a record from the database.
-sql = "select * from %s where Email = '%s'"%(activeTaTable,email)
+term = activeTaTable[-5:]
+sql = "select * from Teaching.Tas where Term = '%s' and Email = '%s'"%(term,email)
 nMatches = 0
 
 try:
@@ -69,7 +70,8 @@ except:
     sys.exit()
 
 if nMatches == 0:    # now we just add the new student
-    sql = "insert into Teaching.%s (Email,FullTime,PartTime) values ('%s',1,0)"%(activeTaTable,email)
+    sql = "insert into Teaching.Tas (Term,Email,FullTime,PartTime)" + \
+          " values ('%s','%s',1,0)"%(term,email)
     print " SQL> " + sql
     try:
         # Execute the SQL command
@@ -87,7 +89,7 @@ else:
         sys.exit()
 
     # delete the existing recrod from the table
-    sql = " delete from Teaching.%s where Email = '%s'"%(activeTaTable,email)
+    sql = " delete from Teaching.Tas where Term = '%s' and Email = '%s'"%(term,email)
     print " SQL> " + sql
     try:
         # Execute the SQL command

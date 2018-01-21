@@ -9,7 +9,7 @@ import Database
 
 debug = False
 
-usage  = " usage:  showAssignment.py  <semesterId>\n\n"
+usage  = " usage:  getStudentsEmail.py  <semesterId>\n\n"
 usage += "           semesterId       identification string for a specific semster\n"
 usage += "                            ex. F13 (Fall 2013), I13 (IAP 2013), S13 (Spring 2013)\n\n"
 

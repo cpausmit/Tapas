@@ -38,7 +38,7 @@ db = Database.DatabaseHandle()
 cursor = db.getCursor()
 
 # Prepare SQL query to screate the new table
-sql = "select * from Assignments" + semesterId + " where Task = '" + taskId + "';"
+sql = "select * from Assignments where Term = '" + semesterId + "' and Task = '" + taskId + "';"
 nResults = 0
 try:
     # Execute the SQL command
@@ -63,8 +63,8 @@ if nResults != 1:
 
 # Prepare SQL query to screate the new table
 # UPDATE  table_name  SET  field1=new-value1, field2=new-value2
-sql = "update Assignments" + semesterId + " set Person = '" + email + \
-      "' where Task = '" + taskId + "';"
+sql = "update Assignments set Person = '" + email + \
+      "' where Term = '" + semesterId + "' and Task = '" + taskId + "';"
 nResults = 0
 try:
     # Execute the SQL command

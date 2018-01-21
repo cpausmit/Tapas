@@ -7,6 +7,9 @@ import sys,re,os
 import MySQLdb
 import Database
 
+print " UNTESTED -- CAREFUL NEW SUMMARY TABLES -- Assignments etc."
+sys.exit(0)
+
 debug = False
 check = False
 dataDir = os.getenv('TAPAS_TOOLS_DATA','./')
@@ -68,10 +71,6 @@ if rc != 0:
     db.disco()
     sys.exit()
 
-
-# Prepare SQL query to select a record from the database.
-sql = "select * from Assignments" + period
-
 # Remember active courses, teachers and students
 activeCourses  = Database.Container()
 activeTeachers = Database.Container()
@@ -80,16 +79,19 @@ activeStudents = Database.Container()
 #---------------------------------------------------------------------------------------------------
 # Make a complete list of all assignments
 #---------------------------------------------------------------------------------------------------
-assignments = { }
+assignments = {}
 
+# Prepare SQL query to select a record from the database.
+sql = "select * from Assignments where Term = '" + period "';"
 try:
     # Execute the SQL command
     cursor.execute(sql)
     # Fetch results
     results = cursor.fetchall()
     for row in results:
-        task    = row[0]
-        email   = row[1]
+        term    = row[0]
+        task    = row[1]
+        email   = row[2]
 
         # deal with empty assignments first
         if email == None or email == '':

@@ -120,33 +120,13 @@ except:
     db.disco()
     sys.exit()
 
-# Prepare SQL to accumulate all Assignment tables.
-sql = "show tables"
-
-if debug:
-    print "\n == Collecting Assignment tables =="
-tables = [ ]
-try:
-    cursor.execute(sql)
-    for (tableName,) in cursor:
-        if tableName[0:11] == 'Assignments':
-            if debug:
-                print "   -> " + tableName
-            tables.append(tableName)
-except:
-    print " ERROR - unable to find tables."
 
 print '\n == Course Details =='
 course = courses.retrieveElement(task);
 course.show()
         
 # Prepare SQL query to select a record from the database.
-sql = ''
-for table in tables:
-    if sql == "":
-        sql = "select * from " + table + " where Task like '%-" + task + "-Ta%'"
-    else:
-        sql += " union select * from " + table + " where Task like '%-" + task + "-Ta%'"
+sql = "select * from Assignments where Task like '%-" + task + "-Ta%'"
 
 print '\n == Finding all Students for Task =='
 try:
@@ -155,8 +135,9 @@ try:
     # Fetch results
     results = cursor.fetchall()
     for row in results:
-        task    = row[0]
-        email   = row[1]
+        term    = row[0]
+        task    = row[1]
+        email   = row[2]
 
         print ' %-20s  -> %s'%(task, email)
 

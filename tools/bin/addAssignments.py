@@ -10,79 +10,12 @@ import Database
 
 EMPTY_EMAIL = "EMPTY@mit.edu"
 
+print " UNTESTED -- CAREFUL NEW SUMMARY TABLES -- Assignments etc."
+sys.exit(0)
+
 #---------------------------------------------------------------------------------------------------
 # H E L P E R
 #---------------------------------------------------------------------------------------------------
-def removeTable(cursor,table,flagging=True):
-    # remove the potentially existing table -- can be run in flagging mode only
-
-    if not flagging:
-        # Prepare SQL query to drop the existing table
-        sql = "drop table Teaching." + table + ";"
-        try:
-            # Execute the SQL command
-            print " MYSQL> " + sql
-            cursor.execute(sql)
-        except:
-            print ' ERROR - table removal failed.'
-    else:
-        print ' INFO - table removal requested -- working in flagging mode.'
-
-def makeTable(cursor,tableType,semesterId="",execute="",remove=""):
-    # test whether requested table exists already and if not make the table
-
-    table = tableType + semesterId
-
-    # remove potentially existing table
-    if remove == "remove":
-        flagging = False
-        if execute != "exec":
-            flagging = True
-        print " FLAGGING : %d"%flagging
-        removeTable(cursor,table,flagging)
-     
-    # Prepare SQL query to test whether table exists
-    sql = "describe " + table
-    try:
-        # Execute the SQL command
-        print " MYSQL> " + sql
-        if execute == "exec":
-            cursor.execute(sql)
-            print ' INFO -- table (%s) exists already.\n'%(table)
-    except:
-        print ' INFO - table (%s) does not yet exist.\n'%(table)
-
-        # Prepare SQL query to create the new table
-        if   tableType == 'Assignments':
-            sql = "create table " + table + "(Task char(40), Person char(40));"
-        elif tableType == 'Tas':
-            sql = "create table " + table + "(Email char(40), FullTime tinyint, PartTime tinyint);"
-        elif tableType == 'Preferences':
-            sql = "create table " + table + "(Email char(40), Pref1 text, Pref2 text, Pref3 text);"
-            
-        try:
-            # Execute the SQL command
-            print " MYSQL> " + sql
-            if execute == "exec":
-                cursor.execute(sql)
-        except:
-            print ' ERROR - table creation failed.'
-            
-        # make the task field unique
-        if   tableType == 'Assignments':
-            sql = "alter table " + table + " add unique idTask (Task);"
-        elif tableType == 'Tas' or tableType == 'Preferences':
-            sql = "alter table " + table + " add unique idEmail (Email);"
-
-        try:
-            # Execute the SQL command
-            print " MYSQL> " + sql
-            if execute == "exec":
-                cursor.execute(sql)
-        except:
-            print ' ERROR - creating unique index field failed.'
-
-
 def findAssignment(cursor,semesterId,task):
     # find person of an existing assignment
 
@@ -90,7 +23,7 @@ def findAssignment(cursor,semesterId,task):
     results = []
     
     # Prepare SQL query to insert record into the existing table
-    sql = "select * from Assignments" + semesterId + " where Task = '" + task + "';"
+    sql = "select * from Assignments where Term = '" + semesterId + "' and Task = '" + task + "';"
     try:
         # Execute the SQL command
         cursor.execute(sql)
@@ -103,7 +36,18 @@ def findAssignment(cursor,semesterId,task):
         email = results[0][1]
 
     return email
-        
+
+def removeExistingAssignments(cursor,semesterId,execute):
+
+    sql = "delete from Assignments where Term = '" + semesterId + "';"
+    try:
+        print " MYSQL> " + sql
+        if execute == "exec":
+            cursor.execute(sql)
+            db.commit()
+    except:
+        print ' ERROR - delete failed: ' + sql
+    
 #---------------------------------------------------------------------------------------------------
 # M A I N
 #---------------------------------------------------------------------------------------------------
@@ -135,9 +79,8 @@ db = Database.DatabaseHandle()
 # Prepare a cursor object using cursor() method
 cursor = db.getCursor()
 
-makeTable(cursor,'Assignments',semesterId,execute,remove)
-makeTable(cursor,'Tas',        semesterId,execute,remove)
-makeTable(cursor,'Preferences',semesterId,execute,remove)
+if remove == 'remove':
+    removeExistingAssignments(cursor,semesterId,execute)
 
 lastCourse = 0
 os.chdir(os.getenv('TAPAS_TOOLS_DATA','./'))
@@ -166,8 +109,8 @@ for line in os.popen(cmd).readlines():
             print " Assignment '%s' -> '%s'"%(email,subtask)
             
             # Prepare SQL query to insert record into the existing table
-            sql = "insert into Assignments" + semesterId + " values ('" \
-                  + subtask + "','" + email + "');"
+            sql = "insert into Assignments values" + \
+                  " ('" + semesterId + "','" + subtask + "','" + email + "');"
             try:
                 # Execute the SQL command
                 print " MYSQL> " + sql
@@ -178,8 +121,8 @@ for line in os.popen(cmd).readlines():
             except:
                 try:
                     # Execute the update SQL command
-                    sql = "update Assignments" + semesterId + \
-                          " set Person = '%s' where Task = '%s';"%(email,subtask)
+                    sql = "update Assignments set Person = '%s'"%(email) + \
+                          " where Term = '%s' and Task = '%s';"%(semesterId,subtask)
                     print " MYSQL> " + sql
                     if execute == "exec":
                         cursor.execute(sql)
@@ -193,10 +136,10 @@ for line in os.popen('cat spreadsheets/' + semesterId + 'Tas.csv | grep -v ^#').
     line = line[:-1]
     f = line.split(',')
     if len(f) == 1:
-        # remove leading or trialing spaces
+        # Remove leading or trialing spaces
         email = (f[0]).strip()
         # Prepare SQL query to insert record into the existing table
-        sql = "insert into Tas" + semesterId + " values ('"  + email + "',1,0);"
+        sql = "insert into Tas values ('"  + semesterId + "','"  + email + "',1,0);"
         try:
             # Execute the SQL command
             print " MYSQL> " + sql
@@ -216,10 +159,10 @@ for line in os.popen('cat spreadsheets/' + semesterId + 'Assignments.csv | grep 
         task  = (f[1]).strip()
         g = task.split('/')
         for subtask in g:
-            print " Assignment '%s' -> '%s'"%(email,subtask)
+            print " Assignment(%s): '%s' -> '%s'"%(semesterId,email,subtask)
             # Prepare SQL query to insert record into the existing table
-            sql = "insert into Assignments" + semesterId + " values ('" \
-                  + subtask + "','" + email + "');"
+            sql = "insert into Assignments values" +\
+                  " ('" + semesterdId + "','" + subtask + "','" + email + "');"
             try:
                 # Execute the SQL command
                 print " MYSQL> " + sql
@@ -232,8 +175,8 @@ for line in os.popen('cat spreadsheets/' + semesterId + 'Assignments.csv | grep 
                 setEmail = findAssignment(cursor,semesterId,task)
                 print " set email: '" + setEmail + "'"
                 if setEmail == '' or  setEmail == EMPTY_EMAIL:
-                    sql = "update Assignments" + semesterId + " set Person = '" \
-                          + email + "' where Task = '" + subtask + "';"
+                    sql = "update Assignments set Person = '" + email + \
+                          "' where Term = '" + semesterId + "' and Task = '" + subtask + "';"
                     print " SQL - " + sql
                     try:
                         # Execute the SQL command
