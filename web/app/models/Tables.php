@@ -1,14 +1,16 @@
 <?php
 
+include_once("app/models/Dbc.php");
+
 class Tables
 {
 
   // Declare a public constructor
-  public function __construct($db,$tableName)
+  public function __construct($tableName)
   {
     $this->tableName = $tableName;
     $i = 0;
-    $rows = $db->query("select TableName from ".$tableName);
+    $rows = Dbc::getReader()->query("select TableName from ".$tableName);
     foreach ($rows as $key => $row) {
       $name = $row[0];
       $this->names[$i] = $name;

@@ -13,11 +13,8 @@ include_once("app/models/Semester.php");
 // M A I N
 //==================================================================================================
 
-// connect to our database
-$db = Dbc::getReader();
-
 // get a full list of available semesters
-$semesters = Semesters::fromDb($db);
+$semesters = Semesters::fromDb();
 
 print '<article class="page">';
 print '<hr>';

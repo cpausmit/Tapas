@@ -7,16 +7,14 @@ if (!isMaster()) {
   exitAccessError();
 }
 
-include_once("app/models/Dbc.php");
 include_once("app/models/Semester.php");
-include_once("app/models/Utils.php");
 
 print '<article class="page">'."\n";
 print '<h1>Show All TA Assignments</h1>';
 print ' ';
 
 // get a full list of available semesters
-$semesters = Semesters::fromDb(Dbc::getReader());
+$semesters = Semesters::fromDb();
 
 print "<table>\n";
 print "<tr><th>Term</th><th>Actions</th>\n";

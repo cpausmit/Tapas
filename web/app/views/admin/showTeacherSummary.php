@@ -12,15 +12,11 @@ $email = $_GET['email'];
 
 // load database and models
 include_once("app/models/Assignment.php");
-include_once("app/models/Dbc.php");
 include_once("app/models/Teacher.php");
 include_once("app/models/TeachingTask.php");
 
-// create an instance
-$db = Dbc::getReader();
-
 // find the stuff we need from the database
-$teachers = Teachers::fromDb($db);
+$teachers = Teachers::fromDb();
 $teacher = $teachers->list[$email];
 
 print '<article class="page">'."\n";
@@ -30,7 +26,7 @@ print "\n";
 print "<hr>\n";
 
 // loop through all assignment tables and find our candidate
-$assignments = Assignments::fromDb($db,'ALL');
+$assignments = Assignments::fromDb('ALL');
 print '<ul>';
 foreach ($assignments->list as $key => $assignment) {
   if ($assignment->person == $email) {

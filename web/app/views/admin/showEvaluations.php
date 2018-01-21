@@ -8,32 +8,24 @@ if (! isMaster()) {
 // command line parameters
 $term = $_GET['term'];
 
-include_once("app/models/Dbc.php");
 include_once("app/models/Teacher.php");
 include_once("app/models/Student.php");
 include_once("app/models/Evaluation.php");
 
-// connect to our database
-$db = Dbc::getReader();
-
 // get TA names
-$rows = $db->query("select * from Students order by lastName");
+$students = Students::fromDb();
 $taNames = "";
-foreach ($rows as $key => $row) {
-  $student = Student::fromRow($row);
+foreach ($students->list as $key => $student)
   $taNames[$student->email] = "$student->lastName, $student->firstName";
-}
 
 // get teacher names
-$rows = $db->query("select * from Teachers order by lastName");
+$teachers = Teachers::fromDb();
 $teacherNames = "";
-foreach ($rows as $key => $row) {
-  $teacher = Teacher::fromRow($row);
+foreach ($teachers->list as $key => $teacher)
   $teacherNames[$teacher->email] = "$teacher->lastName, $teacher->firstName";
-}
 
 // get evaluations
-$evaluations = Evaluations::fromDb(Dbc::getReader(),$term);
+$evaluations = Evaluations::fromDb(,$term);
 $n = sizeof($evaluations->list);
  
 // Present the results

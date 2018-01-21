@@ -7,19 +7,17 @@ if (! (isTa() || isMaster())) {
   exitAccessError();
 }
 
-include_once("app/models/Dbc.php");
 include_once("app/models/Preference.php");
 include_once("app/models/Tables.php");
 include_once("app/models/TeachingTask.php");
 
 // get the db link
-$db = Dbc::getReader();
 $email = strtolower($_SERVER['SSL_CLIENT_S_DN_Email']);
 
 // get all TAs and the possible full time assignments
-$planningTables = new Tables($db,'PlanningTables');
+$planningTables = new Tables('PlanningTables');
 $term = substr($planningTables->getUniqueMatchingName('Preferences'),-5,5);
-$preferences = Preferences::fromDb($db,$term);
+$preferences = Preferences::fromDb($term);
 
 $empty = true;
 if (isset($preferences->list[$email])) {

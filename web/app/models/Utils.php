@@ -1,8 +1,9 @@
 <?php
 
+include_once("app/models/Dbc.php");
+
 function findAccessParameters()
 {
-  //$GLOBALS['DB_CREATIONS'] = $GLOBALS['DB_CREATIONS']+1;
   $pars = "";
   $on = 0;
   $host = "";
@@ -74,7 +75,7 @@ function makeEmail($email)
   return $email;
 }
 
-function getTables($db,$pattern)
+function getTables($pattern)
 {
   // find all tables that match a given pattern (WARNING - there cannot be a printout here)
 
@@ -82,7 +83,7 @@ function getTables($db,$pattern)
   
   // query and go through the results
   $query = "show tables like '".$pattern."'";
-  $tableRows = $db->query($query);
+  $tableRows = Dbc::getReader()->query($query);
   foreach ($tableRows as $key => $row) {
     $tables[] = $row[0];
   }

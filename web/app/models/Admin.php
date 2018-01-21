@@ -7,6 +7,7 @@
 //| Level | mediumint(9) | YES  |     | 0       |       |
 //+-------+--------------+------+-----+---------+-------+
 
+include_once("app/models/Dbc.php");
 include_once("app/models/Utils.php");
 
 class Admins
@@ -25,11 +26,11 @@ class Admins
     return $instance;
   }
 
-  public static function fromDb($db)
+  public static function fromDb()
   {
     // 'constructor' returns full list of admins
     $instance = new self();
-    $adminRows = $db->query("select * from Admins order by Email");
+    $adminRows = Dbc::getReader()->query("select * from Admins order by Email");
     foreach ($adminRows as $key => $row)
       $instance->addAdmin(Admin::fromRow($row));
     
@@ -83,12 +84,12 @@ class Admin
     return $instance;
   }
 
-  public static function fromEmail($db,$email)
+  public static function fromEmail($email)
   {
     // 'constructor' with just email given
     $instance = new self();
     $sql = "select * from Admins where Email = '$email'";
-    $admins = $db->query($sql);
+    $admins = Dbc::getReader()->query($sql);
     foreach ($admins as $key => $row) {
       $instance->fill($row);
     }
@@ -115,7 +116,7 @@ class Admin
     $this->level = $row[1];
   }
 
-  public function addToDb($db)
+  public function addToDb()
   {
     // adding the given admin instance to the database
 
@@ -124,13 +125,13 @@ class Admin
       // check for duplicate
       $vals = sprintf("('%s',%d)",$this->email,$this->level);
       $sql = " insert into Admins values $vals";
-      $db->Exec($sql);
+      Dbc::getReader()->Exec($sql);
     }
     else
       print "<br> Invalid entry. STOP! ($sql)<br>";
   }
 
-  public function updateDb($db)
+  public function updateDb()
   {
     // adding the given admin instance to the database
 
@@ -140,7 +141,7 @@ class Admin
       // check for duplicate
       $vals = sprintf("Level = %d",$this->level);
       $sql = " update Admins set $vals where Email = '$this->email';";
-      $db->Exec($sql);
+      Dbc::getReader()->Exec($sql);
     }
     else
       print "<br> Invalid entry. STOP! ($sql)<br>";

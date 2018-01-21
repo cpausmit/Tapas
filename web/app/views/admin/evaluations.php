@@ -6,12 +6,10 @@ if (! isMaster()) {
   exitAccessError();
 }
 
-include_once("app/models/Utils.php");
-include_once("app/models/Dbc.php");
 include_once("app/models/Semester.php");
 
 // find the active tables and the last non active table
-$semesters = Semesters::fromDb(Dbc::getReader());
+$semesters = Semesters::fromDb();
 
 print '<article class="page">'."\n";
 print '<h1>Show All TA Evaluations</h1>';

@@ -12,13 +12,13 @@ include_once("app/models/Semester.php");
 include_once("app/models/Tables.php");
 include_once("app/models/TeachingTask.php");
 
-function getNamesFromDb($db,$term)
+function getNamesFromDb($term)
 {
   $sql = "select Students.FirstName, Students.LastName, Assignments.Person, Assignments.Task"
       . " from Assignments,Students "
       . " where Assignments.Term = 'Assignmentserm' and Students.Email = Assignments.Person"
       . " order by Students.LastName";
-  $taskRows = $db->query($sql);
+  $taskRows = Dbc::getReader()->query($sql);
 
   $names = "";
   foreach ($taskRows as $key => $row) {
@@ -33,17 +33,14 @@ function getNamesFromDb($db,$term)
 // M A I N
 //==================================================================================================
 
-// connect to our database
-$db = Dbc::getReader();
-
 // get a full list of available semesters
-$semesters = Semesters::fromDb($db);
+$semesters = Semesters::fromDb();
 
 // find the active table
-$activeTables = new Tables($db,"ActiveTables");
+$activeTables = new Tables("ActiveTables");
 $evaluationsTable = $activeTables->getUniqueMatchingName('Evaluations');
 $term = substr($evaluationsTable,-5,5);
-$names = getNamesFromDb($db,$term);
+$names = getNamesFromDb($term);
 
 print '<article class="page">'."\n";
 

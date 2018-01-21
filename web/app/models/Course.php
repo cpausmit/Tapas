@@ -8,6 +8,8 @@
 // | Version | int(11)  | YES  |     | NULL    |       | 
 // +---------+----------+------+-----+---------+-------+
 
+include_once("app/models/Dbc.php");
+
 class Courses
 {
   // Property declaration
@@ -24,11 +26,11 @@ class Courses
     return $instance;
   }
 
-  public static function fromDb($db)
+  public static function fromDb()
   {
     // 'constructor' returns full list of courses
     $instance = new self();
-    $rows = $db->query("select * from Courses order by Number");
+    $rows = Dbc::getReader()->query("select * from Courses order by Number");
     foreach ($rows as $key => $row)
       $instance->addCourse(Course::fromRow($row));
     
@@ -64,11 +66,11 @@ class Course
     return $instance;
   }
 
-  public static function fromNumber($db,$number) // 'constructor' with just number given
+  public static function fromNumber($number) // 'constructor' with just number given
   {
     $instance = new self();
     $sql = "select * from Courses where Number = '".$number."'";
-    $courses = $db->query($sql);
+    $courses = Dbc::getReader()->query($sql);
     foreach ($courses as $key => $row) {
       $instance->fill($row);
     }
@@ -126,7 +128,7 @@ class Course
     return ($this->number == '');
   }
 
-  public function addToDb($db)
+  public function addToDb()
   {
     // adding the given course instance to the database
 
@@ -135,10 +137,10 @@ class Course
     $vals = sprintf("('%s','%s',%d)",$this->number,$this->name,$this->version);
     $sql = " insert into Courses values $vals";
     print "<br> SQL: $sql <br>";
-    $db->Exec($sql);
+    Dbc::getReader()->Exec($sql);
   }
 
-  public function updateDb($db)
+  public function updateDb()
   {
     // updating the given course instance to the database
 
@@ -148,7 +150,7 @@ class Course
     $vals = sprintf($form,$this->number,$this->name,$this->version);
     $sql = " update Courses set $vals where Number = '$this->number';";
     print "<br> SQL: $sql <br>";
-    $db->Exec($sql);
+    Dbc::getReader()->Exec($sql);
   }
 
   // Simple accessors

@@ -13,10 +13,10 @@ include_once("app/models/Student.php");
 include_once("app/models/Ta.php");
 
 // Get all TAs that are in the planning table
-function getPlanningTable($db)
+function getPlanningTable()
 {
   // find the planning table
-  $planningTables = new Tables($db,"PlanningTables");
+  $planningTables = new Tables("PlanningTables");
   $taTable = $planningTables->getUniqueMatchingName('Tas');
 
   return $taTable;
@@ -45,24 +45,21 @@ function printForm()
   print '</form>'."\n";
 }
 
-function removeFromDb($db,$taTable,$email)
+function removeFromDb($taTable,$email)
 {
   // remove an existing student from the database
   $sql = " delete from $taTable where email = '$email'";
-  $db->Exec($sql);
+  Dbc::getReader()->Exec($sql);
 }
 
 // start the html page
 print '<article class="page">'."\n";
 
-// connect to our database
-$db = Dbc::getReader();
-
 // get input from the database
-$students = Students::fromDb($db);
-$taTable = getPlanningTable($db);
+$students = Students::fromDb();
+$taTable = getPlanningTable();
 $term = substr($taTable,-5,5);
-$tas = Tas::fromDb($db,$term);
+$tas = Tas::fromDb($term);
 
 // pick up email, effort and action from the form
 if (array_key_exists('email',$_POST) &&
@@ -84,7 +81,7 @@ if (array_key_exists('email',$_POST) &&
   }
   else {
     if (isset($tas[$email])) {
-      removeFromDb($db,$taTable,$email);
+      removeFromDb($taTable,$email);
       print "<p>Removed TA from our list: $email</p>\n";
     }
     else {
@@ -93,11 +90,11 @@ if (array_key_exists('email',$_POST) &&
       $ta->email = $email;
       $ta->fullTime = $fullTime;
       $ta->partTime = $partTime;
-      $ta->addToDb($db);
+      $ta->addToDb();
       print "<p>Added new TA to our list: $email</p>\n";
     }
     // update the TA list in memory
-    $tas = Tas::fromDb($db);
+    $tas = Tas::fromDb();
   }
 }
 

@@ -12,6 +12,8 @@
 // | Citation     | text       | YES  |     | NULL    |       | 
 // +--------------+------------+------+-----+---------+-------+
 
+include_once("app/models/Dbc.php");
+
 class Evaluations
 {
   // Property declaration
@@ -28,15 +30,15 @@ class Evaluations
     return $instance;
   }
 
-  public static function fromDb($db,$term)
+  public static function fromDb($term)
   {
     // 'constructor' returns full list of evaluations
     $instance = new self();
 
     if ($term == 'ALL')
-      $rows = $db->query("select * from Evaluations");
+      $rows = Dbc::getReader()->query("select * from Evaluations");
     else
-      $rows = $db->query("select * from Evaluations where Term='$term'");
+      $rows = Dbc::getReader()->query("select * from Evaluations where Term='$term'");
     
     foreach ($rows as $key => $row)
       $instance->add(Evaluation::fromRow($row));

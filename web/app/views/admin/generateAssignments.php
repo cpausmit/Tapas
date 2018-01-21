@@ -9,8 +9,6 @@ if (! (isMaster() || isAdmin())) {
   exitAccessError();
 }
 
-include_once("app/models/Dbc.php");
-include_once("app/models/Utils.php");
 include_once("app/models/Semester.php");
 include_once("app/models/Course.php");
 include_once("app/models/CourseResource.php");
@@ -21,7 +19,7 @@ function findTerm($semesters)
 {
   $term = getPostVariable('term');
 
-  if (! isset($semesters[$term])) {
+  if (! isset($semesters->list[$term])) {
     print "<article class=\"page\">\n";
     print "<h1>ERROR</h1>\n";
     print "<hr>\n";
@@ -37,34 +35,6 @@ function findTerm($semesters)
   return $term;
 }
 
-// Get all courses from the database
-function getCoursesFromDb($db)
-{
-  // read complete courses table
-  $courses = "";
-  $rows = $db->query("select * from Courses order by Number");
-  foreach ($rows as $key => $row) {
-    $course = Course::fromRow($row);
-    $courses[$course->number] = $course;
-  }
-
-  return $courses;
-}
-
-// Get all semesters from the database
-function getSemestersFromDb($db)
-{
-  // read complete courses table
-  $semesters = "";
-  $rows = $db->query("select * from Semesters order by Term");
-  foreach ($rows as $key => $row) {
-    $semester = Semester::fromRow($row);
-    $semesters[$semester->term] = $semester;
-  }
-
-  return $semesters;
-}
-
 function printTermForm($semesters)
 {
   print '<table>';
@@ -75,7 +45,7 @@ function printTermForm($semesters)
   print '</td>';
   print '<td align=center><select class="type" name="term">'."\n";
   print "<option value=\"\">term ?</option>";
-  foreach ($semesters as $key => $semester)
+  foreach ($semesters->list as $key => $semester)
     print "<option value=\"$key\"> $key </option>";
   print '    </select></td>'."\n";
   print '</td>';
@@ -89,14 +59,11 @@ function printTermForm($semesters)
 // M A I N
 //==================================================================================================
 
-// connect to our database
-$db = Dbc::getReader();
-
 // get all relevant info from the database
-$semesters = Semesters::fromDb($db);
-$courses = CourseResources::fromDb($db);
+$semesters = Semesters::fromDb();
+$courses = CourseResources::fromDb();
 $term = getPostVariable('term');
-$courseResources = CourseResources::fromDb($db,$term);
+$courseResources = CourseResources::fromDb($term);
 
 if (!$GLOBALS['COMPLETE']) {                // term parameter was not available
   print "<article class=\"page\">\n";
@@ -111,7 +78,7 @@ if (!$GLOBALS['COMPLETE']) {                // term parameter was not available
 }
 else {                                     // term was set
   print "<article class=\"page\">\n";
-  if (! isset($semesters[$term])) {
+  if (! isset($semesters->list[$term])) {
     print "<h1>ERROR</h1>\n";
     print "This term ($term) is not in our database.\n";
   }
@@ -122,8 +89,8 @@ else {                                     // term was set
   print "<hr>\n";
   print "<h1>Adding the following Assignments (Term: $term)</h1>\n";
   print "<hr>\n";
-  if (isset($semesters[$term]))
-    $courseResources->registerAssignments($db);
+  if (isset($semesters->list[$term]))
+    $courseResources->registerAssignments();
 }
 
 // footer

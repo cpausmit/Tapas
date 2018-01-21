@@ -11,36 +11,33 @@ if (! isMaster()) {
 include_once("app/models/Dbc.php");
 include_once("app/models/Tables.php");
 
-function findRecipientList($db,$targetString,$email)
+function findRecipientList($targetString,$email)
 {
   $list = "";
   if ($targetString == "TAs") {
     // find planning Ta table
-    $planningTables = new Tables($db,"PlanningTables");
-    $taTable = $planningTables->getUniqueMatchingName('Tas');
-    // do the query
-    $rows = $db->query("select Email from $taTable");
-    foreach ($rows as $key => $row) {
+    $planningTables = new Tables("PlanningTables");
+    $term = substr($planningTables->getUniqueMatchingName('Tas'),-5,5);
+    $tas = Tas::fromDb($term);
+    foreach ($tas->list as $key => $ta) {
       if ($list == "")
-        $list = "$row[0]";
+        $list = "$ta->email";
       else
-        $list = "$list,$row[0]";
+        $list = "$list,$ta->email";
     }
   } 
   else if ($targetString == "Teachers") {
     // find evaluations teachers
     $activeTables = new Tables($db,"ActiveTables");
-    $teachersTable = $activeTables->getUniqueMatchingName('Evaluations');
-    $term = substr($teachersTable,-5,5);
-    $query = "select Person from Assignments where Term='$term' and Task like '%Lec%'";
-    // do the query
-    $rows = $db->query($query);
-    foreach ($rows as $key => $row) {
-      if ($list == "")
-        $list = "$row[0]";
-      else
-        $list = "$list,$row[0]";
-    }
+    $term = substr($activeTables->getUniqueMatchingName('Evaluations'),-5,5);
+    $assignments = Assignments::fromDb($term);
+    foreach ($assignments->list as $key => $assignment) {
+      if (strpos($assignment->task,'-Lec-') > 0) {     // find only lecturers
+        if ($list == "")
+          $list = "$assignment->person";
+        else
+          $list = "$list,$assignment->person";
+      }
   } 
   else if ($targetString == "Myself") {
     $list = "$email";

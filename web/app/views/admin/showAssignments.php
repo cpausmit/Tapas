@@ -7,14 +7,11 @@ if (! (isMaster() || isAdmin())) {
   exitAccessError();
 }
 
-include_once("app/models/Utils.php");
-include_once("app/models/Dbc.php");
 include_once("app/models/Assignment.php");
 
 // command line parameters
 $term = $_GET['term'];
-$db = Dbc::getReader();
-$assignments = Assignments::fromDb($db,$term);
+$assignments = Assignments::fromDb($term);
 
 print '<article class="page">'."\n";
 print "<h1>Show TA Assignment - $term</h1>";

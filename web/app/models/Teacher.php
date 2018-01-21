@@ -12,6 +12,7 @@
 // +-----------+----------+------+-----+---------+-------+
 
 include_once("app/models/Utils.php");
+include_once("app/models/Dbc.php");
 
 class Teachers
 {
@@ -29,11 +30,11 @@ class Teachers
     return $instance;
   }
 
-  public static function fromDb($db)
+  public static function fromDb()
   {
     // 'constructor' returns full list of teachers
     $instance = new self();
-    $teacherRows = $db->query("select * from Teachers order by Email");
+    $teacherRows = Dbc::getReader()->query("select * from Teachers order by Email");
     foreach ($teacherRows as $key => $row)
       $instance->addTeacher(Teacher::fromRow($row));
     
@@ -84,11 +85,11 @@ class Teacher
     return $instance;
   }
 
-  public static function fromEmail($db,$email) // 'constructor' with just email given
+  public static function fromEmail($email) // 'constructor' with just email given
   {
     $instance = new self();
     $sql = "select * from Teachers where Email = '$email'";
-    $teachers = $db->query($sql);
+    $teachers = Dbc::getReader()->query($sql);
     foreach ($teachers as $key => $row) {
       $instance->fill($row);
     }
@@ -158,7 +159,7 @@ class Teacher
     print ' position: ' . $this->position . ',   status: ' . $this->status . "\n<br>";
   }
 
-public function addToDb($db)
+public function addToDb()
   {
     // adding the given teacher instance to the database
 
@@ -170,14 +171,14 @@ public function addToDb($db)
                       $this->email,$this->position,$this->status);
       $sql = " insert into Teachers values $vals";
       print "<br> SQL: $sql <br>";
-      $db->Exec($sql);
+      Dbc::getReader()->Exec($sql);
     }
     else {
       print '<br> Invalid entry. STOP!<br>';
     }
   }
 
-  public function updateDb($db)
+  public function updateDb()
   {
     // adding the given teacher instance to the database
 
@@ -193,7 +194,7 @@ public function addToDb($db)
                       $this->position,$this->status);
       $sql = " update Teachers set $vals where Email = '$this->email';";
       print "<br> SQL: $sql <br>";
-      $db->Exec($sql);
+      Dbc::getReader()->Exec($sql);
     }
     else {
       print '<br> Invalid entry. STOP!<br>';

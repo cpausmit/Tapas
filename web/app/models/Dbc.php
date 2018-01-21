@@ -1,6 +1,5 @@
 <?php
 include_once("app/models/AccessParameters.php");
-include_once("app/models/Utils.php");
 
 class Dbc
 {

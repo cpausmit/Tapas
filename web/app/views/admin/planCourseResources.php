@@ -148,31 +148,28 @@ function printTermForm($term,$semesters)
   print '</form>'."\n";
 }
 
-function removeFromDb($db,$term,$number)
+function removeFromDb($term,$number)
 {
   // remove an existing course number from the course resource table in the database
   $sql = " delete from CourseResources where Term = '$term' and Number = '$number'";
-  $db->Exec($sql);
+  Dbc::getReader()->Exec($sql);
 }
 
 //==================================================================================================
 // M A I N
 //==================================================================================================
 
-// connect to our database
-$db = Dbc::getReader();
-
 // get a full list of available semesters
-$semesters = Semesters::fromDb($db);
+$semesters = Semesters::fromDb();
 
 // which term are we talking about?
 $term = findTerm($semesters);
 
 // get a full list of courses
-$courses = Courses::fromDb($db);
+$courses = Courses::fromDb();
 
 // get list of CourseResources for the given semester (term)
-$courseResources = CourseResources::fromDb($db,$term);
+$courseResources = CourseResources::fromDb($term);
 $nEntries = sizeof($courseResources->list);
 
 $number = getPostVariable('number');
@@ -192,7 +189,7 @@ if ($GLOBALS['COMPLETE'] == 2) {                  // All post variables are fill
   }
   else {
     if (isset($courseResources->list[$number])) { // if course exists it will be overwritten
-      removeFromDb($db,$term,$number);
+      removeFromDb($term,$number);
       print "Removed course $term:$number from our list<br>\n";
     }
     
@@ -211,11 +208,11 @@ if ($GLOBALS['COMPLETE'] == 2) {                  // All post variables are fill
     $courseResource->numPartUtilTas = $numPartUtilTas;
     
     // add it to the database
-    $courseResource->addToDb($db);
+    $courseResource->addToDb();
     print "Added new CourseResource to our list: $term:$number<br>\n";
 
     // update the TA list in memory
-    $courseResources = getCourseResourcesFromDb($db,$term);
+    $courseResources = getCourseResourcesFromDb($term);
     $nEntries =  sizeof($courseResources->list);
   }
 }

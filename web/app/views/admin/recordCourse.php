@@ -10,8 +10,7 @@ if (! (isMaster())) {
   exitAccessError();
 }
 
-$db = Dbc::getReader();
-$course = Course::fromNumber($db,$_POST['number']);
+$course = Course::fromNumber($_POST['number']);
 $new = $course->isFresh();
 
 print '<article class="page">'."\n";
@@ -26,11 +25,10 @@ $course->number = $_POST['number'];
 $course->name = $_POST['name'];
 $course->version = intval($_POST['version']);
 
-$db = Dbc::getReader();
 if ($new)
-  $course->addToDb($db);
+  $course->addToDb();
 else
-  $course->updateDb($db);
+  $course->updateDb();
 
 print '</article>'."\n";
 

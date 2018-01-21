@@ -20,18 +20,16 @@ print ' '."\n";
 
 $email = strtolower($_SERVER['SSL_CLIENT_S_DN_Email']);
 
-// connect to our database
-$db = Dbc::getReader();
-
-$students = Students::fromDb($db);
-$teachers = Teachers::fromDb($db);
-$activeTables = new Tables($db,"ActiveTables");
+$students = Students::fromDb();
+$teachers = Teachers::fromDb();
+$activeTables = new Tables("ActiveTables");
 $evaluationsTable = $activeTables->getUniqueMatchingName('Evaluations');
 $term = substr($evaluationsTable,-5,5);
 
+$evaluations = Evaluations::fromDb($term);
 $sql = "select Term,TeacherEmail,TaEmail,Award,EvalText,Citation from Evaluations "
     . "where Term='$term' and TeacherEmail='$email'";
-$rows = $db->query($sql);
+$rows = Dbc::getReader()->query($sql);
 if ($rows->rowCount() < 1) {
   print " ERROR - could not find evaluation for sql: $sql\n";
   exit();

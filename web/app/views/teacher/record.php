@@ -7,11 +7,8 @@ if (! (isTeacher() || isMaster())) {
   exitAccessError();
 }
 
-include_once("app/models/Utils.php");
 include_once("app/models/Dbc.php");
 include_once("app/models/Tables.php");
-
-$db = Dbc::getReader();
 
 $email = strtolower($_SERVER['SSL_CLIENT_S_DN_Email']);
 
@@ -39,7 +36,7 @@ print "<b>AwardProposed:</b> $awardProposed<br>\n";
 print "<b>Proposed Citation:</b> $citation</p>\n";
 
 // find active evaluations table
-$activeTables = new Tables($db,"ActiveTables");
+$activeTables = new Tables("ActiveTables");
 $evaluationsTable = $activeTables->getUniqueMatchingName('Evaluations');
 $term = substr($evaluationsTable,-5,5);
 
@@ -49,16 +46,16 @@ if ($email != "" && $studentEmail != "" && $evaluation != "") {
 
   $sql = "select TeacherEmail,TaEmail from Evaluations "
       . " where Term='$term' and TeacherEmail='$email' and TaEmail='$studentEmail'";
-  $rows = $db->query($sql);
+  $rows = Dbc::getReader()->query($sql);
   if ($rows->rowCount() < 1)   // no entry yet
     $sql = "insert into Evaluations (Term,TeacherEmail,TaEmail,EvalText,Award,Citation) values"
       . "('$term','$email','$studentEmail','$evaluation',$awardProposed,'$citation')";
-  else                     // need to update existing entry
+  else                         // need to update existing entry
     $sql = "update Evaluations set EvalText='$evaluation', Award=$awardProposed, Citation='$citation' where "
       . " Term='$term' and TeacherEmail='$email' and TaEmail='$studentEmail'";
   // execute
   try {
-    $db->exec($sql);
+    Dbc::getReader()->exec($sql);
     print "Evaluation has been registered. ($sql)</p>";
   }
   catch (PDOException $e) {

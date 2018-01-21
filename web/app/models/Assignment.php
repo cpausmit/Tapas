@@ -1,6 +1,6 @@
 <?php
 
-// mysql> describe AssignmentsF2015;
+// mysql> describe Assignments;
 //+--------+----------+------+-----+---------+-------+
 //| Field  | Type     | Null | Key | Default | Extra |
 //+--------+----------+------+-----+---------+-------+
@@ -9,6 +9,7 @@
 //| Person | char(40) | YES  |     | NULL    |       |
 //+--------+----------+------+-----+---------+-------+
 
+include_once("app/models/Dbc.php");
 include_once("app/models/TeachingTask.php");
 
 class Assignments
@@ -27,16 +28,15 @@ class Assignments
     return $instance;
   }
 
-  public static function fromDb($db,$term)
+  public static function fromDb($term)
   {
     // 'constructor' returns full list of assignments
     $instance = new self();
-    //$rows = $db->query("select * from Assignments$term");
 
     if ($term == 'ALL')
-      $rows = $db->query("select * from Assignments");
+      $rows = Dbc::getReader()->query("select * from Assignments");
     else
-      $rows = $db->query("select * from Assignments where Term='$term'");
+      $rows = Dbc::getReader()->query("select * from Assignments where Term='$term'");
 
     foreach ($rows as $key => $row)
       $instance->add(Assignment::fromRow($row));

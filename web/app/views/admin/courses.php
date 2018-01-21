@@ -9,12 +9,9 @@ if (! (isAdmin() || isMaster())) {
   exitAccessError();
 }
 
-include_once("app/models/Utils.php");
-include_once("app/models/Dbc.php");
 include_once("app/models/Course.php");
 
-$courses = Courses::fromDb(Dbc::getReader());
-
+$courses = Courses::fromDb();
 
 print '<article class="page">';
 print '<hr>';

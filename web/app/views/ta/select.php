@@ -7,19 +7,18 @@ if (! (isTa() || isMaster())) {
   exitAccessError();
 }
 
-include_once("app/models/Utils.php");
 include_once("app/models/Dbc.php");
 include_once("app/models/Course.php");
 include_once("app/models/Tables.php");
 include_once("app/models/TeachingTask.php");
 
-function generateOptions($db,$term,$courses)
+function generateOptions($term,$courses)
 {
   // generate the options for all teaching assignment
 
   $options = array();
   $sql = "select * from Assignments where Term='$term' order by Task";
-  $results = $db->query($sql);
+  $results = Dbc::getReader()->query($sql);
   foreach ($results as $key => $row) {
     $term = $row[0];
     $task = $row[1];
@@ -39,16 +38,15 @@ function generateOptions($db,$term,$courses)
 }
 
 // get the list of courses
-$db = Dbc::getReader();
-$courses = Courses::fromDb($db);
+$courses = Courses::fromDb();
 
 // get all TAs and the possible full time assignments
-$planningTables = new Tables($db,'PlanningTables');
+$planningTables = new Tables('PlanningTables');
 $tasTable = $planningTables->getUniqueMatchingName('Tas');
 $term = substr($planningTables->getUniqueMatchingName('Assignments'),-5,5);
 
 // select all possible options for the full time TAs
-$options = generateOptions($db,$term,$courses);
+$options = generateOptions($term,$courses);
 
 // start the page
 print '<article class="page">'."\n";

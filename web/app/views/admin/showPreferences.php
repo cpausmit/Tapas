@@ -6,23 +6,19 @@ if (! isMaster()) {
   exitAccessError();
 }
 
-include_once("app/models/Dbc.php");
-include_once("app/models/ActiveTables.php");
-include_once("app/models/Student.php");
 include_once("app/models/Preference.php");
-
-// connect to our database
-$db = Dbc::getReader();
+include_once("app/models/Student.php");
+include_once("app/models/Tables.php");
 
 // read complete students table
 $empty = true;
-$students = Students::fromDb($db);
+$students = Students::fromDb();
 
 // find active preference table
-$activeTables = new ActiveTables($db);
-$term = substr($preferenceTable = $activeTables->getUniqueMatchingName('Preferences'),-5,5);
+$activeTables = new Tables('ActiveTables');
+$term = substr($activeTables->getUniqueMatchingName('Preferences'),-5,5);
 // do the query
-$preferences = Preferences::fromDb($db,$term);
+$preferences = Preferences::fromDb($term);
 $nTas = sizeof($preferences->list);
 
 // start page

@@ -7,12 +7,10 @@ if (! (isAdmin() || isMaster())) {
 }
 
 // load database and models
-include_once("app/models/Dbc.php");
 include_once("app/models/Teacher.php");
 
 // create an instance
-$db = Dbc::getReader();
-$teachers = $db->query("select * from Teachers order by lastName");
+$teachers = Teachers::fromDb();
 
 // print basic page
 print '<article class="page">'."\n";
@@ -24,8 +22,7 @@ print "<table>\n";
 
 // loop
 $first = true;
-foreach ($teachers as $key => $row) {
-  $teacher = Teacher::fromRow($row);
+foreach ($teachers->list as $key => $teacher) {
   $teacher->printTableRow($first);
   $first = false;
 }

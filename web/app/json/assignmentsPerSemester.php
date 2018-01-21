@@ -5,19 +5,19 @@ include_once("app/models/Utils.php");
 include_once("app/models/Semester.php");
 include_once("app/models/TeachingTask.php");
 
-function getDivisions($db)
+function getDivisions()
 {
     $divisions = array();
     
     $sql = "select distinct Division from Students order by Division";
-    $rows = $db->query($sql);
+    $rows = Dbc::getReader()->query($sql);
     foreach ($rows as $key => $row)
         $divisions[] = $row[0];
     
     return $divisions;
 }
 
-function getAssignments($db,$term,$divisions)
+function getAssignments($term,$divisions)
 {
     // initialize data
     $semesterData = array();
@@ -28,9 +28,7 @@ function getAssignments($db,$term,$divisions)
     // show all assignments
     $sql = "select t.Task, t.Person, s.Division from Assignments as t".
            " inner join Students as s on s.Email=t.Person where t.Term='$term' order by t.Task";
-    $rows = $db->query($sql);
-    //print " SQL: ".$sql."<br>";
-    //print " LENGTH: ".sizeof($rows)."<br>";
+    $rows = Dbc::getReader()->query($sql);
     foreach ($rows as $key => $row) {
         $task = $row[0];
         $person = $row[1];
@@ -64,12 +62,6 @@ function getAssignments($db,$term,$divisions)
 //
 //--------------------------------------------------------------------------------------------------
 
-// make sure we have access to the database
-//=========================================
-
-// connect to our database
-$db = Dbc::getReader();
-
 // create the empty structure
 //===========================
 
@@ -78,7 +70,7 @@ $data = array('legend' => array(),'totals' => array(), 'data' => array());
 $averages = array();
 
 // add the names of the divisions and the empty result array stub
-$divisions = getDivisions($db);
+$divisions = getDivisions();
 foreach ($divisions as $division) {
     $data['data'][] = array('division' => $division, 'numbers' => array(), 'average' => 0);
     $averages[$division] = 0;
@@ -88,7 +80,7 @@ foreach ($divisions as $division) {
 //=======================================================
 
 // loop through all semesters (excluding IAP)
-$semesters = Semesters::fromDb($db);
+$semesters = Semesters::fromDb();
 $nSemester = 0;
 
 foreach ($semesters->list as $term => $semester) {
@@ -96,7 +88,7 @@ foreach ($semesters->list as $term => $semester) {
     if (substr($term,0,1) != 'I') {
         $nSemester += 1;
         $data['legend'][] = $term;
-        $semesterData = getAssignments($db, $term, $divisions);
+        $semesterData = getAssignments($term, $divisions);
         $totals = 0;
         foreach ($divisions as $index => $division) {
             $data['data'][$index]['numbers'][] = $semesterData[$division];

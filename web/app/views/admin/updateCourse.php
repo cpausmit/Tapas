@@ -2,7 +2,6 @@
 
 include("app/views/admin/header.php");
 
-include("app/models/Dbc.php");
 include("app/models/Course.php");
 
 // make sure we have an admin
@@ -14,8 +13,7 @@ if (! (isAdmin() || isMaster())) {
 $number = $_POST['number'];
 
 // See whether this is a known student
-$db = Dbc::getReader();
-$course = Course::fromNumber($db,$number);
+$course = Course::fromNumber($number);
 $new = $course->isFresh();
 
 print '<article class="page">'."\n";

@@ -2,7 +2,6 @@
 
 include("app/views/admin/header.php");
 
-include_once("app/models/Dbc.php");
 include_once("app/models/Teacher.php");
 
 // make sure we have an admin
@@ -14,8 +13,7 @@ if (! (isAdmin() || isMaster())) {
 $email = makeEmail($_POST['email']);
 
 // See whether this is a known teacher
-$db = Dbc::getReader();
-$teacher = Teacher::fromEmail($db,$email);
+$teacher = Teacher::fromEmail($email);
 $new = $teacher->isFresh();
 
 print '<article class="page">'."\n";

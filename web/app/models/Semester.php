@@ -7,6 +7,8 @@
 // | Term    | char(5)  | YES  |     | NULL    |       | 
 // +---------+----------+------+-----+---------+-------+
 
+include_once("app/models/Dbc.php");
+
 class Semesters
 {
   // Property declaration
@@ -23,11 +25,11 @@ class Semesters
     return $instance;
   }
 
-  public static function fromDb($db)
+  public static function fromDb()
   {
     // 'constructor' returns full list of courses
     $instance = new self();
-    $semesterRows = $db->query("select * from Semesters order by Term");
+    $semesterRows = Dbc::getReader()->query("select * from Semesters order by Term");
     foreach ($semesterRows as $key => $row) {
       $semester = Semester::fromRow($row);
       $instance->addSemester($semester);
@@ -63,11 +65,11 @@ class Semester
     return $instance;
   }
 
-  public static function fromTerm($db,$term) // 'constructor' - term given
+  public static function fromTerm($term) // 'constructor' - term given
   {
     $instance = new self();
     $sql = "select * from Semesters where Term = '".$term."'";
-    $courses = $db->query($sql);
+    $courses = Dbc::getReader()->query($sql);
     foreach ($courses as $key => $row) {
       $instance->fill($row);
     }
@@ -121,7 +123,7 @@ class Semester
     return ($this->term == '');
   }
 
-  public function addToDb($db)
+  public function addToDb()
   {
     // adding the given semester instance to the database
 
@@ -130,10 +132,10 @@ class Semester
     $vals = sprintf("('%s')",$this->term);
     $sql = " insert into Semesters values $vals";
     //print "<br> SQL: $sql <br>";
-    $db->Exec($sql);
+    Dbc::getReader()->Exec($sql);
   }
 
-  public function updateDb($db)
+  public function updateDb()
   {
     // updating the given course instance to the database
 
@@ -142,7 +144,7 @@ class Semester
     $vals = sprintf($form,$this->term);
     $sql = " update Semesters set $vals where Term = '$this->term';";
     //print "<br> SQL: $sql <br>";
-    $db->Exec($sql);
+    Dbc::getReader()->Exec($sql);
   }
 
   // Simple accessors

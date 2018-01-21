@@ -12,8 +12,6 @@ include_once("app/models/Dbc.php");
 include_once("app/models/Teacher.php");
 include_once("app/models/Ta.php");
 
-$db = Dbc::getReader();
-
 print '<article class="page">'."\n";
 print '<h1>Recorded Evaluation</h1>';
 
@@ -41,7 +39,7 @@ print "<b>AwardProposed:</b> $awardProposed<br>\n";
 print "<b>Proposed Citation:</b> $citation</p>\n";
 
 // find terms
-$semesters = Semesters::fromDb($db);
+$semesters = Semesters::fromDb();
 if (! isset($semesters->list[$term])) {  // check if this is a valid term
   print ' EXIT - term is not valid.';
   exitParameterError($term);
@@ -53,7 +51,7 @@ $evaluationsTable = 'Evaluations'; //print " Evaluations from $evaluationsTable.
 //$assignmentsTable = 'Assignments'; //print " Assignments from $assignmentsTable.<br>";
 
 // find teacher and TA
-$teachers = Teachers::fromDb($db);
+$teachers = Teachers::fromDb();
 if (! isset($teachers->list[$teacherEmail])) {  // check if this is a valid teacher (Teachers table)
   print " EXIT - teacher email is not valid.<br>";
   exitParameterError($teacherMail);
@@ -61,7 +59,7 @@ if (! isset($teachers->list[$teacherEmail])) {  // check if this is a valid teac
 $teacher = $teachers->list[$teacherEmail];
 print ' Teacher valid.<br>';
 
-$tas = Tas::fromDb($db,$term);
+$tas = Tas::fromDb($term);
 if (! isset($tas->list[$taEmail])) {
   print " EXIT - ta email is not valid.<br>";
   exitParameterError($taMail);
@@ -76,7 +74,7 @@ if ($teacherEmail != "" && $taEmail != "" && $evaluation != "") {
   // do we update or is it a new entry
   $sql = "select TeacherEmail,TaEmail from $evaluationsTable "
     . " where Term='$term' and TeacherEmail='$teacherEmail' and TaEmail='$taEmail'";
-  $rows = $db->query($sql);
+  $rows = Dbc::getReader()->query($sql);
   if ($rows->rowCount() < 1) { // no entry yet
     $sql = "insert into $evaluationsTable (Term,TeacherEmail,TaEmail,EvalText,Award,Citation) values"
       . "('$term','$teacherEmail','$taEmail','$evaluation',$awardProposed,'$citation')";
@@ -88,7 +86,7 @@ if ($teacherEmail != "" && $taEmail != "" && $evaluation != "") {
   }
   // execute
   try {
-    $db->exec($sql);
+    Dbc::getReader()->exec($sql);
     print 'Evaluation has been registered.</p>';
   }
   catch (PDOException $e) {

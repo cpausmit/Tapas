@@ -11,6 +11,7 @@
 // alter table Tas add constraint onePerTerm unique(Term, Email);
 
 include_once("app/models/Utils.php");
+include_once("app/models/Dbc.php");
 
 class Tas
 {
@@ -28,11 +29,11 @@ class Tas
     return $instance;
   }
 
-  public static function fromDb($db,$term)
+  public static function fromDb($term)
   {
     // 'constructor' returns full list of tas
     $instance = new self();
-    $taRows = $db->query("select * from Tas where Term='$term' order by Email");
+    $taRows = Dbc::getReader()->query("select * from Tas where Term='$term' order by Email");
     foreach ($taRows as $key => $row)
       $instance->addTa(Ta::fromRow($row));
     
@@ -163,7 +164,7 @@ class Ta
       print "</tr>\n";
   }
     
-  public function addToDb($db)
+  public function addToDb()
   {
     // adding the given ta instance to the database
 
@@ -172,7 +173,7 @@ class Ta
       $vals = sprintf("('%s','%s',%d,%d)",
                       $this->term,$this->email,$this->fullTime,$this->partTime);
       $sql = " insert into Tas values $vals";
-      $db->Exec($sql);
+      Dbc::getReader()->Exec($sql);
     }
     else {
       print '<br> Invalid entry. STOP!<br>';

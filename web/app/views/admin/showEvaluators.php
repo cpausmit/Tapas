@@ -7,39 +7,33 @@ if (!isMaster()) {
   exitAccessError();
 }
 
-include_once("app/models/Utils.php");
-include_once("app/models/Dbc.php");
+include_once("app/models/Assignment.php");
 include_once("app/models/Course.php");
 include_once("app/models/Tables.php");
 include_once("app/models/TeachingTask.php");
 
-$db = Dbc::getReader();
-
-$activeTables = new Tables($db,"ActiveTables");
-$evaluationsTable = $activeTables->getUniqueMatchingName('Evaluations');
-$term = substr($evaluationsTable,-5,5);
-$courses = Courses::fromDb($db);
+$courses = Courses::fromDb();
+$activeTables = new Tables("ActiveTables");
+$term = substr($activeTables->getUniqueMatchingName('Evaluations'),-5,5);
+$assignments = Assignments::fromDb($term);
 
 print '<article class="page">'."\n";
-print "Active evaluations term: $term</p>";
+print "<h1>Active evaluations term: $term</h1>";
 
 $list = "";
-$sql = "select Person,Task from Assignments where Term='$term' and Task like '%-Lec-%' order by Task";
-$rows = $db->query($sql);
-foreach ($rows as $key => $row) {
-  $email = $row[0];
-  $taskId = $row[1];
-     
-  $myTask = new TeachingTask($taskId);
-  $number = $myTask->getCourse();
-  foreach ($courses->list as $key => $course) {
-    if ($course->number == $number) {
-      print " $course->number --> $email<br>\n";
-      if ($list == "")
-        $list = "$email";
-      else
-        $list = "$list,$email";
-      break;
+foreach ($assignments->list as $key => $assignment) {
+  if (strpos($assignment->task,'-Lec-') > 0) {     // find only lecturers
+    $myTask = new TeachingTask($assignment->task);
+    $number = $myTask->getCourse();
+    foreach ($courses->list as $key => $course) {
+      if ($course->number == $number) {
+        print " $course->number --> $assignment->person<br>\n";
+        if ($list == "")
+          $list = "$assignment->person";
+        else
+          $list = "$list,$assignment->person";
+        break;
+      }
     }
   }
 }

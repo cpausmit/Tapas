@@ -7,8 +7,6 @@ if (! (isTeacher() || isMaster())) {
   exitAccessError();
 }
 
-include_once("app/models/Utils.php");
-include_once("app/models/Dbc.php");
 include_once("app/models/Evaluation.php");
 include_once("app/models/Student.php");
 include_once("app/models/Tables.php");
@@ -21,15 +19,14 @@ else
   print " ERROR no student name.<br>\n";
 
 // connect to our database
-$db = Dbc::GetReader();
-$students = Students::fromDb($db);
+$students = Students::fromDb();
 $student = $students->list[$studentEmail];
 $name = $student->lastName.", ".$student->firstName;
 
 // find active evaluations table
-$activeTables = new Tables($db,"ActiveTables");
+$activeTables = new Tables("ActiveTables");
 $term = substr($activeTables->getUniqueMatchingName('Evaluations'),-5,5);
-$evaluations = Evaluations::fromDb($db,$term);
+$evaluations = Evaluations::fromDb($term);
 
 // not nice - key needs to be contructed somewhere else
 $key = "$term:$email:$studentEmail";

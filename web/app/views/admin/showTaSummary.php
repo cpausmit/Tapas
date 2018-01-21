@@ -12,19 +12,15 @@ $email = $_GET['email'];
 
 // load database and models
 include_once("app/models/Assignment.php");
-include_once("app/models/Utils.php");
-include_once("app/models/Dbc.php");
 include_once("app/models/Evaluation.php");
 include_once("app/models/Student.php");
 include_once("app/models/Teacher.php");
 include_once("app/models/TeachingTask.php");
 
-$db = Dbc::getReader();
-//
 // create an instance
-$students = Students::fromDb($db);
+$students = Students::fromDb();
 $ta = $students->list[$email];
-$teachers = Teachers::fromDb($db);
+$teachers = Teachers::fromDb();
 
 $taNames = array();
 foreach ($students->list as $key => $student)
@@ -41,7 +37,7 @@ print "\n";
 print "<hr>\n";
 
 // loop through all assignment tables and find our candidate
-$assignments = Assignments::fromDb($db,'ALL');
+$assignments = Assignments::fromDb('ALL');
 print '<ul>';
 foreach ($assignments->list as $key => $assignment) {
   if ($assignment->person == $email) {
@@ -52,7 +48,7 @@ foreach ($assignments->list as $key => $assignment) {
 print '</ul>';
 
 // loop through evaluation table and find our candidate
-$evaluations = Evaluations::fromDb($db,'ALL');
+$evaluations = Evaluations::fromDb('ALL');
 print '<ul>';
 foreach ($evaluations->list as $key => $evaluation) {
   if ($evaluation->taEmail == $email) {

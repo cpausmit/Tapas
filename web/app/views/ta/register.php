@@ -22,11 +22,10 @@ function testSelection($p1,$p2,$p3) {
 }
 
 // database pointer
-$db = Dbc::getReader();
-$courses = Courses::fromDb($db);
+$courses = Courses::fromDb();
 
 // get all TAs and the possible full time assignments
-$planningTables = new Tables($db,'PlanningTables');
+$planningTables = new Tables('PlanningTables');
 $term = substr($planningTables->getUniqueMatchingName('Preferences'),-5,5);
 $email = strtolower($_SERVER['SSL_CLIENT_S_DN_Email']);
 
@@ -48,18 +47,18 @@ if (testSelection($_POST['pref1'],$_POST['pref2'],$_POST['pref3'])) {
   $sql = "insert into Preferences (Term,Email,Pref1,Pref2,Pref3) values"
       . " ('" . $term . "','" . $email . "','" . $_POST['pref1']. "','" . $_POST['pref2']
       . "','" . $_POST['pref3'] . "')";
-  $rc = $db->Exec($sql);
-  $errorArray = $db->errorInfo();
+  $rc = Dbc::getReader()->Exec($sql);
+  $errorArray = Dbc::getReader()->errorInfo();
   if (!$rc) {
     if ($errorArray[0] == 23000 && $errorArray[1] == 1062) {
       print "<!-- WARNING -- duplicate entry.<br> --> \n";
       $sql = "update Preferences set Pref1='" . $_POST['pref1']
            . "',Pref2='" . $_POST['pref2'] . "',Pref3='" . $_POST['pref3']
            . "' where Term='$term' and Email='" . $email ."'";
-      $rc = $db->Exec($sql);
+      $rc = Dbc::getReader()->Exec($sql);
       if (!$rc) {
         print "<br>\n ERROR -- PDO::errorInfo():\n";
-        print_r($db->errorInfo());
+        print_r(Dbc::getReader()->errorInfo());
         exit();
       }
       else
@@ -70,7 +69,7 @@ if (testSelection($_POST['pref1'],$_POST['pref2'],$_POST['pref3'])) {
     }
     else {
       print "<br>\n ERROR -- PDO::errorInfo():\n";
-      print_r($db->errorInfo());
+      print_r(Dbc::getReader()->errorInfo());
     }
   }
   else

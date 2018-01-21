@@ -7,20 +7,6 @@ if (! (isAdmin() || isMaster())) {
   exitAccessError();
 }
 
-// Get all semesters from the database
-function getSemestersFromDb($db)
-{
-  // read complete courses table
-  $semesters = "";
-  $rows = $db->query("select * from Semesters order by Term");
-  foreach ($rows as $key => $row) {
-    $semester = Semester::fromRow($row);
-    $semesters[$semester->term] = $semester;
-  }
-
-  return $semesters;
-}
-
 function printEmptyForm()
 {
   print '<h1>Add Semester to the Database</h1>'."\n";
@@ -44,11 +30,8 @@ function printEmptyForm()
 // M A I N
 //==================================================================================================
 
-// connect to our database
-$db = Dbc::getReader();
-
 // get a full list of available semesters
-$semesters = getSemestersFromDb($db);
+$semesters = Semesters::fromDb();
 
 // pick up the term from the form
 $term = '';
@@ -63,13 +46,13 @@ if ($term == '') {
 }
 else {
   printEmptyForm();
-  if (isset($semesters[$term])) {
+  if (isset($semesters->list[$term])) {
   }
   else {
     $semester = Semester::fresh();
     $semester->term=$term;
-    $semester->addToDb($db);
-    $semesters = getSemestersFromDb($db);
+    $semester->addToDb();
+    $semesters = Semesters::fromDb();
   }
 }
 
@@ -79,7 +62,7 @@ print '<hr>';
 print '<p>';
 print '<table>';
 print "<tr><th> Semester ID </th></tr>";
-foreach ($semesters as $key => $semester)
+foreach ($semesters->list as $key => $semester)
   print "<tr><td> $key </td></tr>";
 print '</table>';
 print '<hr>';

@@ -6,20 +6,16 @@ if (! (isMaster() || isAdmin())) {
   exitAccessError();
 }
 
-include_once("app/models/Dbc.php");
-include_once("app/models/Tables.php");
 include_once("app/models/Student.php");
 include_once("app/models/Ta.php");
-
-// connect to our database
-$db = Dbc::getReader();
+include_once("app/models/Tables.php");
 
 // read complete students table
-$students = Students::fromDb($db);
+$students = Students::fromDb();
 // find active Ta table
-$activeTables = new Tables($db,"ActiveTables");
+$activeTables = new Tables("ActiveTables");
 $term = substr($activeTables->getUniqueMatchingName('Tas')-5,5);
-$tas = Tas::fromDb($db,$term);
+$tas = Tas::fromDb($term);
 $nTas = sizeof($tas->list);
 
 print "<article class=\"page\">\n";

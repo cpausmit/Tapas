@@ -32,11 +32,11 @@ class Students
     return $instance;
   }
 
-  public static function fromDb($db)
+  public static function fromDb()
   {
     // 'constructor' returns full list of students
     $instance = new self();
-    $studentRows = $db->query("select * from Students order by Email");
+    $studentRows = Dbc::getReader()->query("select * from Students order by Email");
     foreach ($studentRows as $key => $row)
       $instance->addStudent(Student::fromRow($row));
     
@@ -77,13 +77,13 @@ class Student
     return $instance;
   }
 
-  public static function fromEmail($db,$email)
+  public static function fromEmail($email)
   {
     // 'constructor' with just email given
     $instance = new self();
     $sql = "select * from Students where Email = '$email'";
     //print " SQL: $sql";
-    $students = $db->query($sql);
+    $students = Dbc::getReader()->query($sql);
     foreach ($students as $key => $row) {
       $instance->fill($row);
     }
@@ -117,7 +117,7 @@ class Student
     $this->research = $row[7];
   }
 
-  public function addToDb($db)
+  public function addToDb()
   {
     // adding the given student instance to the database
 
@@ -130,14 +130,14 @@ class Student
                       $this->year,$this->division,$this->research);
       $sql = " insert into Students values $vals";
       //print "<br> SQL: $sql <br>";
-      $db->Exec($sql);
+      Dbc::getReader()->Exec($sql);
     }
     else {
       print '<br> Invalid entry. STOP!<br>';
     }
   }
 
-  public function updateDb($db)
+  public function updateDb()
   {
     // adding the given student instance to the database
 
@@ -154,8 +154,7 @@ class Student
                       $this->advisorEmail,$this->supervisorEmail,
                       $this->year,$this->division,$this->research);
       $sql = " update Students set $vals where Email = '$this->email';";
-      //print "<br> SQL: $sql <br>";
-      $db->Exec($sql);
+      Dbc::getReader()->Exec($sql);
     }
     else {
       print '<br> Invalid entry. STOP!<br>';

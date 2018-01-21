@@ -1,7 +1,6 @@
 <?php
 
 include_once("app/models/Admin.php");
-include_once("app/models/Dbc.php");
 include_once("app/models/Ta.php");
 include_once("app/models/Tables.php");
 
@@ -16,7 +15,7 @@ function isMaster()
   $level = -1;
 
   // get admins from database
-  $admins = Admins::fromDb(Dbc::getReader());
+  $admins = Admins::fromDb();
   if (array_key_exists($email,$admins->list))
     $level = $admins->list[$email]->level;
 
@@ -35,7 +34,7 @@ function isAdmin()
   $level = -1;
 
   // get admins from database
-  $admins = Admins::fromDb(Dbc::getReader());
+  $admins = Admins::fromDb();
   if (array_key_exists($email,$admins->list))
     $level = $admins->list[$email]->level;
   
@@ -50,9 +49,9 @@ function isTa()
   // read TA table
 
   // get the active tables to consider
-  $activeTables = new Tables(Dbc::getReader(),'ActiveTables');
+  $activeTables = new Tables('ActiveTables');
   $term = substr($activeTables->getUniqueMatchingName('Tas'),-5,5);
-  $tas = Tas::fromDb(Dbc::getReader(),$term);
+  $tas = Tas::fromDb($term);
 
   // out if the list is empty
   if (sizeof($tas->list) == 0)
@@ -69,9 +68,9 @@ function isTa()
 function isTeacher()
 {
   // read Teacher table
-  $activeTables = new Tables(Dbc::getReader(),'ActiveTables');
+  $activeTables = new Tables('ActiveTables');
   $term = substr($activeTables->getUniqueMatchingName('Assignments'),-5,5);
-  $teachers = Tas::fromDb(Dbc::getReader(),$term);
+  $teachers = Tas::fromDb($term);
   
   // see whether the email is in the access list
   $email = strtolower($_SERVER['SSL_CLIENT_S_DN_Email']);

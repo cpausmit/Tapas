@@ -7,21 +7,19 @@ if (! isMaster()) {
   exitAccessError();
 }
 
-include_once("app/models/Dbc.php");
 include_once("app/models/Evaluation.php");
 include_once("app/models/Student.php");
 include_once("app/models/Tables.php");
 include_once("app/models/Teacher.php");
 
 // connect to our database
-$db = Dbc::getReader();
-$students = Students::fromDb($db);
-$teachers = Teachers::fromDb($db);
+$students = Students::fromDb();
+$teachers = Teachers::fromDb();
 
-$activeTables = new Tables($db,'ActiveTables');
+$activeTables = new Tables('ActiveTables');
 $evalTable = $activeTables->getUniqueMatchingName('Evaluations');
 $term = substr($evalTable,-5,5);
-$evaluations = Evaluations::fromDb($db,$term);
+$evaluations = Evaluations::fromDb($term);
 $n = sizeof($evaluations->list);
 
 // get TA names

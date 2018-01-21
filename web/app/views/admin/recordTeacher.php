@@ -2,8 +2,6 @@
 
 include("app/views/admin/header.php");
 
-include_once("app/models/Utils.php");
-include_once("app/models/Dbc.php");
 include_once("app/models/Teacher.php");
 
 // make sure this is the master
@@ -11,8 +9,7 @@ if (! (isMaster())) {
   exitAccessError();
 }
 
-$db = Dbc::getReader();
-$teacher = Teacher::fromEmail($db,$_POST['email']);
+$teacher = Teacher::fromEmail($_POST['email']);
 $new = $teacher->isFresh();
 
 print '<article class="page">'."\n";
@@ -31,11 +28,10 @@ $teacher->status = $_POST['status'];
 
 $teacher->printSummary();
 
-$db = Dbc::getReader();
 if ($new)
-  $teacher->addToDb($db);
+  $teacher->addToDb();
 else
-  $teacher->updateDb($db);
+  $teacher->updateDb();
 
 print '</article>'."\n";
 

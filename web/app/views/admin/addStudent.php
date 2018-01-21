@@ -7,8 +7,7 @@ if (! (isAdmin() || isMaster())) {
   exitAccessError();
 }
 
-include_once("app/models/Utils.php");
-include_once("app/models/Dbc.php");
+include_once("app/models/Student.php");
 
 function printEmptyForm()
 {
@@ -29,13 +28,12 @@ function printEmptyForm()
   print '</form>'."\n";
 }
 
-// Get db handle
-$db = Dbc::getReader();
-
 // Pick up the email from the form
 $email = '';
 if (array_key_exists('email',$_REQUEST))
   $email = makeEmail($_REQUEST['email']);
+
+$students = Students::fromDb();
 
 // start the page
 print '<article class="page">'."\n";
@@ -55,13 +53,13 @@ else if (array_key_exists('firstName',$_REQUEST)) {
   $student->division = $_POST['division'];
   $student->research = $_POST['research'];
 
-  $test = Student::fromEmail($db,$student->email);
+  $test = Student::fromEmail($student->email);
   if ($test->isFresh()) {
-    $student->addToDb($db);
+    $student->addToDb();
     print ' New student added to database: <br>'."\n";
   }
   else {
-    $student->updateDb($db);
+    $student->updateDb();
     print ' Updated existing student in the database: <br>'."\n";
   }
   $student->printSummary();
@@ -69,7 +67,7 @@ else if (array_key_exists('firstName',$_REQUEST)) {
 }
 else {
   // See whether this is a known student
-  $student = Student::fromEmail($db,$email);
+  $student = Student::fromEmail($email);
   if ($student->isFresh())
     print '<h1>Add a New Student to the Database</h1>'."\n";
   else
@@ -86,9 +84,7 @@ print "<table>\n";
 
 // loop
 $first = true;
-$students = $db->query("select * from Students order by lastName");
-foreach ($students as $key => $row) {
-  $student = Student::fromRow($row);
+foreach ($students->list as $key => $student) {
   $student->printTableRow($first);
   $first = false;
 }

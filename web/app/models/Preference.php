@@ -12,6 +12,8 @@
 //+-------+----------+------+-----+---------+-------+
 // alter table Preferences add constraint onePerTerm unique(Term, Email);
 
+include_once("app/models/Dbc.php");
+
 class Preferences
 {
   // Property declaration
@@ -28,12 +30,12 @@ class Preferences
     return $instance;
   }
 
-  public static function fromDb($db,$term)
+  public static function fromDb($term)
   {
     // 'constructor' returns full list of preferences
     $instance = new self();
     $sql = "select * from Preferences where Term='$term' order by Email";
-    $preferenceRows = $db->query($sql);
+    $preferenceRows = Dbc::getReader()->query($sql);
     foreach ($preferenceRows as $key => $row)
       $instance->add(Preference::fromRow($row));
     

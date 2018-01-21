@@ -8,19 +8,17 @@ if (! (isMaster() || isAdmin())) {
 }
 
 include_once("app/models/Utils.php");
-include_once("app/models/Dbc.php");
 include_once("app/models/Assignment.php");
 include_once("app/models/Tables.php");
 
 // command line arguments
 $option = $_GET['option'];  // this is the input course number
-$db = Dbc::getReader();
 
 // find the active tables and the last non-active table
-$activeTables = new Tables($db,"ActiveTables");
+$activeTables = new Tables("ActiveTables");
 $assignmentsTable = $activeTables->getUniqueMatchingName('Assignments');
 $term = substr($assignmentsTable,-5,5);
-$assignments = Assignments::fromDb($db,$term);
+$assignments = Assignments::fromDb($term);
 
 print '<article class="page">'."\n";
 print '<h1>Show Active Assignments</h1>';
