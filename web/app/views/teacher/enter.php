@@ -7,24 +7,28 @@ if (! (isTeacher() || isMaster())) {
   exitAccessError();
 }
 
-include_once("app/models/Dbc.php");
-include_once("app/models/Semester.php");
+include_once("app/models/Assignment.php");
+include_once("app/models/Student.php");
 include_once("app/models/Tables.php");
 include_once("app/models/TeachingTask.php");
 
 function getNamesFromDb($term)
 {
-  $sql = "select Students.FirstName, Students.LastName, Assignments.Person, Assignments.Task"
-      . " from Assignments,Students "
-      . " where Assignments.Term = 'Assignmentserm' and Students.Email = Assignments.Person"
-      . " order by Students.LastName";
-  $taskRows = Dbc::getReader()->query($sql);
+  $students = Students::fromDb();
+  $assignments = Assignments::fromDb($term);
 
-  $names = "";
-  foreach ($taskRows as $key => $row) {
-    $myTask = new TeachingTask($row[3]);
-    $names[$row[2]] = $row[1] . ', ' . $row[0] . '  Task: ' . $myTask->getTaTask();
+  // loop through all assignments and enter the names of TAs to be evaluated
+  $names = array();
+  foreach ($assignments->list as $key => $assignment) {
+    if (isset($students->list[$assignment->person])) {
+      $student = $students->list[$assignment->person];
+      $myTask = new TeachingTask($assignment->task);
+      $names[$assignment->person] = $student->lastName . ', ' . $student->firstName . '  Task: ' . $myTask->getTaTask();
+    }
   }
+
+  // make sure to sort the names alphabetically
+  asort($names);
 
   return $names;
 }
@@ -33,17 +37,12 @@ function getNamesFromDb($term)
 // M A I N
 //==================================================================================================
 
-// get a full list of available semesters
-$semesters = Semesters::fromDb();
-
 // find the active table
 $activeTables = new Tables("ActiveTables");
-$evaluationsTable = $activeTables->getUniqueMatchingName('Evaluations');
-$term = substr($evaluationsTable,-5,5);
+$term = substr($activeTables->getUniqueMatchingName('Evaluations'),-5,5);
 $names = getNamesFromDb($term);
 
 print '<article class="page">'."\n";
-
 print '<h1>Select the TA</h1>'."\n";
 print ' '."\n";
 print "Active evaluations term: $term (assignments)<br>\n";

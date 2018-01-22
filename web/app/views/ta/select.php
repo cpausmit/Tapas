@@ -7,7 +7,7 @@ if (! (isTa() || isMaster())) {
   exitAccessError();
 }
 
-include_once("app/models/Dbc.php");
+include_once("app/models/Assignment.php");
 include_once("app/models/Course.php");
 include_once("app/models/Tables.php");
 include_once("app/models/TeachingTask.php");
@@ -17,20 +17,16 @@ function generateOptions($term,$courses)
   // generate the options for all teaching assignment
 
   $options = array();
-  $sql = "select * from Assignments where Term='$term' order by Task";
-  $results = Dbc::getReader()->query($sql);
-  foreach ($results as $key => $row) {
-    $term = $row[0];
-    $task = $row[1];
-    $email = $row[2];
-    $myTask = new TeachingTask($task);
+  $assignments = Assignments::fromDb($term);
+  foreach ($assignments->list as $key => $assignment) {
+    $myTask = new TeachingTask($assignment->task);
     if ($myTask->isTa() && $myTask->getEffort() == 'full') {
       $number = $myTask->getCourse();
       $course = $courses->list[$number];
       $option = $myTask->getTaTask() . ' --> ' . $course->name;
       $find = array_search($option,$options);
       if (! $find)
-        $options[$task] = $option;
+        $options[$assignment->task] = $option;
     }
   }
   

@@ -8,7 +8,6 @@ if (! isMaster()) {
   exitAccessError();
 }
 
-include_once("app/models/Dbc.php");
 include_once("app/models/Tables.php");
 
 function findRecipientList($targetString,$email)
@@ -28,7 +27,7 @@ function findRecipientList($targetString,$email)
   } 
   else if ($targetString == "Teachers") {
     // find evaluations teachers
-    $activeTables = new Tables($db,"ActiveTables");
+    $activeTables = new Tables("ActiveTables");
     $term = substr($activeTables->getUniqueMatchingName('Evaluations'),-5,5);
     $assignments = Assignments::fromDb($term);
     foreach ($assignments->list as $key => $assignment) {
@@ -84,9 +83,6 @@ function printEmailForm($subject,$message)
 // M A I N
 //==================================================================================================
 
-// connect to our database
-$db = Dbc::getReader();
-
 // setting the right defaults
 $subject = '';
 $message = '';
@@ -107,7 +103,7 @@ $headers  = "From: Christoph Paus <paus@mit.edu>\nReply-To: <paus@mit.edu>\n";
 
 // are we sending the message already?
 if (isMessageReady()) {
-  $list = findRecipientList($db,$targetString,$email);
+  $list = findRecipientList($targetString,$email);
 }
 
 // start page

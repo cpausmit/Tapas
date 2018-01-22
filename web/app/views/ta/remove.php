@@ -7,9 +7,8 @@ if (! (isTa() || isMaster())) {
   exitAccessError();
 }
 
+include_once("app/models/Preference.php");
 include_once("app/models/Utils.php");
-include_once("app/models/Dbc.php");
-
 
 // find the active tables
 $activeTables = new Tables("ActiveTables");
@@ -19,19 +18,16 @@ print '<article class="page">'."\n";
 print '<h1>TA Preference Removal</h1>';
 
 $email = strtolower($_SERVER['SSL_CLIENT_S_DN_Email']);
-$sql = "delete from Preferences where Term='$term' and Email = '$email'";
 
-$rc = Dbc::getReader()->exec($sql);
-if (!$rc) {
-  //$errNum = mysqli_errno($link);
-  //$errMsg = mysqli_error($link);
-  print " ERROR - could not remove preferences: ";
-}
-else {
-  print '<p>Selected preferences have been removed.</p>';
-}
+$preference = new Preference();
+$preference->term = $term;
+$preference->email = $email;
 
-print '</article>'."\n";
+$preference->deleteFromDb();
+
+print ' REMOVED preferences..<br>';
+
+print "</article>\n";
 
 include("app/views/ta/footer.php");
 

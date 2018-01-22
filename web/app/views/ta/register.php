@@ -7,9 +7,17 @@ if (! (isTa() || isMaster())) {
   exitAccessError();
 }
 
-include_once("app/models/Dbc.php");
 include_once("app/models/Course.php");
+include_once("app/models/Preference.php");
 include_once("app/models/Tables.php");
+include_once("app/models/TeachingTask.php");
+
+function parametersSet() {
+  if (!isset($_POST['pref1']) || !isset($_POST['pref1']) || !isset($_POST['pref1'])) {
+    return false;
+  }
+  return true;
+}
 
 function testSelection($p1,$p2,$p3) {
   $valid = false;
@@ -27,10 +35,17 @@ $courses = Courses::fromDb();
 // get all TAs and the possible full time assignments
 $planningTables = new Tables('PlanningTables');
 $term = substr($planningTables->getUniqueMatchingName('Preferences'),-5,5);
+$preferences = Preferences::fromDb($term);
 $email = strtolower($_SERVER['SSL_CLIENT_S_DN_Email']);
 
 print '<article class="page">'."\n";
 print '<h1>Selected TA Preferences</h1>';
+
+if (!parametersSet()) {
+  print " Parameters not set.<br>";
+  print '</article>'."\n";
+  exit();
+}
 print '<p>Your selected TA preferences are:</p>';
 print ' ';
 
@@ -40,41 +55,23 @@ $task2 = new TeachingTask($_POST['pref2']); print '&nbsp;&nbsp; 2: '; $task2->pr
 $task3 = new TeachingTask($_POST['pref3']); print '&nbsp;&nbsp; 3: '; $task3->printTaTask();
 print '</p>';
 
-// test whether selection is valid
+//// test whether selection is valid
 if (testSelection($_POST['pref1'],$_POST['pref2'],$_POST['pref3'])) {
   print '<p>Selection is valid. ';
-
-  $sql = "insert into Preferences (Term,Email,Pref1,Pref2,Pref3) values"
-      . " ('" . $term . "','" . $email . "','" . $_POST['pref1']. "','" . $_POST['pref2']
-      . "','" . $_POST['pref3'] . "')";
-  $rc = Dbc::getReader()->Exec($sql);
-  $errorArray = Dbc::getReader()->errorInfo();
-  if (!$rc) {
-    if ($errorArray[0] == 23000 && $errorArray[1] == 1062) {
-      print "<!-- WARNING -- duplicate entry.<br> --> \n";
-      $sql = "update Preferences set Pref1='" . $_POST['pref1']
-           . "',Pref2='" . $_POST['pref2'] . "',Pref3='" . $_POST['pref3']
-           . "' where Term='$term' and Email='" . $email ."'";
-      $rc = Dbc::getReader()->Exec($sql);
-      if (!$rc) {
-        print "<br>\n ERROR -- PDO::errorInfo():\n";
-        print_r(Dbc::getReader()->errorInfo());
-        exit();
-      }
-      else
-        print "Existing preferences have been updated.</p>";
-    }
-    else if ($errorArray[0] == 42 && $errorArray[1] == 1146) {
-      print "<br>\n ERROR - table (Preferences) does not exist.\n";
-    }
-    else {
-      print "<br>\n ERROR -- PDO::errorInfo():\n";
-      print_r(Dbc::getReader()->errorInfo());
-    }
-  }
+//  
+  $row = array();
+  $row[0] = $term;
+  $row[1] = $email;
+  $row[2] = $_POST['pref1'];
+  $row[3] = $_POST['pref2'];
+  $row[4] = $_POST['pref3'];
+  $preference = Preference::fromRow($row);
+  if (!isset($preferences->list[$preference->email]))
+    $preference->addToDb();
   else
-    print 'Selection has been registered.</p>';
+    $preference->updateDb();
 
+  print 'Selection has been registered.</p>';
   print '</select></td></tr>';
 }
 else {

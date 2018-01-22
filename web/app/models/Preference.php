@@ -13,6 +13,7 @@
 // alter table Preferences add constraint onePerTerm unique(Term, Email);
 
 include_once("app/models/Dbc.php");
+include_once("app/models/Utils.php");
 
 class Preferences
 {
@@ -76,6 +77,59 @@ class Preference
     $this->pref1 = $row[2];
     $this->pref2 = $row[3];
     $this->pref3 = $row[4];
+  }
+
+  protected function isValid()
+  {
+    // making sure preferences information is valid
+
+    $valid = true;
+    if (isEmail($this->email))
+      print "";
+    else
+      return false;
+   
+    return $valid;
+  }
+
+  public function addToDb()
+  {
+    // adding the given preference to the database
+
+    // make sure this is a valid new entry
+    if ($this->isValid()) {
+      $vals = sprintf("('%s','%s','%s','%s','%s')",
+                      $this->term,$this->email,$this->pref1,$this->pref2,$this->pref3);
+      $sql = " insert into Preferences values $vals";
+      //print "<br> SQL: $sql <br>";
+      Dbc::getReader()->Exec($sql);
+    }
+    else
+      print '<br> Invalid entry. STOP!<br>';
+  }
+
+  public function updateDb()
+  {
+    // updating the given preference to the database
+
+    // make sure this is a valid new entry
+    if ($this->isValid()) {
+      $form = "Pref1 = '%s', Pref2 = '%s', Pref3 = '%s'";
+      $vals = sprintf($form,$this->pref1,$this->pref2,$this->pref3);
+      $sql = " update Preferences set $vals where Term = '$this->term' and Email = '$this->email';";
+      Dbc::getReader()->Exec($sql);
+    }
+    else
+      print '<br> Invalid entry. STOP!<br>';
+  }
+
+  public function deleteFromDb()
+  {
+    // delete the given preference to the database
+
+    // make sure this is a valid new entry
+    $sql = "delete from Preferences where Term = '$this->term' and Email = '$this->email';";
+    Dbc::getReader()->Exec($sql);
   }
 
   // Property declaration
