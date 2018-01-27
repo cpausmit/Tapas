@@ -14,18 +14,18 @@ include_once("app/models/Evaluation.php");
 
 // get TA names
 $students = Students::fromDb();
-$taNames = "";
+$taNames = array();
 foreach ($students->list as $key => $student)
   $taNames[$student->email] = "$student->lastName, $student->firstName";
 
 // get teacher names
 $teachers = Teachers::fromDb();
-$teacherNames = "";
+$teacherNames = array();
 foreach ($teachers->list as $key => $teacher)
   $teacherNames[$teacher->email] = "$teacher->lastName, $teacher->firstName";
 
 // get evaluations
-$evaluations = Evaluations::fromDb(,$term);
+$evaluations = Evaluations::fromDb($term);
 $n = sizeof($evaluations->list);
  
 // Present the results

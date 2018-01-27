@@ -58,7 +58,7 @@ class Assignments
   public function show($option)
   {
     print "<table>\n";
-    print "<tr><th>&nbsp; Course &nbsp;</th><th> Type &nbsp;</th><th> Effort &nbsp;</th>";
+    print "<tr><th>&nbsp; Term &nbsp;</th><th>&nbsp; Course &nbsp;</th><th> Type &nbsp;</th><th> Effort &nbsp;</th>";
     print "<th> TA type &nbsp;</th><th> Person &nbsp;</th><th> Id &nbsp;</th></tr>\n";
     $iF = 0;
     $iP = 0;

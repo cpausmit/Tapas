@@ -2,6 +2,7 @@
 
 // make sure we have an admin
 include("app/views/admin/header.php");
+
 if (! (isAdmin() || isMaster())) {
   exitAccessError();
 }

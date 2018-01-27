@@ -22,9 +22,6 @@ if (isTa() || isMaster()) {
   print ' <hr>'."\n";
   print ' Thank you! for being available to help with the important task of teaching in the';
   print ' department.';
-  //print ' Please remember, teaching is rewarding, but can also be hard at times for';
-  //print ' TAs and for professors. Keep a positive attitude, it helps everybody!<br><br>'."\n";
-  //print '<center><img class="rounded" src="/img/phd120610s.gif"></center>'."\n";
 }
 else {
   print '<p> You are not on the TA list. This could be a mistake'."\n";

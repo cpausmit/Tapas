@@ -2,12 +2,12 @@
 
 include("app/views/admin/header.php");
 
-include_once("app/models/Teacher.php");
-
 // make sure we have an admin
 if (! (isAdmin() || isMaster())) { 
   exitAccessError();
 }
+
+include_once("app/models/Teacher.php");
 
 // Pick up the email from the form
 $email = makeEmail($_POST['email']);

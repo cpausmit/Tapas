@@ -2,12 +2,12 @@
 
 include("app/views/admin/header.php");
 
-include("app/models/Course.php");
-
 // make sure we have an admin
 if (! (isAdmin() || isMaster())) { 
   exitAccessError();
 }
+
+include("app/models/Course.php");
 
 // Pick up the course number from the form
 $number = $_POST['number'];

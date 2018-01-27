@@ -148,13 +148,6 @@ function printTermForm($term,$semesters)
   print '</form>'."\n";
 }
 
-function removeFromDb($term,$number)
-{
-  // remove an existing course number from the course resource table in the database
-  $sql = " delete from CourseResources where Term = '$term' and Number = '$number'";
-  Dbc::getReader()->Exec($sql);
-}
-
 //==================================================================================================
 // M A I N
 //==================================================================================================
@@ -188,10 +181,6 @@ if ($GLOBALS['COMPLETE'] == 2) {                  // All post variables are fill
     print "This term is not in our database. \n";
   }
   else {
-    if (isset($courseResources->list[$number])) { // if course exists it will be overwritten
-      removeFromDb($term,$number);
-      print "Removed course $term:$number from our list<br>\n";
-    }
     
     // initialize a new courseResource
     print " New resource $term:$number<br>\n";
@@ -207,12 +196,18 @@ if ($GLOBALS['COMPLETE'] == 2) {                  // All post variables are fill
     $courseResource->numHalfUtilTas = $numHalfUtilTas;
     $courseResource->numPartUtilTas = $numPartUtilTas;
     
-    // add it to the database
-    $courseResource->addToDb();
-    print "Added new CourseResource to our list: $term:$number<br>\n";
+    if (isset($courseResources->list[$number])) { // if course exists it will be overwritten
+      $courseResource->updateDb();
+      print "Updated course in database: $term:$number<br>\n";
+    }
+    else {
+      // add it to the database
+      $courseResource->addToDb();
+      print "Added new CourseResource in the database: $term:$number<br>\n";
+    }
 
-    // update the TA list in memory
-    $courseResources = getCourseResourcesFromDb($term);
+    // update the course resource list in memory
+    $courseResources = CourseResources::fromDb($term);
     $nEntries =  sizeof($courseResources->list);
   }
 }
