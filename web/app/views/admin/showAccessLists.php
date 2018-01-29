@@ -21,7 +21,7 @@ $teacherTerm = substr($activeTables->getUniqueMatchingName('Assignments'),-5,5);
 // get admins, tas and teachers from database
 $admins = Admins::fromDb();
 $tas = Tas::fromDb($taTerm);
-$teachers = Teachers::fromDb($teacherTerm);
+$teachers = Teachers::fromAssignments($teacherTerm);
 
 print '<article class="page">'."\n";
 print "<h1>Admins</h1><p>";

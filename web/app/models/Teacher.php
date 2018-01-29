@@ -41,6 +41,20 @@ class Teachers
     return $instance;
   }
 
+  public static function fromAssignments($term)
+  {
+    // 'constructor' returns list of teachers assigned during term for lecture
+    $instance = new self();
+    $sql = "select * from Teachers as t inner join Assignments as a on t.Email = a.Person"
+        .  " where a.Term = '$term' and a.Task like '%-Lec-%' order by t.LastName";
+    //print " SQL : $sql";
+    $rows = Dbc::getReader()->query($sql);
+    foreach ($rows as $key => $row)
+      $instance->addTeacher(Teacher::fromRow($row));
+
+    return $instance;
+  }
+
   public function addTeacher($teacher)
   {
     if (!isset($this->list[$teacher->email]))
