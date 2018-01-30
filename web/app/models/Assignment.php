@@ -1,13 +1,14 @@
 <?php
 
 // mysql> describe Assignments;
-//+--------+----------+------+-----+---------+-------+
-//| Field  | Type     | Null | Key | Default | Extra |
-//+--------+----------+------+-----+---------+-------+
-//| Term   | char(5)  | YES  |     | NULL    |       |
-//| Task   | char(40) | YES  | UNI | NULL    |       |
-//| Person | char(40) | YES  |     | NULL    |       |
-//+--------+----------+------+-----+---------+-------+
+//+--------+------------+------+-----+---------+-------+
+//| Field  | Type       | Null | Key | Default | Extra |
+//+--------+------------+------+-----+---------+-------+
+//| Term   | char(5)    | YES  |     | NULL    |       |
+//| Task   | char(40)   | YES  | UNI | NULL    |       |
+//| Person | char(40)   | YES  |     | NULL    |       |
+//| EvalO  | tinyint(4) | YES  |     | -1      |       |
+//+--------+------------+------+-----+---------+-------+
 
 include_once("app/models/Dbc.php");
 include_once("app/models/TeachingTask.php");
@@ -117,6 +118,7 @@ class Assignment
     $this->term = $row[0];
     $this->task = $row[1];
     $this->person = $row[2];
+    $this->evalO = $row[3];
   }
 
   public function show($option='full')
@@ -147,6 +149,7 @@ class Assignment
   public $term = '';
   public $task = '';
   public $person = '';
+  public $evalO = -1;
 
 }
 

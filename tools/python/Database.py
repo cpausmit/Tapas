@@ -109,6 +109,25 @@ class Teacher(BaseTeacher):
               (self.firstName,self.lastName,self.eMail,self.position,self.status)
         return string
 
+class Assignment:
+    'An Assignment class.'
+
+    def __init__(self,term,task,person,evalO):
+        self.term = term
+        self.task = task
+        self.person = person
+        self.evalO = float(evalO)
+
+    def insertString(self):
+        string = "('%s','%s','%s',%d)"%(self.term,self.task,self.person,self.evalO)
+        return string
+
+    def update(self,evalO):
+        self.evalO = evalO
+        
+    def show(self):
+        print " Number: %5s %20s %s %3.1f"%(self.term,self.task,self.person,self.evalO)
+    
 class Container:
     'Container class for any type of teacher or course. Basically a hash array. Keys: email or course number.'
 
@@ -131,6 +150,42 @@ class Container:
         for key, value in self.hash.iteritems():
             sys.stdout.write(" Key: %-6s -- "%key)
             value.show()
+
+    def fillWithAssignments(self,database,debug=False):
+        if debug:
+            print " Start fill assignments."
+        # grab the cursor
+        cursor = database.cursor()
+        # Prepare SQL query to select all courses from the Courses table
+        sql = "SELECT * FROM Assignments"
+        if debug:
+            print " SQL> " + sql
+        try:
+            # Execute the SQL command
+            cursor.execute(sql)
+            # Fetch all the results
+            results = cursor.fetchall()
+            for row in results:
+                term = row[0]
+                task = row[1]
+                person = row[2]
+                evalO = row[3]
+                # Now print fetched result
+                if debug:
+                    print " found Assignment with ('%s','%s''%s',%d);"\
+                        %(term,task,person,evalO)
+                # create a new course and add it to our courses object
+                assignment = Assignment(term,task,person,evalO)
+                if debug:
+                    print " Assignment created."
+                self.addElement(task,assignment);
+                
+        except:
+            print " ERROR - unable to fetch data from Assignments table."
+            return 1
+
+        # all went well
+        return 0
 
     def fillWithCourses(self,database,debug=False):
         if debug:

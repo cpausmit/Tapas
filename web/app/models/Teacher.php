@@ -30,17 +30,6 @@ class Teachers
     return $instance;
   }
 
-  public static function fromDb()
-  {
-    // 'constructor' returns full list of teachers
-    $instance = new self();
-    $teacherRows = Dbc::getReader()->query("select * from Teachers order by Email");
-    foreach ($teacherRows as $key => $row)
-      $instance->addTeacher(Teacher::fromRow($row));
-    
-    return $instance;
-  }
-
   public static function fromAssignments($term)
   {
     // 'constructor' returns list of teachers assigned during term for lecture
@@ -52,6 +41,17 @@ class Teachers
     foreach ($rows as $key => $row)
       $instance->addTeacher(Teacher::fromRow($row));
 
+    return $instance;
+  }
+
+  public static function fromDb()
+  {
+    // 'constructor' returns full list of teachers
+    $instance = new self();
+    $teacherRows = Dbc::getReader()->query("select * from Teachers order by Email");
+    foreach ($teacherRows as $key => $row)
+      $instance->addTeacher(Teacher::fromRow($row));
+    
     return $instance;
   }
 

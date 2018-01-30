@@ -32,6 +32,20 @@ class Students
     return $instance;
   }
 
+  public static function fromAssignments($term)
+  {
+    // 'constructor' returns list of TAs assigned during term
+    $instance = new self();
+    $sql = "select * from Students as s inner join Assignments as a on s.Email = a.Person"
+        .  " where a.Term = '$term' and a.Task like '%-Ta%' order by s.LastName";
+    //print " SQL : $sql";
+    $rows = Dbc::getReader()->query($sql);
+    foreach ($rows as $key => $row)
+      $instance->addStudent(Student::fromRow($row));
+
+    return $instance;
+  }
+
   public static function fromDb()
   {
     // 'constructor' returns full list of students
