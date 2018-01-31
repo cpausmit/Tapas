@@ -122,12 +122,27 @@ class Assignment:
         string = "('%s','%s','%s',%d)"%(self.term,self.task,self.person,self.evalO)
         return string
 
+    def show(self):
+        print " Number: %5s %20s %s %3.1f"%(self.term,self.task,self.person,self.evalO)
+
     def update(self,evalO):
         self.evalO = evalO
         
-    def show(self):
-        print " Number: %5s %20s %s %3.1f"%(self.term,self.task,self.person,self.evalO)
-    
+    def updateDb(self,database):
+        
+        # grab the cursor
+        cursor = database.getCursor()
+        # Prepare SQL query to select all courses from the Courses table
+        sql = "UPDATE Assignments set EvalO = %f where Task = '%s'"%(self.evalO,self.task)
+        try:
+            # Execute the SQL command
+            rc = cursor.execute(sql)
+            print ' Executed: %s (%d)'%(sql,rc)
+        except:
+            print " ERROR - updating Assignments table (%s)."%sql
+            return 1
+        return
+        
 class Container:
     'Container class for any type of teacher or course. Basically a hash array. Keys: email or course number.'
 

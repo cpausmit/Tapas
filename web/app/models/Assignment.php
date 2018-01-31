@@ -60,7 +60,7 @@ class Assignments
   {
     print "<table>\n";
     print "<tr><th>&nbsp; Term &nbsp;</th><th>&nbsp; Course &nbsp;</th><th> Type &nbsp;</th><th> Effort &nbsp;</th>";
-    print "<th> TA type &nbsp;</th><th> Person &nbsp;</th><th> Id &nbsp;</th></tr>\n";
+    print "<th> TA type &nbsp;</th><th> Person &nbsp;</th><th> Id &nbsp;</th><th> EvalO &nbsp;</th></tr>\n";
     $iF = 0;
     $iP = 0;
     foreach ($this->list as $task => $assignment) {
@@ -125,7 +125,8 @@ class Assignment
   {
     // print the full assignment
     $myTask = new TeachingTask($this->task);
-    print "<tr><td> "
+    print "<tr>";
+    print "<td> "
       . $this->term . ": &nbsp;</td><td>"
       . "<a href=\"/showTaskSummary?number=" . $myTask->getCourse(). "\">"
       . $myTask->getCourse()
@@ -136,13 +137,15 @@ class Assignment
       . $myTask->getTaType()  . "&nbsp;</td><td>";
 
     if ($option == 'simple')
-      print "&nbsp;</td></tr>\n";
+      print "&nbsp;</td>\n";
     else
       print "<a href=\"/showTaSummary?email=" . $this->person . "\">"
         . $this->person
         . "</a>"
         . "&nbsp;</td><td>"
-        . $myTask->generateId() . "&nbsp;</td></tr>\n";
+        . $myTask->generateId() . "&nbsp;</td>\n"
+        . "<td>&nbsp; " . number_format($this->evalO,1,'.',',') . " &nbsp;</td>";
+    print "</tr>\n";
   }
 
   // Property declaration

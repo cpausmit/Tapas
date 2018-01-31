@@ -6,6 +6,63 @@ import pandas as pd
 import Evaluation
 import Database
 
+def writeEvalCache(evalCache,evs):
+    
+    with open(evalCache,'w') as f:
+        for ev in evs:
+            f.write(ev.writeline())
+
+    return 0
+            
+def getEvaluationsFromCache(evalCache):
+
+    evs = []
+    with open(evalCache,'r') as f:
+        for line in f:
+            line = line[:-1]
+            ev = Evaluation.Eval('UNKNOWN','UNKNOWN','UNKNOWN','UNKNOWN',-1)
+            rc = ev.readline(line)
+            if rc == 0:
+                evs.append(ev)
+
+    return evs
+    
+def getEvaluationsFromWeb(term):
+    
+    # base
+    trunc = 'https://edu-apps.mit.edu/ose-rpt/'
+    evaluation_url = 'subjectEvaluationSearch.htm?'
+    parameters = 'departmentId=+++8&search=Search&termId=%s&subjectCode=&instructorName='%term
+    
+    # the url
+    url = trunc + evaluation_url + parameters
+    
+    # get the page output
+    r = requests.get(url,cookies=cookies)
+    
+    data = r.text
+    
+    # scrape it
+    evs = []
+    soup = BeautifulSoup(data,"lxml")
+    paras = soup.find_all('p')
+    for row in paras:
+        for link in row.find_all('a'):
+            evaluation_link = link.get('href')
+            if 'subjectId' in evaluation_link:
+    
+                p = re.compile('subjectId=.*$')
+                matches = p.findall(evaluation_link)
+                if len(matches) == 0:
+                    p = re.compile('subjectId=.*&')
+                    matches = p.findall(evaluation_link)
+                if len(matches) > 0:
+                    number = matches[0].split("=")[1]
+                    print " %s --> %s"%(term,number)
+                    evs = getEvaluationsForSubject(trunc+evaluation_link,cookies,number,evs)
+                    
+    return evs
+                
 def getTerm(mitTerm):
 
     year = int(mitTerm[:4])
@@ -32,7 +89,7 @@ def getCookies(cookie_file):
         cookie = cookie.strip()
         (cookie_key,cookie_value) = cookie.split('=')
         cookies.set(cookie_key,cookie_value,domain='mit.edu', path='/')
-        print cookie_key + " --> " + cookie_value
+        #print cookie_key + " --> " + cookie_value
 
     return cookies
 
@@ -68,6 +125,13 @@ def findLastName(name,list):
             nMatch += 1
     return nMatch
             
+def findTasks(tapasTerm,assignments,person):
+    tasks = ""
+    for eml, element in assignments.getHash().iteritems():
+        if element.term == tapasTerm and element.person == person:
+            tasks = tasks + "," + element.task
+    return tasks
+            
 #===================================================================================================
 #                                       M A I N
 #===================================================================================================
@@ -79,39 +143,16 @@ term = sys.argv[1]
 tapasTerm = getTerm(term)
 
 print " TERM: %s (MIT: %s)"%(tapasTerm,term)
+evalCache = ".%s.evals"%(tapasTerm)
 
-# base
-trunc = 'https://edu-apps.mit.edu/ose-rpt/'
-evaluation_url = 'subjectEvaluationSearch.htm?'
-parameters = 'departmentId=+++8&search=Search&termId=%s&subjectCode=&instructorName='%term
-
-# the url
-url = trunc + evaluation_url + parameters
-
-# get the page output
-r = requests.get(url,cookies=cookies)
-
-data = r.text
-
-# scrape it
-evs = []
-soup = BeautifulSoup(data,"lxml")
-paras = soup.find_all('p')
-for row in paras:
-    for link in row.find_all('a'):
-        evaluation_link = link.get('href')
-        if 'subjectId' in evaluation_link:
-
-            p = re.compile('subjectId=.*$')
-            matches = p.findall(evaluation_link)
-            if len(matches) == 0:
-                p = re.compile('subjectId=.*&')
-                matches = p.findall(evaluation_link)
-            if len(matches) > 0:
-                number = matches[0].split("=")[1]
-                print " %s --> %s"%(term,number)
-                evs = getEvaluationsForSubject(trunc+evaluation_link,cookies,number,evs)
-
+if os.path.isfile(evalCache):
+    print ' Evaluations cache (%s) exists already.'%(evalCache)
+    evs = getEvaluationsFromCache(evalCache)
+else:
+    evs = getEvaluationsFromWeb(term)
+    print ' Writing evaluations cache (%s).'%(evalCache)
+    writeEvalCache(evalCache,evs)
+            
 # Open database connection
 db = Database.DatabaseHandle()
 
@@ -141,55 +182,75 @@ if rc != 0:
     # disconnect from server
     db.disco()
     sys.exit()
+
+# filter out the active people and assignments
+print ' Finding all active elements in term: %s'%(term)
+activeStudents = Database.Container()
+activeTeachers = Database.Container()
+activeAssignments = Database.Container()
+for task, assignment in assignments.getHash().iteritems():
+    if assignment.term == tapasTerm:
+        activeAssignments.addElement(assignment.task,assignment)
+        if assignment.person in students.getHash():
+            activeStudents.addElement(assignment.person,students.retrieveElement(assignment.person))
+        if assignment.person in teachers.getHash():
+            activeTeachers.addElement(assignment.person,teachers.retrieveElement(assignment.person))
     
 # find matching emails for the evaluation
 for ev in evs:
 
-    nMatchStudents = findLastName(ev.lastName,students)
-    nMatchTeachers = findLastName(ev.lastName,teachers)
-    
-    if nMatchStudents+nMatchTeachers > 1:
-        print '\n ==== AMBIGUOUS ===='
-        ev.show()
-        print " nStudents: %d, NTeachers: %d"%(nMatchStudents,nMatchTeachers)
+    #nMatchStudents = findLastName(ev.lastName,activeStudents)
+    #nMatchTeachers = findLastName(ev.lastName,activeTeachers)
+    #
+    #if nMatchStudents+nMatchTeachers > 1:
+    #    print '\n ==== AMBIGUOUS ===='
+    #    ev.show()
+    #    print " nStudents: %d, NTeachers: %d"%(nMatchStudents,nMatchTeachers)
         
     done = False
-    for eml, student in students.getHash().iteritems():
+    for eml, student in activeStudents.getHash().iteritems():
         if ev.lastName == student.lastName:
-            done = True
-            #print '\n ==== MATCH ===='
-            #ev.show()
-            #student.show()
-            ev.update(student.eMail)
-    if not done:
-        for eml, teacher in teachers.getHash().iteritems():
-            if ev.lastName == teacher.lastName:
+            tasks = findTasks(tapasTerm,activeAssignments,student.eMail)
+            if ev.number in tasks:
                 done = True
                 #print '\n ==== MATCH ===='
                 #ev.show()
-                #teacher.show()
-                ev.update(teacher.eMail)
-
+                #student.show()
+                ev.update(student.eMail)
     if not done:
-        print '\n ERROR - could not match evaluation.\n '
-        ev.show()
-        print '\n '
+        for eml, teacher in activeTeachers.getHash().iteritems():
+            if ev.lastName == teacher.lastName:
+                tasks = findTasks(tapasTerm,activeAssignments,teacher.eMail)
+                if ev.number in tasks:
+                    done = True
+                    #print '\n ==== MATCH ===='
+                    #ev.show()
+                    #teacher.show()
+                    ev.update(teacher.eMail)
+                    
+    if not done:
+        #print '\n ERROR - could not match evaluation.\n '
+        #ev.show()
+        #print '\n '
+        pass
 
 
 for ev in evs:
 
     if ev.email == 'UNKNOWN':
+        #print ' UNKNOWN: '
         ev.show()
         continue
-    if ev.lastName == 'Williams':
-        ev.show()
-    
-    for task, assignment in assignments.getHash().iteritems():
-        if ev.email == assignment.person:
+
+    for task, assignment in activeAssignments.getHash().iteritems():
+        if assignment.term == tapasTerm and ev.email == assignment.person:
             assignment.update(ev.evalO)
 
-# list the updates
-for task, assignment in assignments.getHash().iteritems():
-    if assignment.term == tapasTerm:
-        assignment.show()
+# do the updates
+for task, assignment in activeAssignments.getHash().iteritems():
+    if assignment.evalO != -1:
+        assignment.updateDb(db)
 
+# finish
+db.disco()
+sys.exit()
