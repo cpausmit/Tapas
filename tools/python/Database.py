@@ -128,15 +128,65 @@ class Assignment:
     def update(self,evalO):
         self.evalO = evalO
         
-    def updateDb(self,database):
-        
+    def selectDb(self,database,task):
         # grab the cursor
         cursor = database.getCursor()
         # Prepare SQL query to select all courses from the Courses table
-        sql = "UPDATE Assignments set EvalO = %f where Task = '%s'"%(self.evalO,self.task)
+        sql = "SELECT * FROM Assignments WHERE Task = '%s'"%(task)
         try:
             # Execute the SQL command
             rc = cursor.execute(sql)
+            print ' Executed: %s (%d)'%(sql,rc)
+            results = cursor.fetchall()
+            for row in results:
+                self.term = row[0]
+                self.task = row[1]
+                self.person = row[2]
+                self.evalO = row[3]
+        except:
+            print " ERROR - selecting into Assignments table (%s)."%sql
+            return 1
+        return 0
+    
+    def insertDb(self,database):
+        # grab the cursor
+        cursor = database.getCursor()
+        # Prepare SQL query to select all courses from the Courses table
+        sql = "INSERT INTO Assignments VALUES " + self.insertString()
+        try:
+            # Execute the SQL command
+            rc = cursor.execute(sql)
+            database.commit()
+            print ' Executed: %s (%d)'%(sql,rc)
+        except:
+            print " ERROR - inserting into Assignments table (%s)."%sql
+            return 1
+        return
+    
+    def deleteDb(self,database):
+        # grab the cursor
+        cursor = database.getCursor()
+        # Prepare SQL query to select all courses from the Courses table
+        sql = "DELETE FROM Assignments where Task = '%s'"%(self.task)
+        try:
+            # Execute the SQL command
+            rc = cursor.execute(sql)
+            database.commit()
+            print ' Executed: %s (%d)'%(sql,rc)
+        except:
+            print " ERROR - deleting from Assignments table (%s)."%sql
+            return 1
+        return
+    
+    def updateDb(self,database):
+        # grab the cursor
+        cursor = database.getCursor()
+        # Prepare SQL query to select all courses from the Courses table
+        sql = "UPDATE Assignments SET EvalO = %f WHERE Task = '%s'"%(self.evalO,self.task)
+        try:
+            # Execute the SQL command
+            rc = cursor.execute(sql)
+            database.commit()
             print ' Executed: %s (%d)'%(sql,rc)
         except:
             print " ERROR - updating Assignments table (%s)."%sql

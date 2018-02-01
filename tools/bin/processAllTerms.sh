@@ -1,0 +1,29 @@
+findAllEvaluationsForCourse.py 2010FA
+findAllEvaluationsForCourse.py 2011FA
+findAllEvaluationsForCourse.py 2012FA
+findAllEvaluationsForCourse.py 2013FA
+findAllEvaluationsForCourse.py 2014FA
+findAllEvaluationsForCourse.py 2015FA
+findAllEvaluationsForCourse.py 2016FA
+findAllEvaluationsForCourse.py 2017FA
+findAllEvaluationsForCourse.py 2018FA
+
+findAllEvaluationsForCourse.py 2010JA
+findAllEvaluationsForCourse.py 2011JA
+findAllEvaluationsForCourse.py 2012JA
+findAllEvaluationsForCourse.py 2013JA
+findAllEvaluationsForCourse.py 2014JA
+findAllEvaluationsForCourse.py 2015JA
+findAllEvaluationsForCourse.py 2016JA
+findAllEvaluationsForCourse.py 2017JA
+findAllEvaluationsForCourse.py 2018JA
+
+findAllEvaluationsForCourse.py 2010SP
+findAllEvaluationsForCourse.py 2011SP
+findAllEvaluationsForCourse.py 2012SP
+findAllEvaluationsForCourse.py 2013SP
+findAllEvaluationsForCourse.py 2014SP
+findAllEvaluationsForCourse.py 2015SP
+findAllEvaluationsForCourse.py 2016SP
+findAllEvaluationsForCourse.py 2017SP
+

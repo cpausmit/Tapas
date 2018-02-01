@@ -20,7 +20,7 @@ def getEvaluationsFromCache(evalCache):
     with open(evalCache,'r') as f:
         for line in f:
             line = line[:-1]
-            ev = Evaluation.Eval('UNKNOWN','UNKNOWN','UNKNOWN','UNKNOWN',-1)
+            ev = Evaluation.Eval('UNKNOWN','UNKNOWN','UNKNOWN','UNKNOWN','UNKNOWN',-1)
             rc = ev.readline(line)
             if rc == 0:
                 evs.append(ev)
@@ -60,7 +60,6 @@ def getEvaluationsFromWeb(term):
                     number = matches[0].split("=")[1]
                     print " %s --> %s"%(term,number)
                     evs = getEvaluationsForSubject(trunc+evaluation_link,cookies,number,evs)
-                    
     return evs
                 
 def getTerm(mitTerm):
@@ -71,6 +70,8 @@ def getTerm(mitTerm):
         tapasTerm = "F%4d"%(year-1)
     elif 'SP' in mitTerm:
         tapasTerm = "S%4d"%(year)
+    elif 'JA' in mitTerm:
+        tapasTerm = "I%4d"%(year)
     else:
         print " ERROR - MIT term (%s) not defined."%(mitTerm)
         sys.exit(1)
@@ -98,10 +99,26 @@ def getEvaluationsForSubject(url,cookies,number,evs):
     r = requests.get(url,cookies=cookies)
     data = r.text
     soup = BeautifulSoup(data,"lxml")
-    
-    table = soup.find_all('table')[4]
-    rows = table.find_all('tr')[2:]
 
+    column = 4
+    
+    # find the table
+    table = soup.find_all('table')[4]
+
+    # find and analyze header rows
+    rows = table.find_all('tr')
+    for row in rows:
+        ths = row.find_all('th')
+        if len(ths)>0:                              # make sure we do not have crashes
+            index = -1
+            for th in ths:
+                index += 1
+                if 'verall rating' in th.get_text():
+                    column = index
+                    print ' Setting rating index to: %d'%(column)
+
+    # find and analyze full content
+    rows = table.find_all('tr')[2:]
     for row in rows:
         tds = row.find_all('td')
         if len(tds)>0:                              # make sure we do not have crashes
@@ -110,10 +127,12 @@ def getEvaluationsForSubject(url,cookies,number,evs):
                 name = strongs[0].get_text()
                 last_name = name.split(',')[0]
                 first_name = name.split(',')[-1]
-                overall_grade = float(row.find_all('td')[4].find_all('span')[0].get_text())
+                overall_grade = float(row.find_all('td')[column].find_all('span')[0].get_text())
+                description = tds[0].get_text().split(',')[2].rstrip("\n")
+                #description = description.encode("utf-8")
                 
-                #print "%20s %20s %4.1f"%(last_name, first_name, overall_grade)
-                ev = Evaluation.Eval(number,last_name,first_name,'UNKNOWN',overall_grade)
+                print "%20s %20s %20s %4.1f"%(last_name, first_name, description, overall_grade)
+                ev = Evaluation.Eval(number,last_name,first_name,description,'UNKNOWN',overall_grade)
                 evs.append(ev)
                 
     return evs
@@ -152,7 +171,7 @@ else:
     evs = getEvaluationsFromWeb(term)
     print ' Writing evaluations cache (%s).'%(evalCache)
     writeEvalCache(evalCache,evs)
-            
+
 # Open database connection
 db = Database.DatabaseHandle()
 
@@ -244,12 +263,15 @@ for ev in evs:
 
     for task, assignment in activeAssignments.getHash().iteritems():
         if assignment.term == tapasTerm and ev.email == assignment.person:
-            assignment.update(ev.evalO)
+            if ev.evalO != assignment.evalO:
+                assignment.update(ev.evalO)
+                assignment.updateDb(db)
 
-# do the updates
+# do other updates
 for task, assignment in activeAssignments.getHash().iteritems():
-    if assignment.evalO != -1:
-        assignment.updateDb(db)
+    if assignment.person == "EMPTY@mit.edu":
+        print " EMPTY "
+        assignment.show()
 
 # finish
 db.disco()
