@@ -10,16 +10,13 @@ import Database
 
 EMPTY_EMAIL = "EMPTY@mit.edu"
 
-print " UNTESTED -- CAREFUL NEW SUMMARY TABLES -- Assignments etc."
-sys.exit(0)
-
 #---------------------------------------------------------------------------------------------------
 # H E L P E R
 #---------------------------------------------------------------------------------------------------
 def findAssignment(cursor,semesterId,task):
     # find person of an existing assignment
 
-    email = 'EMTPY'
+    email = EMPTY_EMAIL
     results = []
     
     # Prepare SQL query to insert record into the existing table
@@ -33,7 +30,7 @@ def findAssignment(cursor,semesterId,task):
         email = 'ERROR'
         
     if len(results) == 1:
-        email = results[0][1]
+        email = results[0][2]
 
     return email
 
@@ -110,7 +107,7 @@ for line in os.popen(cmd).readlines():
             
             # Prepare SQL query to insert record into the existing table
             sql = "insert into Assignments values" + \
-                  " ('" + semesterId + "','" + subtask + "','" + email + "');"
+                  " ('" + semesterId + "','" + subtask + "','" + email + "',-1);"
             try:
                 # Execute the SQL command
                 print " MYSQL> " + sql
@@ -162,7 +159,7 @@ for line in os.popen('cat spreadsheets/' + semesterId + 'Assignments.csv | grep 
             print " Assignment(%s): '%s' -> '%s'"%(semesterId,email,subtask)
             # Prepare SQL query to insert record into the existing table
             sql = "insert into Assignments values" +\
-                  " ('" + semesterdId + "','" + subtask + "','" + email + "');"
+                  " ('" + semesterId + "','" + subtask + "','" + email + "',-1);"
             try:
                 # Execute the SQL command
                 print " MYSQL> " + sql
@@ -177,7 +174,6 @@ for line in os.popen('cat spreadsheets/' + semesterId + 'Assignments.csv | grep 
                 if setEmail == '' or  setEmail == EMPTY_EMAIL:
                     sql = "update Assignments set Person = '" + email + \
                           "' where Term = '" + semesterId + "' and Task = '" + subtask + "';"
-                    print " SQL - " + sql
                     try:
                         # Execute the SQL command
                         print " MYSQL> " + sql

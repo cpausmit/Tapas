@@ -254,19 +254,35 @@ for ev in evs:
         pass
 
 
+# loop through evaluations and find matching emails for the evaluation
 for ev in evs:
 
     if ev.email == 'UNKNOWN':
         #print ' UNKNOWN: '
-        ev.show()
+        #ev.show()
         continue
 
     for task, assignment in activeAssignments.getHash().iteritems():
-        if assignment.term == tapasTerm and ev.email == assignment.person:
-            if ev.evalO != assignment.evalO:
-                assignment.update(ev.evalO)
-                assignment.updateDb(db)
-
+        if assignment.term == tapasTerm:
+            if ev.email == assignment.person:
+                if ev.evalO != assignment.evalO:
+                    assignment.update(ev.evalO)
+                    assignment.updateDb(db)
+#            elif assignment.person == 'EMPTY@mit.edu' and ev.number in assignment.task:
+#                if 'Teaching Assistant' in ev.description:
+#                    print ' ==== TA ===='
+#                    ev.show()
+#                    assignment.show()
+#                elif 'Lecturer' in ev.description:
+#                    print ' ==== LECTURER ===='
+#                    ev.show()
+#                    assignment.show()
+#                elif 'Recitation Instructor' in ev.description:
+#                    print ' ==== RECITATOR ===='
+#                    ev.show()
+#                    assignment.show()
+                
+                    
 # do other updates
 for task, assignment in activeAssignments.getHash().iteritems():
     if assignment.person == "EMPTY@mit.edu":

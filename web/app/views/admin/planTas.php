@@ -69,7 +69,7 @@ if (array_key_exists('email',$_POST) &&
   $email = $_POST['email'];
   $fullTime =  $_POST['fullTime'];
   $partTime =  $_POST['partTime'];
-
+  
   // Make sure that the email makes sense (add '@mit.edu' if not provided)
   $email = makeEmail($email);
 
@@ -80,7 +80,7 @@ if (array_key_exists('email',$_POST) &&
     print "</a></h3><br>\n";
   }
   else {
-    if (isset($tas[$email])) {
+    if (isset($tas->list[$email])) {
       removeFromDb($taTable,$email);
       print "<p>Removed TA from our list: $email</p>\n";
     }
@@ -94,7 +94,7 @@ if (array_key_exists('email',$_POST) &&
       print "<p>Added new TA to our list: $email</p>\n";
     }
     // update the TA list in memory
-    $tas = Tas::fromDb();
+    $tas = Tas::fromDb($term);
   }
 }
 

@@ -2,7 +2,7 @@
 #
 #    >> create table Courses  (Number char(10), Name char(80), Version int);
 #
-#    >> create table Teacher  (FirstName char(20), LastName char(20),
+#    >> create table Teachers (FirstName char(20), LastName char(20),
 #                              Email char(40), Position char(20), Status char(20));
 #
 #    >> create table Students (FirstName char(20), LastName char(20),

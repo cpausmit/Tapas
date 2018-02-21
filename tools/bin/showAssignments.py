@@ -7,9 +7,6 @@ import sys,re,os
 import MySQLdb
 import Database
 
-print " UNTESTED -- CAREFUL NEW SUMMARY TABLES -- Assignments etc."
-sys.exit(0)
-
 debug = False
 check = False
 dataDir = os.getenv('TAPAS_TOOLS_DATA','./')
@@ -82,7 +79,7 @@ activeStudents = Database.Container()
 assignments = {}
 
 # Prepare SQL query to select a record from the database.
-sql = "select * from Assignments where Term = '" + period "';"
+sql = "select * from Assignments where Term = '" + period + "';"
 try:
     # Execute the SQL command
     cursor.execute(sql)
