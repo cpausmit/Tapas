@@ -98,8 +98,9 @@ if (isset($_POST['Message']))
   $message = $_POST['Message'];
 
 $headers  = "From: Christoph Paus <paus@mit.edu>\nReply-To: <paus@mit.edu>\n";
+$cc       = "Cc: paus@mit.edu";
 //$cc       = "Cc: paus@mit.edu,sahughes@mit.edu,cmodica@mit.edu";
-//$headers  = "From: Christoph Paus <paus@mit.edu>\nReply-To: <paus@mit.edu>\n$cc";
+$headers  = "From: Christoph Paus <paus@mit.edu>\nReply-To: <paus@mit.edu>\n$cc";
 
 // are we sending the message already?
 if (isMessageReady()) {

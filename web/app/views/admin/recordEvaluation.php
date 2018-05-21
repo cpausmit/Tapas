@@ -9,6 +9,7 @@ if (! (isMaster())) {
 
 include_once("app/models/Utils.php");
 include_once("app/models/Dbc.php");
+include_once("app/models/Semester.php");
 include_once("app/models/Teacher.php");
 include_once("app/models/Ta.php");
 
