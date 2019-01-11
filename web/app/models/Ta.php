@@ -179,6 +179,23 @@ class Ta
       print '<br> Invalid entry. STOP!<br>';
     }
   }
+
+  public function removeFromDb()
+  {
+    // adding the given ta instance to the database
+
+    // make sure this is a valid new entry
+    if ($this->isValid()) {
+      $vals = sprintf("('%s','%s',%d,%d)",
+                      $this->term,$this->email,$this->fullTime,$this->partTime);
+      $sql = " insert into Tas values $vals";
+      $sql = " delete from Tas where Term = '$this->term' and email = '$this->email'";
+      Dbc::getReader()->Exec($sql);
+    }
+    else {
+      print '<br> Invalid entry. STOP!<br>';
+    }
+  }
     
   // Property declaration
   public $term = '';

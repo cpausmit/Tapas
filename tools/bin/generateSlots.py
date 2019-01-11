@@ -2,13 +2,15 @@
 #---------------------------------------------------------------------------------------------------
 # Script to read the standardized input from the physics department to generate the required slots.
 #
-#   input file: $TAPAS_TOOLS_DATA/spreadsheets/${SEMESTERID}Courses.csv
+#   input table: CourseResources
 #
 #                                                             Written: Aug 04, 2017 (Christoph Paus)
+#                                                                      May 25, 2018 (Christoph Paus)
 #---------------------------------------------------------------------------------------------------
 import sys,os
+import MySQLdb
+import Database
 
-empty = 'EMPTY@mit.edu'
 period = ''
 test = ''
 debug = True
@@ -32,15 +34,20 @@ if len(sys.argv) > 2:
 if test != '':
     debug = False
 
-# say what we do
-print '\n Generating slots for semester: %s\n'%(period)
+# Open database connection
+db = Database.DatabaseHandle()
+# Prepare a cursor object using cursor() method
+cursor = db.getCursor()
 
-# reading the file in one shot
-with open('%s/spreadsheets/%sCourses.csv'%(os.getenv('TAPAS_TOOLS_DATA'),period),'r') as f:
-    content = f.read()
+# Make a new objects of students
+courseResources = Database.Container()
+rc = courseResources.fillWithCourseResources(db.handle,period)
+if rc != 0:
+    print " ERROR - filling course resources."
+    # disconnect from server
+    db.disco()
+    sys.exit()
 
-# get all lines into an array
-lines = content.split('\n')
 
 # initialize counters
 totalLec = 0
@@ -48,91 +55,27 @@ totalRec = 0
 totalTasF = 0.
 totalTasP = 0.
 
-# loop through the lines
-for line in lines:
-    if len(line) < 1 or line[0] == '#':
-        continue
+# loop through the list of resources
+for number in sorted(courseResources.getHash()):
+
+    # get the specific course resource
+    cr = courseResources.retrieveElement(number)
     
     if debug:
-        print ' > ' + line
+        print ' ---- '
+        cr.show()
 
-    f = line.split(",")
-    if len(f) > 8:
-        course        = f[0]
-        courseEmail   = f[1].replace('/',',')
-        nLec          = int(f[2])
-        nRec          = int(f[3])
-        nFullTimeTasR = int(f[4])
-        nFullTimeTasU = int(f[5])
-        nHalfTimeTasR = int(f[6])
-        nHalfTimeTasU = int(f[7])
-        nPartTimeTasU = int(f[8])
+    # print the slots
+    cr.printSlots()
 
-        nCourseTas    = 0.5 * (nHalfTimeTasR+nHalfTimeTasU)+nFullTimeTasR+nFullTimeTasU
-
-        totalLec       += nLec
-        totalRec       += nRec
-        totalTasF      += nCourseTas;
-        totalTasP      += nPartTimeTasU;
-        
-        base = " insert into Assignments%s values ('%s-%s"%(period,period,course)
+    # some overall accounting
+    nCourseTas = (cr.numHalfRecTas+cr.numHalfUtilTas)/2. +cr.numFullRecTas+cr.numFullUtilTas
+    totalLec   += cr.numLecturers
+    totalRec   += cr.numRecitators
+    totalTasF  += nCourseTas;
+    totalTasP  += cr.numPartUtilTas;
     
-        # print all slots per course
-        
-        # lecturer slots
-        i = 0
-        while i < nLec:
-            n = i+1;
-            query = "%s-Lec-%d','%s')"%(base,n,empty);
-            #print query
-            i += 1
-
-        # recitation instructor slots
-        i = 0
-        while i < nRec:
-            n = i+1;
-            query = "%s%s-Rec-%d','%s')"%(base,course,n,empty);
-            #print query
-            i += 1
-
-        # TA slots -------------------------------------
-        i = 0
-        while i < nFullTimeTasR:
-            n = i+1;
-            query = "%s-TaFR-%d','%s')"%(base,n,empty);
-            #print query
-            print '%s-%s-TaFR-%s'%(period,course,n)
-            i += 1
-        i = 0
-        while i < nFullTimeTasU:
-            n = i+1;
-            query = "%s-TaFU-%d','%s')"%(base,n,empty);
-            #print query
-            print '%s-%s-TaFU-%s'%(period,course,n)
-            i += 1
-        i = 0
-        while i < nHalfTimeTasR:
-            n = i+1;
-            query = "%s-TaHR-%d','%s')"%(base,n,empty);
-            #print query
-            print '%s-%s-TaHR-%s'%(period,course,n)
-            i += 1
-        i = 0
-        while i < nHalfTimeTasU:
-            n = i+1;
-            query = "%s-TaHU-%d','%s')"%(base,n,empty);
-            #print query
-            print '%s-%s-TaHU-%s'%(period,course,n)
-            i += 1
-        i = 0
-        while i < nPartTimeTasU:
-            n = i+1;
-            query = "%s-TaPU-%d','%s')"%(base,n,empty);
-            #print query
-            print '%s-%s-TaPU-%s'%(period,course,n)
-            i += 1
-            
 if debug:
     print "  Total %3d %3d                %4.1f %4.1f\n"%(totalLec,totalRec,totalTasF,totalTasP)
-    
+
 sys.exit(0)

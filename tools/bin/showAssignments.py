@@ -155,8 +155,8 @@ try:
                 print " Found the person."
         else:
             print " ERROR -- Did not find the person: " + email + "  (task: " + task + ")"
-            db.disco()
-            sys.exit(0)
+            #db.disco()
+            #sys.exit(0)
 
 
 except:
@@ -274,7 +274,7 @@ for key, assignment in assignments.iteritems():
 
                 # addup the additional teacher to be copied
                 ##additionalCc += "," + teacher.eMail
-                if course.admin != 'EMPTY@mit.edu':
+                if course.admin != 'EMPTY@mit.edu' and course.admin != 'EMPTY': 
                     additionalCc += "," + course.admin
 
         if debug:

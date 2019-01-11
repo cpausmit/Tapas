@@ -7,6 +7,8 @@ if (! (isAdmin() || isMaster())) {
   exitAccessError();
 }
 
+include_once("app/models/Semester.php");
+
 function printEmptyForm()
 {
   print '<h1>Add Semester to the Database</h1>'."\n";

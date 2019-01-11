@@ -8,7 +8,7 @@ import sys,os,re
 import MySQLdb
 import Database
 
-EMPTY_EMAIL = "EMPTY@mit.edu"
+EMPTY_EMAIL = "EMPTY"
 
 #---------------------------------------------------------------------------------------------------
 # H E L P E R

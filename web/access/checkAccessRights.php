@@ -3,6 +3,7 @@
 include_once("app/models/Admin.php");
 include_once("app/models/Ta.php");
 include_once("app/models/Tables.php");
+include_once("app/models/Teacher.php");
 
 function isMaster()
 {
@@ -69,8 +70,9 @@ function isTeacher()
 {
   // read Teacher table
   $activeTables = new Tables('ActiveTables');
-  $term = substr($activeTables->getUniqueMatchingName('Assignments'),-5,5);
-  $teachers = Tas::fromDb($term);
+  $term = substr($activeTables->getUniqueMatchingName('Evaluations'),-5,5);
+  $teachers = Teachers::fromAssignments($term);
+  //$teachers->printTable();
   
   // see whether the email is in the access list
   $email = strtolower($_SERVER['SSL_CLIENT_S_DN_Email']);

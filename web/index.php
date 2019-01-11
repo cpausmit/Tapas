@@ -62,6 +62,8 @@ $f3->route('GET /showEvaluators',       'Main->showEvaluators');
 $f3->route('GET /addEvaluation',        'Main->addEvaluation');
 $f3->route('GET|POST /recordEvaluation','Main->recordEvaluation');
 
+$f3->route('GET|POST /selectTerm',      'Main->selectTerm');
+
 $f3->route('GET /ta',                   'Main->ta');
 $f3->route('GET /select',               'Main->select');
 $f3->route('GET /show',                 'Main->show');

@@ -33,7 +33,7 @@ print '<p>';
 print "<b>Evaluation:</b><br> $evaluation</p>\n";
 print '<p>';
 print "<b>AwardProposed:</b> $awardProposed<br>\n";
-print "<b>Proposed Citation:</b> $citation</p>\n";
+print "<b>Proposed -- Citation:</b> $citation</p>\n";
 
 // find active evaluations table
 $activeTables = new Tables("ActiveTables");
@@ -53,6 +53,7 @@ if ($email != "" && $studentEmail != "" && $evaluation != "") {
   else                         // need to update existing entry
     $sql = "update Evaluations set EvalText='$evaluation', Award=$awardProposed, Citation='$citation' where "
       . " Term='$term' and TeacherEmail='$email' and TaEmail='$studentEmail'";
+
   // execute
   try {
     Dbc::getReader()->exec($sql);
@@ -61,6 +62,7 @@ if ($email != "" && $studentEmail != "" && $evaluation != "") {
   catch (PDOException $e) {
     print " ERROR - could not register selection: ".$e->getMessage()."<br>\n";
   }
+
 }
 else {
   print '<p> Evaluation is NOT valid.<br>';

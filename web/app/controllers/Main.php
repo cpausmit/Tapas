@@ -222,6 +222,12 @@ class Main extends Controller {
     echo $view->render('admin/recordEvaluation.php');
   }
 
+  public function selectTerm($f3) {
+    $f3->set('selected', 'admin');
+    $view = new View;
+    echo $view->render('admin/selectTerm.php');
+  }
+    
   // TA functions
   public function ta($f3) {
     $f3->set('selected', 'ta');

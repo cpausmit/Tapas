@@ -88,7 +88,7 @@ class CourseResources
 
   public function showSummary()
   {
-    // print a summery of the course resources
+    // print a summary of the course resources
     print " $this->nTeachers teachers,".
           " $this->nFullTas full time TAs,".
           " $this->nPartTas part time TAs.<br>\n";
@@ -272,7 +272,7 @@ class CourseResource
 
   public function addToDb()
   {
-    // adding the given course instance to the database
+    // adding the given course resource to the database
 
     // check for duplicate
     $vals = sprintf("('%s','%s',%d,%d,%d,%d,%d,%d,%d,%d)",
@@ -282,24 +282,28 @@ class CourseResource
                     $this->numFullUtilTas,$this->numHalfUtilTas,
                     $this->numPartUtilTas);
     $sql = " insert into CourseResources values $vals";
-    print " ADDING TO THE DATABASE<br>\n";
+    Dbc::getReader()->Exec($sql);
+  }
+
+  public function removeFromDb()
+  {
+    // removing the given course resource from the database
+    $sql = " delete from CourseResources where Term = '$this->term' and Number = '$this->number'";
     Dbc::getReader()->Exec($sql);
   }
 
   public function updateDb()
   {
-    // updating the given course instance to the database
-
+    // updating the given course resource in the database
     $form = "Term = '%s', Number = '%s', NumAdmins = %d, NumLecturers = %d, NumRecitators = %d,".
             " NumFullRecTas = %d, NumHalfRecTas = %d, NumFullUtilTas = %d, NumHalfUtilTas = %d,".
             " NumPartUtilTas = %d";
     $vals = sprintf($form,
-                    $this->number,$this->name,
+                    $this->term,$this->number,
                     $this->numAdmins,$this->numLecturers,$this->numRecitators,
                     $this->numFullRecTas,$this->numHalfRecTas,
                     $this->numFullUtilTas,$this->numHalfUtilTas,
                     $this->numPartUtilTas);
-
     $sql = " update CourseResources set $vals where".
            " Term = '$this->term' and Number = '$this->number';";
     Dbc::getReader()->Exec($sql);

@@ -13,26 +13,17 @@ include_once("app/models/Semester.php");
 include_once("app/models/Course.php");
 include_once("app/models/CourseResource.php");
 
-
 // Find the term we want to plan
-function findTerm($semesters)
+function getPostVariable($variableName)
 {
-  $term = getPostVariable('term');
+  // read complete courses table
+  $variable = 'undefined';
+  if (array_key_exists($variableName,$_POST))
+    $variable = $_POST[$variableName];
+  else
+    $GLOBALS['COMPLETE'] = 0;
 
-  if (! isset($semesters->list[$term])) {
-    print "<article class=\"page\">\n";
-    print "<h1>ERROR</h1>\n";
-    print "<hr>\n";
-    print "This term is not in our database: $term\n";
-    // footer
-    print "<hr>\n";
-    print "<h2><a href=\"/generateAssignments\">try again</a></h2>\n";
-    print '</article>'."\n";
-    include("app/views/admin/footer.php");
-    exit("");
-  }
-
-  return $term;
+  return $variable;
 }
 
 function printTermForm($semesters)
@@ -59,9 +50,11 @@ function printTermForm($semesters)
 // M A I N
 //==================================================================================================
 
+print "<article class=\"page\">\n";
+
 // get all relevant info from the database
 $semesters = Semesters::fromDb();
-$courses = CourseResources::fromDb();
+$courses = Courses::fromDb();
 $term = getPostVariable('term');
 $courseResources = CourseResources::fromDb($term);
 

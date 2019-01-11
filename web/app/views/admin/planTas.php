@@ -45,13 +45,6 @@ function printForm()
   print '</form>'."\n";
 }
 
-function removeFromDb($taTable,$email)
-{
-  // remove an existing student from the database
-  $sql = " delete from $taTable where email = '$email'";
-  Dbc::getReader()->Exec($sql);
-}
-
 // start the html page
 print '<article class="page">'."\n";
 
@@ -81,8 +74,9 @@ if (array_key_exists('email',$_POST) &&
   }
   else {
     if (isset($tas->list[$email])) {
-      removeFromDb($taTable,$email);
-      print "<p>Removed TA from our list: $email</p>\n";
+      $ta = $tas->list[$email];
+      $ta->removeFromDb();
+      print "<p>Removed TA from our list (Tas, $term): $email</p>\n";
     }
     else {
       $ta = Ta::fresh();
@@ -91,7 +85,7 @@ if (array_key_exists('email',$_POST) &&
       $ta->fullTime = $fullTime;
       $ta->partTime = $partTime;
       $ta->addToDb();
-      print "<p>Added new TA to our list: $email</p>\n";
+      print "<p>Added new TA to our list (Tas, $term): $email</p>\n";
     }
     // update the TA list in memory
     $tas = Tas::fromDb($term);

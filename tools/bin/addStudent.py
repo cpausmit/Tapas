@@ -37,6 +37,7 @@ else:
    os.chdir(os.getenv('TAPAS_TOOLS_DATA','./'))
 
    # add all existing tables (starting with the newest == most up to date one)
+   tables  = "spreadsheets/grads_F2018.csv "
    tables  = "spreadsheets/grads_F2017.csv "
    tables += "spreadsheets/grads_S2016.csv "
    tables += "spreadsheets/grads_F2016.csv "
@@ -60,7 +61,7 @@ else:
            supervisor = f.pop()
            advisor    = f.pop()
    
-           print " Found in overall spreadsheet\n    ( '%s', '%s', '%s', '%s', '%s', %d, '%s', '%s')"%\
+           print " Found in overall spreadsheet\n    ('%s','%s','%s','%s','%s',%d,'%s','%s')"%\
                (firstName,lastName,email,advisor,supervisor,year,division,research)
            break
    

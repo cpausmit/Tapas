@@ -35,6 +35,70 @@ class DatabaseHandle:
     def disco(self):
         self.handle.close()
 
+class CourseResource:
+    'Class resources for any MIT course.'
+
+    def __init__(self, row):
+        self.fill(row[0],row[1],
+                  int(row[2]),int(row[3]),int(row[4]),int(row[5]),
+                  int(row[6]),int(row[7]),int(row[8]),int(row[9]))
+
+    def fill(self, term,number,nA,nL,nR,nFRTa,nHRTa,nFUTa,nHUTa,nPUTa):
+        self.term = term
+        self.number = number
+        self.numAdmins = nA
+        self.numLecturers = nL
+        self.numRecitators = nR
+        self.numFullRecTas = nFRTa
+        self.numHalfRecTas = nHRTa
+        self.numFullUtilTas = nFUTa
+        self.numHalfUtilTas = nHUTa
+        self.numPartUtilTas = nPUTa
+
+    def show(self):
+        print "%s,%s,%d,%d,%d,%d,%d,%d,%d,%d"%(self.term,self.number,
+                                               self.numAdmins,self.numLecturers,self.numRecitators,
+                                               self.numFullRecTas,self.numHalfRecTas,
+                                               self.numFullUtilTas,self.numHalfUtilTas,
+                                               self.numPartUtilTas)
+    def printSlots(self):
+        # lecturer slots
+        i = 0
+        while i < self.numLecturers:
+            n = i+1;
+            i += 1
+        # recitation instructor slots
+        i = 0
+        while i < self.numRecitators:
+            n = i+1;
+            i += 1
+        # TA slots -------------------------------------
+        i = 0
+        while i < self.numFullRecTas:
+            n = i+1;
+            print '%s-%s-TaFR-%s'%(self.term,self.number,n)
+            i += 1
+        i = 0
+        while i < self.numFullUtilTas:
+            n = i+1;
+            print '%s-%s-TaFU-%s'%(self.term,self.number,n)
+            i += 1
+        i = 0
+        while i < self.numHalfRecTas:
+            n = i+1;
+            print '%s-%s-TaHR-%s'%(self.term,self.number,n)
+            i += 1
+        i = 0
+        while i < self.numHalfUtilTas:
+            n = i+1;
+            print '%s-%s-TaHU-%s'%(self.term,self.number,n)
+            i += 1
+        i = 0
+        while i < self.numPartUtilTas:
+            n = i+1;
+            print '%s-%s-TaPU-%s'%(self.term,self.number,n)
+            i += 1
+        
 class Course:
     'Base class for any MIT course.'
 
@@ -247,6 +311,29 @@ class Container:
                 
         except:
             print " ERROR - unable to fetch data from Assignments table."
+            return 1
+
+        # all went well
+        return 0
+
+    def fillWithCourseResources(self,database,term='F2018',debug=False):
+
+        # grab the cursor
+        cursor = database.cursor()
+        # Prepare SQL query to select all courses from the Courses table
+        sql = "select * from CourseResources where term = '%s'"%(term)
+        try:
+            # Execute the SQL command
+            cursor.execute(sql)
+            # Fetch all the results
+            results = cursor.fetchall()
+            for row in results:
+                # create a new course and add it to our courses object
+                courseResource = CourseResource(row)
+                number = row[1]
+                self.addElement(number,courseResource);                
+        except:
+            print " ERROR - unable to fetch data from CourseResources table."
             return 1
 
         # all went well

@@ -9,8 +9,18 @@ class Tables
   public function __construct($tableName)
   {
     $this->tableName = $tableName;
+    $this->readTable();
+  }
+
+  public function __destruct() { }
+
+  public function readTable() {
+    // Reads the content of the database into memory
+    // Note: the table name $this->tableName has to be set already
+    $this->names = array();
+    $rows = Dbc::getReader()->query("select TableName from ".$this->tableName);
+
     $i = 0;
-    $rows = Dbc::getReader()->query("select TableName from ".$tableName);
     foreach ($rows as $key => $row) {
       $name = $row[0];
       $this->names[$i] = $name;
@@ -18,8 +28,6 @@ class Tables
     }
     $this->nNames = sizeof($this->names);
   }
-
-  public function __destruct() { }
 
   public function getMatchingNames($pattern)
   {
@@ -47,6 +55,14 @@ class Tables
     return $name;
   }
 
+  public function updateMatching($activity,$term)
+  {
+    $sql = " update $this->tableName set TableName='$activity$term' where TableName like '$activity%'";
+    //print "<br> SQL: $sql <br>";
+    Dbc::getReader()->Exec($sql);
+    return;
+  }
+
   // Simple accessors
   public function getTableName() { return $this->tableName; }
   public function getNames() { return $this->names; }
@@ -54,7 +70,7 @@ class Tables
 
   // Property declaration
   private $tableName = '';
-  private $names = '';
+  private $names = array();
   private $nNames = 0;
 }
 

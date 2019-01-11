@@ -35,7 +35,7 @@ function findTerm($semesters)
   
   if ($test != 2) {
     print "<article class=\"page\">\n";
-    print "<h1>Which Term?</h1>\n";
+    print "<h1>Which Term? ($term)</h1>\n";
     print "<hr>\n";
     printTermForm("term ?",$semesters);
     // footer
@@ -104,7 +104,9 @@ function printForm($courses,$term)
       print "<option value=\"$key\"> $key </option>";
   print '    </select></td>'."\n";
   print '<td align=center><select style="width:100%;text-align-last:center" class="type" name="numAdmins">'."\n";
-  printNum(0,1);
+  printNum(-1,1);
+  // setting a reasonable default (instead of -1)
+  print "<option selected=\"selected\"> 0 </option>";
   print '    </select></td>'."\n";
   print '<td align=center><select style="width:100%;text-align-last:center" class="type" name="numLecturers">'."\n";
   printNum(0,10);
@@ -135,9 +137,10 @@ function printTermForm($term,$semesters)
 {
   print '<table>';
   print '<form  action="/planCourseResources" method="post">'."\n";
+  print '<input type="hidden" name="term" value="'.$term.'" />';
   print '<tr>';
   print '<td align=center><select class="type" name="term">'."\n";
-  print "<option value=\"\">".$term."</option>";
+  print "<option value=\"$term\">".$term."</option>";
   foreach ($semesters->list as $key => $semester)
     print "<option value=\"$key\"> $key </option>";
   print '    </select></td>'."\n";
@@ -178,12 +181,12 @@ $numPartUtilTas = getPostVariable('numPartUtilTas');
 if ($GLOBALS['COMPLETE'] == 2) {                  // All post variables are filled == ready to register
   if (! isset($semesters->list[$term])) {
     print "<h1>ERROR</h1>\n";
-    print "This term is not in our database. \n";
+    print "This term ($term) is not in our database. \n";
   }
   else {
     
     // initialize a new courseResource
-    print " New resource $term:$number<br>\n";
+    //print " Setting up resource $term:$number<br>\n";
     $courseResource = courseResource::fresh();
     $courseResource->term = $term;
     $courseResource->number = $number;
@@ -197,13 +200,19 @@ if ($GLOBALS['COMPLETE'] == 2) {                  // All post variables are fill
     $courseResource->numPartUtilTas = $numPartUtilTas;
     
     if (isset($courseResources->list[$number])) { // if course exists it will be overwritten
-      $courseResource->updateDb();
-      print "Updated course in database: $term:$number<br>\n";
+      if ($numAdmins == -1) {
+        print "Remove from course resource in database: $term:$number<br>\n";
+        $courseResource->removeFromDb();
+      }
+      else {
+        print "Update course resource in database: $term:$number<br>\n";
+        $courseResource->updateDb();
+      }
     }
     else {
       // add it to the database
+      print "Add new CourseResource in the database: $term:$number<br>\n";
       $courseResource->addToDb();
-      print "Added new CourseResource in the database: $term:$number<br>\n";
     }
 
     // update the course resource list in memory
@@ -221,30 +230,30 @@ printTermForm($term,$semesters);
 print "<table>\n";
 
 // loop through all course resources
-if ($courseResources->list != "") {
-  $first = true;
-  foreach ($courseResources->list as $key => $courseResource) {
-    if ($first) {
-      $first = false;
-      $courseResource->printTableHeader(false);
-      printForm($courses,$term);
-    }
-    $courseResource->printTableRow(true);
+
+$first = true;
+foreach ($courseResources->list as $key => $courseResource) {
+  if ($first) {
+    $first = false;
+    $courseResource->printTableHeader(false);
+    printForm($courses,$term);
   }
-  print "</table>\n";
-  print "<p> &nbsp;&nbsp;&nbsp;&nbsp; $nEntries unique entries (for term: $term).".
-        "<br> &nbsp;&nbsp;&nbsp;&nbsp;";
-  $courseResources->showSummary();
-  print "</p>\n";
-  print "<hr>\n";
-  // register all present assignment slots
-  printGenerateAssignments($term);
+  $courseResource->printTableRow(true);
 }
-else {
-  $courseResource = courseResource::fresh();
+if ($first) {
+  $courseResource = CourseResource::fresh();
   $courseResource->printTableHeader(false);
   printForm($courses,$term);
 }
+
+print "</table>\n";
+print "<p> &nbsp;&nbsp;&nbsp;&nbsp; $nEntries unique entries (for term: $term).".
+      "<br> &nbsp;&nbsp;&nbsp;&nbsp;";
+$courseResources->showSummary();
+print "</p>\n";
+print "<hr>\n";
+// register all present assignment slots
+printGenerateAssignments($term);
 
 // footer
 print "<hr>\n";
