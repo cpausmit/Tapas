@@ -121,7 +121,8 @@ class Course:
         self.admin = admin
             
     def show(self):
-        print " Course: %s: %s  -- version %d"%(self.number,self.name,self.version)
+        print " Course: %s: %s  -- version %d (Teacher: %s (%s))"%\
+        (self.number,self.name,self.version,self.teacher,self.admin)
 
 class BaseTeacher:
     'Base class for any teaching Personnel.'

@@ -68,11 +68,11 @@ class Assignments
       $p = $assignment->person;
       $display = 0;
 
-      if ($option == "ALL")
+      if ($option == "ALL" && $p != "EMPTY" && $p != "EMPTY@mit.edu")
         $display = 1;
-      else if ($option == "TA" && $myTask->isTa() && $p != "" && $p != "EMPTY@mit.edu")
+      else if ($option == "TA" && $myTask->isTa() && $p != "" && $p != "EMPTY" && $p != "EMPTY@mit.edu")
         $display = 1;
-      else if ($option == "Unassigned" && ($p == "" || $p == "EMPTY@mit.edu"))
+      else if ($option == "Unassigned" && ($p == "" || $p == "EMPTY" || $p == "EMPTY@mit.edu"))
         $display = 1;
       
       if ($display) {

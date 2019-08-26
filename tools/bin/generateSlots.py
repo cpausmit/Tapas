@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 #---------------------------------------------------------------------------------------------------
-# Script to read the standardized input from the physics department to generate the required slots.
+# Script to read the standardized input from the physics department to generate the required slot
+# tokens. No entries in the database are generated. The tokens are then used to make an assignment
+# files which will be pushed into the database.
 #
 #   input table: CourseResources
 #

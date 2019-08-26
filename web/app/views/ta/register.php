@@ -37,6 +37,7 @@ $planningTables = new Tables('PlanningTables');
 $term = substr($planningTables->getUniqueMatchingName('Preferences'),-5,5);
 $preferences = Preferences::fromDb($term);
 $email = strtolower($_SERVER['SSL_CLIENT_S_DN_Email']);
+$comment = "";
 
 print '<article class="page">'."\n";
 print '<h1>Selected TA Preferences</h1>';
@@ -55,7 +56,12 @@ $task2 = new TeachingTask($_POST['pref2']); print '&nbsp;&nbsp; 2: '; $task2->pr
 $task3 = new TeachingTask($_POST['pref3']); print '&nbsp;&nbsp; 3: '; $task3->printTaTask();
 print '</p>';
 
-//// test whether selection is valid
+if (isset($_POST['Comment'])) {
+  $comment = $_POST['Comment'];
+  print "<p>&nbsp;&nbsp;  Comment: $comment</p>";
+}
+
+// test whether selection is valid
 if (testSelection($_POST['pref1'],$_POST['pref2'],$_POST['pref3'])) {
   print '<p>Selection is valid. ';
 //  
@@ -65,6 +71,7 @@ if (testSelection($_POST['pref1'],$_POST['pref2'],$_POST['pref3'])) {
   $row[2] = $_POST['pref1'];
   $row[3] = $_POST['pref2'];
   $row[4] = $_POST['pref3'];
+  $row[5] = $comment;
   $preference = Preference::fromRow($row);
   if (!isset($preferences->list[$preference->email]))
     $preference->addToDb();

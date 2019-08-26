@@ -39,7 +39,7 @@ class Teachers
     //print " SQL : $sql";
     $rows = Dbc::getReader()->query($sql);
     foreach ($rows as $key => $row)
-      $instance->addTeacher(Teacher::fromRow($row));
+        $instance->addTeacher(Teacher::fromRow($row),0);
 
     return $instance;
   }
@@ -50,17 +50,18 @@ class Teachers
     $instance = new self();
     $teacherRows = Dbc::getReader()->query("select * from Teachers order by Email");
     foreach ($teacherRows as $key => $row)
-      $instance->addTeacher(Teacher::fromRow($row));
+        $instance->addTeacher(Teacher::fromRow($row),1);
     
     return $instance;
   }
 
-  public function addTeacher($teacher)
+  public function addTeacher($teacher,$unique = 0)
   {
     if (!isset($this->list[$teacher->email]))
       $this->list[$teacher->email] = $teacher;
     else
-      print " ERROR - trying to add a teacher twice.<br>\n";
+      if ($unique != 0)
+        print " ERROR - trying to add a teacher twice ($teacher->email).<br>\n";
     
     return;
   }

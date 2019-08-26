@@ -14,30 +14,31 @@ include_once("app/models/Tables.php");
 // M A I N
 //==================================================================================================
 
-// find the active table
+// find the active and planning table
 $activeTables = new Tables("ActiveTables");
+$planningTables = new Tables("PlanningTables");
+
 // get a full list of available semesters
 $semesters = Semesters::fromDb();
 
 print "<article class=\"page\">\n";
-//print "<h1>POST</h1>\n";
-//print "<p><ul style=\"list-style-type:disc\">\n";
-$update = False;
-foreach($_POST as $key => $value) {
-    //print "  <li> $key --> $value </li>\n";
-  $activeTables->updateMatching($key,$value); 
-  $update = True;
-}
-//print "</ul></p>\n";
-if ($update) {
-  $activeTables->readTable();
+
+if (isset($_GET['Tables'])) {
+  $tables = $activeTables;
+  if ($_GET['Tables'] == "Planning")
+    $tables = $planningTables;
+  $update = False;
+  foreach($_POST as $key => $value) {
+    $tables->updateMatching($key,$value); 
+    $update = True;
+  }
+  if ($update)
+    $tables->readTable();
 }
 
-print '<h1>Term Selection</h1>'."\n";
-print ' '."\n";
-print "Select the active term for each activity<br>\n";
-print '<p>';
-print '<form action="/selectTerm" method="post">'."\n";
+
+print '<h1>Active terms</h1>'."\n";
+print '<form action="/selectTerm?Tables=Active" method="post">'."\n";
 foreach ($activeTables->getNames() as $key => $name) {
   $t = substr($name,-5,5);
   $a = substr($name,0,strlen($name)-5);
@@ -48,8 +49,23 @@ foreach ($activeTables->getNames() as $key => $name) {
     print "<option value=\"" . $k . "\"> $k </option>";
   print '  </select>'."\n";
 }
-
 print '  <input type="submit" value="select these active terms" />'."\n";
+print '</form>'."\n";
+print '</p>'."\n";
+
+print '<h1>Planning terms</h1>'."\n";
+print '<form action="/selectTerm?Tables=Planning" method="post">'."\n";
+foreach ($planningTables->getNames() as $key => $name) {
+  $t = substr($name,-5,5);
+  $a = substr($name,0,strlen($name)-5);
+  print "$a: ";
+  print '  <select class="'.$a.'" name="'.$a.'">'."\n";
+  print '  <option value="'.$t.'">'.$t.'</option>'."\n";
+  foreach ($semesters->list as $k => $semester)
+    print "<option value=\"" . $k . "\"> $k </option>";
+  print '  </select>'."\n";
+}
+print '  <input type="submit" value="select these planning terms" />'."\n";
 print '</form>'."\n";
 print '</p>'."\n";
 

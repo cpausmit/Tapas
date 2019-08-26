@@ -50,6 +50,7 @@ else{
   $task3->printTaTask();// print '<br>';
 
   print '</p> ';
+  print "<p>&nbsp;&nbsp;  Comment: $preference->comment</p>";
 }
 
 print '</article>'."\n";

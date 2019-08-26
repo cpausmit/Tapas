@@ -27,5 +27,8 @@ echo ""                                                            >> setup.sh
 echo "export PATH=\"\${PATH}:\${TAPAS_TOOLS_BIN}\""                >> setup.sh
 echo "export PYTHONPATH=\"\${PYTHONPATH}:\${TAPAS_TOOLS_PYTHON}\"" >> setup.sh
 echo ""                                                            >> setup.sh
+echo "alias tapgo=\"cd $TAPAS_TOOLS_DATA\""                        >> setup.sh
+echo "alias taphelp=\"head -20 $TAPAS_TOOLS_DATA/INSTRUCTIONS\""   >> setup.sh
+echo ""                                                            >> setup.sh
 
 exit 0

@@ -2,8 +2,6 @@
 
 include("app/views/admin/header.php");
 
-$debug = false;
-
 if (! isMaster()) { 
   exitAccessError();
 }
@@ -50,8 +48,10 @@ function findRecipientList($targetString,$email)
 
 function isMessageReady()
 {
-  return (isset($_POST['Recipients']) &&
-          isset($_POST['Subject']) && isset($_POST['Message']));
+  return (isset($_POST['Debugging']) &&
+          isset($_POST['Recipients']) &&
+          isset($_POST['Subject']) &&
+          isset($_POST['Message']));
 }
 
 function printEmailForm($subject,$message)
@@ -60,12 +60,17 @@ function printEmailForm($subject,$message)
 
   print '<p>';
   print "<form action=\"/email\" method=\"post\">\n";
+  print '  <select class="type" name="Debugging">'."\n";
+  print '    <option value="">Debugging (0 or 1): </option>'."\n";
+  print '    <option value="0">0</option>'."\n";
+  print '    <option value="1">1</option>';
+  print '    </select>';
   print '  <select class="Recipients" name="Recipients">'."\n";
-  print '  <option value="">To: </option>'."\n";
-  print "  <option value=\"Myself\"> Myself </option>";
-  print "  <option value=\"TAs\"> TAs </option>";
-  print "  <option value=\"Teachers\"> Teachers </option>";
-  print '  </select>'."\n";
+  print '    <option value="">To: </option>'."\n";
+  print "    <option value=\"Myself\"> Myself </option>";
+  print "    <option value=\"TAs\"> TAs </option>";
+  print "    <option value=\"Teachers\"> Teachers </option>";
+  print '    </select>'."\n";
   print "Write your message.\n";
   if ($subject == "")
     print '<textarea placeholder="Subject: " '.$style.' name="Subject" rows=1 cols=40>'.
@@ -87,12 +92,15 @@ function printEmailForm($subject,$message)
 //==================================================================================================
 
 // setting the right defaults
+$debug = true;
 $subject = '';
 $message = '';
 
 // command line arguments
 $email = strtolower($_SERVER['SSL_CLIENT_S_DN_Email']);
 
+if (isset($_POST['Debugging']))
+  $debug = intval($_POST['Debugging']);
 if (isset($_POST['Recipients']))
   $targetString = $_POST['Recipients'];
 if (isset($_POST['Subject']))
@@ -128,21 +136,20 @@ if (isMessageReady()) {
   print " Subject:     $subject<br>\n";
   print " Message:<br> $message<br>\n";
   print " Headers:<br> $Uheaders<br>\n";
+
   // Send
   print '<br><b>==== RESULT ====</b><br>'."\n";
-  if (False) { 
-    print "<p>Mail was NOT sent. Feature disabled for now!</p>";
-  }
+
+  if ($debug)
+    print " MESSAGE NOT SEND. DEBUGGING = $debug";
   else {
-    if ($debug)
-      print " MESSAGE NOT SEND. DEBUGGING = $debug";
-    else{
-      if (mail($list,$subject,$message,$headers))
-        print "<p>Mail accepted for delivery (does not guarantee delivery though).</p>";
-      else
-        print "<p>Mail was NOT accepted for delivery.</p>";
-    }
+    //print " MESSAGE NOT SEND. DISABLED = $debug";
+    if (mail($list,$subject,$message,$headers))
+      print "<p>Mail accepted for delivery (does not guarantee delivery though).</p>";
+    else
+      print "<p>Mail was NOT accepted for delivery.</p>";
   }
+
 }
 print "<hr>\n";
 print "<h1>Compose an Email</h1>\n";

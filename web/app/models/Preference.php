@@ -1,16 +1,18 @@
 <?php
 
 // mysql> describe PreferencesF2015;
-//+-------+----------+------+-----+---------+-------+
-//| Field | Type     | Null | Key | Default | Extra |
-//+-------+----------+------+-----+---------+-------+
-//| Term  | char(5)  | YES  | MUL | NULL    |       |
-//| Email | char(40) | YES  |     | NULL    |       |
-//| Pref1 | text     | YES  |     | NULL    |       |
-//| Pref2 | text     | YES  |     | NULL    |       |
-//| Pref3 | text     | YES  |     | NULL    |       |
+//+---------+----------+------+-----+---------+-------+
+//| Field   | Type     | Null | Key | Default | Extra |
+//+---------+----------+------+-----+---------+-------+
+//| Term    | char(5)  | YES  | MUL | NULL    |       |
+//| Email   | char(40) | YES  |     | NULL    |       |
+//| Pref1   | text     | YES  |     | NULL    |       |
+//| Pref2   | text     | YES  |     | NULL    |       |
+//| Pref3   | text     | YES  |     | NULL    |       |
+//| Comment | text     | YES  |     | NULL    |       |
 //+-------+----------+------+-----+---------+-------+
 // alter table Preferences add constraint onePerTerm unique(Term, Email);
+// alter table Preferences add column Comment text default "";
 
 include_once("app/models/Dbc.php");
 include_once("app/models/Utils.php");
@@ -77,6 +79,7 @@ class Preference
     $this->pref1 = $row[2];
     $this->pref2 = $row[3];
     $this->pref3 = $row[4];
+    $this->comment = $row[5];
   }
 
   protected function isValid()
@@ -98,8 +101,8 @@ class Preference
 
     // make sure this is a valid new entry
     if ($this->isValid()) {
-      $vals = sprintf("('%s','%s','%s','%s','%s')",
-                      $this->term,$this->email,$this->pref1,$this->pref2,$this->pref3);
+      $vals = sprintf("('%s','%s','%s','%s','%s','%s')",
+                      $this->term,$this->email,$this->pref1,$this->pref2,$this->pref3,$this->comment);
       $sql = " insert into Preferences values $vals";
       //print "<br> SQL: $sql <br>";
       Dbc::getReader()->Exec($sql);
@@ -114,8 +117,8 @@ class Preference
 
     // make sure this is a valid new entry
     if ($this->isValid()) {
-      $form = "Pref1 = '%s', Pref2 = '%s', Pref3 = '%s'";
-      $vals = sprintf($form,$this->pref1,$this->pref2,$this->pref3);
+      $form = "Pref1 = '%s', Pref2 = '%s', Pref3 = '%s', Comment = '%s'";
+      $vals = sprintf($form,$this->pref1,$this->pref2,$this->pref3,$this->comment);
       $sql = " update Preferences set $vals where Term = '$this->term' and Email = '$this->email';";
       Dbc::getReader()->Exec($sql);
     }
@@ -138,6 +141,7 @@ class Preference
   public $pref1 = 0;
   public $pref2 = 0;
   public $pref3 = 0;
+  public $comment = 'undefined';
 
 }
 

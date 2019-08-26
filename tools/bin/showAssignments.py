@@ -7,7 +7,7 @@ import sys,re,os
 import MySQLdb
 import Database
 
-debug = False
+debug = True
 check = False
 dataDir = os.getenv('TAPAS_TOOLS_DATA','./')
 os.chdir(dataDir)
@@ -126,6 +126,7 @@ try:
             if   task.split('-')[2] == 'Lec':          ## and task.split('-')[3] == '1':
                 course = activeCourses.retrieveElement(number);
                 course.setTeacher(email)
+                course.show()
             elif task.split('-')[2] == 'Adm':
                 course = activeCourses.retrieveElement(number);
                 course.setAdmin(email)

@@ -10,6 +10,7 @@ if (isAdmin() || isMaster()) {
   print '<p> Administrators can list:</p>'."\n";
   print '<ul class="cp-list">'."\n";
   print '<li> <a href="/semesters">semesters</a>'." all semesters so far recorded.\n";
+  print '<li> <a href="/selectTerm">active semesters</a>'." active semesters per activity.\n";
   print '<li> <a href="/courses">courses</a>'." all courses in the physics department.\n";
   print '<li> <a href="/teachers">teachers</a>'." all teachers (mostly faculty).\n";
   print '<li> <a href="/students">students</a>'." all grad students that have been a TA.\n";

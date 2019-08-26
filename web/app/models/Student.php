@@ -257,9 +257,12 @@ class Student
   public function printSummary()
   {
     // print one row of a table with the relevant infromation
-
-    print "<u><b>". $this->lastName . ', ' . $this->firstName . " (" . $this->email .
-          ")</b></u>\n<br>";
+    print "<form  action=\"/addStudent\" method=\"post\">\n";
+    print "<table><tr><td><input type=\"text\" name=\"email\" value=\"$this->email\">\n</td>";
+    print "<td><input type=\"submit\" value=\"update\" />\n</td></tr>";
+    print "</table></form>\n";
+    print "<u><b> $this->lastName, $this->firstName ($this->email) </b></u>";
+    print "\n<br>";
     print ' joined: '. $this->year .
           ', division: ' . $this->division . ',   research: ' . $this->research . "\n<br>" .
           ' academic advisor: ' . $this->advisorEmail .

@@ -2,18 +2,17 @@
 
 include("app/views/admin/header.php");
 
-include("app/models/Dbc.php");
-include("app/models/Course.php");
-
 // make sure this is the master
 if (! (isMaster())) { 
   exitAccessError();
 }
 
+include("app/models/Course.php");
+
 $course = Course::fromNumber($_POST['number']);
 $new = $course->isFresh();
 
-print '<article class="page">'."\n";
+print "<article class=\"page\">\n";
 if ($new)
   print "<h1>New Course</h1>\n";
 else
@@ -30,7 +29,7 @@ if ($new)
 else
   $course->updateDb();
 
-print '</article>'."\n";
+print "</article>\n";
 
 include("app/views/admin/footer.php");
 
