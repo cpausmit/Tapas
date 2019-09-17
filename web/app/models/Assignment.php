@@ -127,7 +127,7 @@ class Assignment
     $myTask = new TeachingTask($this->task);
     print "<tr>";
     print "<td> "
-      . $this->term . ": &nbsp;</td><td>"
+      . $this->term . "&nbsp;</td><td>"
       . "<a href=\"/showTaskSummary?number=" . $myTask->getCourse(). "\">"
       . $myTask->getCourse()
       . "</a>"

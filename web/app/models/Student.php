@@ -235,6 +235,8 @@ class Student
     print "<td>&nbsp;";
     print "<a href=\"showTaSummary?email=" . $this->email . "\">" . $this->email . "</a>";
     print "&nbsp;</td>";
+    print "<td>&nbsp;" . $this->division . "&nbsp;</td>";
+    print "<td>&nbsp;" . $this->research . "&nbsp;</td>";
     if (!$open)
       print "</tr>\n";
   }
@@ -249,6 +251,12 @@ class Student
     print "&nbsp;</th>";
     print "<th>&nbsp;";
     print " Email";
+    print "&nbsp;</th>";
+    print "<th>&nbsp;";
+    print " Division";
+    print "&nbsp;</th>";
+    print "<th>&nbsp;";
+    print " Research";
     print "&nbsp;</th>";
     if (!$open)
       print "</tr>\n";
