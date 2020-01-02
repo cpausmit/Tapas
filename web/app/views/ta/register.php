@@ -57,7 +57,7 @@ $task3 = new TeachingTask($_POST['pref3']); print '&nbsp;&nbsp; 3: '; $task3->pr
 print '</p>';
 
 if (isset($_POST['Comment'])) {
-  $comment = $_POST['Comment'];
+  $comment = addslashes($_POST['Comment']);
   print "<p>&nbsp;&nbsp;  Comment: $comment</p>";
 }
 

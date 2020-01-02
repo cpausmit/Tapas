@@ -9,9 +9,9 @@ if (! (isMaster())) {
 
 include_once("app/models/Utils.php");
 include_once("app/models/Dbc.php");
+include_once("app/models/Assignment.php");
 include_once("app/models/Semester.php");
 include_once("app/models/Teacher.php");
-include_once("app/models/Ta.php");
 
 print '<article class="page">'."\n";
 print '<h1>Recorded Evaluation</h1>';
@@ -49,7 +49,6 @@ print ' Term valid.<br>';
 
 // find the tables
 $evaluationsTable = 'Evaluations'; //print " Evaluations from $evaluationsTable.<br>";
-//$assignmentsTable = 'Assignments'; //print " Assignments from $assignmentsTable.<br>";
 
 // find teacher and TA
 $teachers = Teachers::fromDb();
@@ -60,12 +59,20 @@ if (! isset($teachers->list[$teacherEmail])) {  // check if this is a valid teac
 $teacher = $teachers->list[$teacherEmail];
 print ' Teacher valid.<br>';
 
-$tas = Tas::fromDb($term);
-if (! isset($tas->list[$taEmail])) {
-  print " EXIT - ta email is not valid.<br>";
-  exitParameterError($taMail);
+$assignments = Assignments::fromDb($term);
+$test = "EMPTY";
+foreach ($assignments->list as $task => $assignment) {
+    //print " $taEmail --> $assignment->person ";
+  if (strcmp($taEmail,$assignment->person) == 0) {
+      //print " MATCH <br>";
+    $test = $assignment->person;
+  }
+  //print " no <br>";
 }
-$ta = $tas->list[$taEmail];
+if (strcmp($test,"EMPTY") == 0) {
+  print " EXIT - ta email is not valid.<br>";
+  exitParameterError($taEmail);
+}
 print ' TA valid.<br>';
 
 // test whether evaluation is valid

@@ -61,7 +61,6 @@ function show_teacher($assignment,$t,$teacher)
   print "</tr>\n";
 }
 
-
 // command line arguments
 $option = "ALL";
 if (isset($_GET['option']))
@@ -73,7 +72,7 @@ $assignmentsTable = $activeTables->getUniqueMatchingName('Assignments');
 $term = substr($assignmentsTable,-5,5);
 $assignments = Assignments::fromDb($term);
 $students = Students::fromDb();
-$Teachers = Teachers::fromDb();
+$teachers = Teachers::fromDb();
 
 print '<article class="page">'."\n";
 print '<h1>Show Active Assignments</h1>';
@@ -117,7 +116,7 @@ foreach ($assignments->list as $task => $assignment) {
     }
     else {
       $teacher = $teachers->list[$assignment->person];
-      show_teacher($assignment,$myTask,$student);
+      show_teacher($assignment,$myTask,$teacher);
     }
   }
 }

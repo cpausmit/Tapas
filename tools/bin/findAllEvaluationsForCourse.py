@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+#
+# The old format before 2007 has not yet been fully implemented.... maybe one day.
+#
 from bs4 import BeautifulSoup
 import sys, re, os
 import requests
@@ -26,7 +29,64 @@ def getEvaluationsFromCache(evalCache):
                 evs.append(ev)
 
     return evs
+
+def getEvaluationsFromWebOld(term):
     
+    # base
+    trunc = 'https://edu-apps.mit.edu/ose-rpt/'
+    evaluation_url = 'subjectEvaluationSearch.htm?'
+    parameters = 'departmentId=+++8&search=Search&termId=%s&subjectCode=&instructorName='%term
+    
+    # the url
+    url = trunc + evaluation_url + parameters
+    
+    # get the page output
+    r = requests.get(url,cookies=cookies)
+    
+    data = r.text
+    
+    # scrape it
+    evs = []
+    soup = BeautifulSoup(data,"lxml")
+    paras = soup.find_all('p')
+    for row in paras:
+        for link in row.find_all('a'):
+            evaluation_link = link.get('href')
+            if 'evaluation' in evaluation_link:
+                number = evaluation_link.split("/").pop()
+                number = number.replace(".html","")
+                print " %s --> %s"%(term,number)
+                evs = getEvaluationsForSubjectOld(trunc+evaluation_link,cookies_eval,number,evs)
+    return evs
+
+def getEvaluationsForSubjectOld(url,cookies_eval,number,evs):
+
+    r = requests.get(url,cookies=cookies_eval)
+    data = r.text
+    print data
+    
+    soup = BeautifulSoup(data,"lxml")
+
+    column = 4
+    
+    # find the table
+    tables = soup.find_all('table')
+
+##    # find and analyze header rows
+##    trs = table.find_all('tr')
+##    for tr in trs:
+##        tds = tr.find_all('td')
+##        if len(tds)>0:
+##            index = -1
+##            for td in tds:
+##                index += 1
+##                if 'verall rating' in td.get_text():
+##                    column = index
+##                    print ' Setting rating index to: %d'%(column)
+    
+    return
+
+
 def getEvaluationsFromWeb(term):
     
     # base
@@ -94,6 +154,7 @@ def getCookies(cookie_file):
 
     return cookies
 
+
 def getEvaluationsForSubject(url,cookies,number,evs):
     
     r = requests.get(url,cookies=cookies)
@@ -156,6 +217,7 @@ def findTasks(tapasTerm,assignments,person):
 #===================================================================================================
 # get our cookies
 cookies = getCookies("/home/paus/.cookies")
+cookies_eval = getCookies("/home/paus/.cookies_eval")
 
 # command line
 term = sys.argv[1]
@@ -171,11 +233,11 @@ else:
     evs = getEvaluationsFromWeb(term)
     print ' Writing evaluations cache (%s).'%(evalCache)
     writeEvalCache(evalCache,evs)
-
+    
 # Open database connection
 db = Database.DatabaseHandle()
 
-# Make a new objects of faculties
+# Make a new objects of teachers
 teachers = Database.Container()
 rc = teachers.fillWithTeachers(db.handle)
 if rc != 0:
@@ -193,7 +255,7 @@ if rc != 0:
     db.disco()
     sys.exit()
 
-# Make a new objects of students
+# Make a new objects of assignments
 assignments = Database.Container()
 rc = assignments.fillWithAssignments(db.handle)
 if rc != 0:
@@ -207,6 +269,7 @@ print ' Finding all active elements in term: %s'%(term)
 activeStudents = Database.Container()
 activeTeachers = Database.Container()
 activeAssignments = Database.Container()
+
 for task, assignment in assignments.getHash().iteritems():
     if assignment.term == tapasTerm:
         activeAssignments.addElement(assignment.task,assignment)
@@ -248,9 +311,9 @@ for ev in evs:
                     ev.update(teacher.eMail)
                     
     if not done:
-        #print '\n ERROR - could not match evaluation.\n '
-        #ev.show()
-        #print '\n '
+        print '\n ERROR - could not match evaluation.\n '
+        ev.show()
+        print '\n '
         pass
 
 

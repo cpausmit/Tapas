@@ -1,3 +1,4 @@
+# careful: there is a definition offset: ex. 2019FA -> F2020
 findAllEvaluationsForCourse.py 2010FA
 findAllEvaluationsForCourse.py 2011FA
 findAllEvaluationsForCourse.py 2012FA
@@ -7,6 +8,7 @@ findAllEvaluationsForCourse.py 2015FA
 findAllEvaluationsForCourse.py 2016FA
 findAllEvaluationsForCourse.py 2017FA
 findAllEvaluationsForCourse.py 2018FA
+findAllEvaluationsForCourse.py 2019FA
 
 findAllEvaluationsForCourse.py 2010JA
 findAllEvaluationsForCourse.py 2011JA
@@ -17,6 +19,7 @@ findAllEvaluationsForCourse.py 2015JA
 findAllEvaluationsForCourse.py 2016JA
 findAllEvaluationsForCourse.py 2017JA
 findAllEvaluationsForCourse.py 2018JA
+findAllEvaluationsForCourse.py 2019JA
 
 findAllEvaluationsForCourse.py 2010SP
 findAllEvaluationsForCourse.py 2011SP
@@ -26,4 +29,6 @@ findAllEvaluationsForCourse.py 2014SP
 findAllEvaluationsForCourse.py 2015SP
 findAllEvaluationsForCourse.py 2016SP
 findAllEvaluationsForCourse.py 2017SP
+findAllEvaluationsForCourse.py 2018SP
+findAllEvaluationsForCourse.py 2019SP
 

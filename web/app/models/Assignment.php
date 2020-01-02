@@ -137,7 +137,8 @@ class Assignment
       . $myTask->getTaType()  . "&nbsp;</td><td>";
 
     if ($option == 'simple')
-      print "&nbsp;</td>\n";
+      print "</td>\n"
+        . "<td>&nbsp; (Eval:" . number_format($this->evalO,1,'.',',') . ") &nbsp;</td>";
     else
       print "<a href=\"/showTaSummary?email=" . $this->person . "\">"
         . $this->person

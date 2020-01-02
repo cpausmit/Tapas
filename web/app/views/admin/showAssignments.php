@@ -77,14 +77,18 @@ print "<th> TA type &nbsp;</th><th> Person &nbsp;</th><th> Division &nbsp;</th><
 foreach ($assignments->list as $task => $assignment) {
   $myTask = new TeachingTask($task);
 
-  if ($myTask->isTa()) {
-    $student = $students->list[$assignment->person];
-    show_student($assignment,$myTask,$student);
-  }
-  else {
+  //print "$assignment->person";
+
+  if ($assignment->person != "EMPTY" && $assignment->person != "EMPTY@mit.edu") {
+    if ($myTask->isTa()) {
+      $student = $students->list[$assignment->person];
+      show_student($assignment,$myTask,$student);
+    }
+    else {
       //$assignment->show();
-    $teacher = $teachers->list[$assignment->person];
-    show_teacher($assignment,$myTask,$teacher);
+      $teacher = $teachers->list[$assignment->person];
+      show_teacher($assignment,$myTask,$teacher);
+    }
   }
 }
 print "</table>";
