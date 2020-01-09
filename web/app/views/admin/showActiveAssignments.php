@@ -81,11 +81,9 @@ print "Unassigned slots from $assignmentsTable</p>";
 $assignments->show("Unassigned");
 print "Active Assignments from $assignmentsTable</p>";
 
-//$assignments->show($option);
-
 print "<table>\n";
 print "<tr><th>&nbsp; Term &nbsp;</th><th>&nbsp; Course &nbsp;</th><th> Type &nbsp;</th><th> Effort &nbsp;</th>";
-print "<th> TA type &nbsp;</th><th> Person &nbsp;</th><th> Id &nbsp;</th><th> EvalO &nbsp;</th></tr>\n";
+print "<th> TA type &nbsp;</th><th> Person &nbsp;</th><th> Research &nbsp;</th><th> Id &nbsp;</th><th> EvalO &nbsp;</th></tr>\n";
 $iF = 0;
 $iP = 0;
 foreach ($assignments->list as $task => $assignment) {

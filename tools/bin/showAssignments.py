@@ -7,7 +7,7 @@ import sys,re,os
 import MySQLdb
 import Database
 
-debug = True
+debug = False
 check = False
 dataDir = os.getenv('TAPAS_TOOLS_DATA','./')
 os.chdir(dataDir)

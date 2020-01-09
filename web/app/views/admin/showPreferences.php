@@ -33,6 +33,7 @@ print "<tr>";
 print "<th>&nbsp; Name &nbsp;</th>";
 print "<th>&nbsp; Email &nbsp;</th>";
 print "<th>&nbsp; Division &nbsp;</th>";
+print "<th>&nbsp; Research &nbsp;</th>";
 print "<th>&nbsp; Preference 1 &nbsp;</th>";
 print "<th>&nbsp; Preference 2 &nbsp;</th>";
 print "<th>&nbsp; Preference 3 &nbsp;</th>";
@@ -56,7 +57,6 @@ foreach ($preferences->list as $key => $preference) {
   $task3 = new TeachingTask($preference->pref3);
 
   $student->printTableRow(true);
-  print "<td>&nbsp; $student->division &nbsp;</td>";
   print "<td>&nbsp; ";
   $task1->printTaskWithLink();
   print " &nbsp;</td>";
