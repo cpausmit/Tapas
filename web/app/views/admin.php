@@ -28,26 +28,14 @@ if (isAdmin() || isMaster()) {
 }
 
 if (isMaster()) {
-  print '<p> You are the master:<br>'."\n";
-  print "&nbsp;&nbsp; evaluations:";
-  print '&nbsp;&nbsp; <a href="/evaluations">all</a>'."\n";
-  print '&nbsp;&nbsp; <a href="/showActiveEvaluations">active</a>'."\n";
-  print '&nbsp;&nbsp; <a href="/showEvaluators">evaluators</a>'."\n";
-  print '&nbsp;&nbsp; <a href="/addEvaluation">evaluate</a>'."\n";
-  print "<br>\n";
-  print "&nbsp;&nbsp; preferences:";
-  print '&nbsp;&nbsp; <a href="/showPreferences">preferences</a>'."\n";
-  print "<br>\n";
-  print "&nbsp;&nbsp; assignments:";
-  print "<br>\n";
-  print "&nbsp;&nbsp; course resources:";
-  print '&nbsp;&nbsp; <a href="/planCourseResources">planning</a>'."\n";
-  print "<br>\n";
-  print "&nbsp;&nbsp; TAs:";
-  print "<br>\n";
-  print "&nbsp;&nbsp; access:";
-  print '&nbsp;&nbsp; <a href="/showAccessLists">access lists</a>'."\n";
+  print '<p> Additional master menu:<br>'."\n";
+  print '<ul class="cp-list">'."\n";
+  print '<li> evaluations: <a href="/showActiveEvaluations">show active</a>, <a href="/showEvaluators">active evaluators</a>, <a href="/evaluations">show any</a>, <a href="/addEvaluation">add evaluation</a>'."\n";
+  print '<li> preferences: <a href="/showPreferences">show active</a>'."\n";
+  print '<li> access list: <a href="/showAccessLists">show</a>'."\n";
+  print "</ul>\n";
   print ' '."\n";
+  print ' <hr>'."\n";
 }
 print '</article>'."\n";
 

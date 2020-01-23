@@ -9,6 +9,87 @@ import pandas as pd
 import Evaluation
 import Database
 
+def getEvaluationsFromWebOld(term):
+    
+#    # base
+    trunc = 'https://edu-apps.mit.edu/ose-rpt/'
+    evaluation_url = 'subjectEvaluationSearch.htm?'
+    parameters = 'departmentId=+++8&search=Search&termId=%s&subjectCode=&instructorName='%term
+   
+    # the url
+    url = trunc + evaluation_url + parameters
+    
+    # get the page output
+    r = requests.get(url,cookies=cookies)
+    
+    data = r.text
+
+    evs = []
+        
+    # scrape it
+    evs = []
+    soup = BeautifulSoup(data,"lxml")
+    paras = soup.find_all('p')
+    for row in paras:
+        for link in row.find_all('a'):
+            evaluation_link = link.get('href')
+            if 'evaluation' in evaluation_link:
+                number = evaluation_link.split("/").pop()
+                number = number.replace(".html","")
+                print " %s --> %s"%(term,number)
+                evs = getEvaluationsForSubjectOld(evaluation_link,cookies_eval,number,evs)
+    return evs
+
+def getEvaluationsForSubjectOld(url,cookies,number,evs):
+
+    r = requests.get(url,cookies=cookies)
+    data = r.text
+    #print data
+
+    #with open("/home/paus/Work/Tapas/web/8.02.test.html",'r') as f:
+    #    data = f.read()
+    #    #print data
+        
+    soup = BeautifulSoup(data,"lxml")
+
+    column = 4
+    
+    # find the table
+    table = soup.find_all('table')[1]
+    table = table.find_all('table')[1]
+    
+    #print table
+
+    # find and analyze header rows
+    trs = table.find_all('tr')
+    for tr in trs:
+        #print tr
+        tds = tr.find_all('td')
+        if len(tds)>6:
+            index = -1
+            for td in tds:
+                #print td.get_text()
+                index += 1
+                if 'overall' in td.get_text():
+                    column = index
+                    #print ' Setting rating index to: %d'%(column)
+            if column>4:
+                #print tds[column]
+                lecturer = tds[0].get_text()
+                bs = tds[column].find_all('b')
+                if len(bs)>0:
+                    overall_grade = (bs[0].get_text()).strip()
+                    print ' Lecturer: %s;  Rating: %s'%(lecturer,overall_grade)
+                    f = lecturer.split(" ")
+                    first_name = f[0]
+                    description = f[-1]
+                    last_name = " ".join(f[1:-1])
+                    #(first_name,last_name,description) = lecturer.split(" ")
+                    ev = Evaluation.Eval(number,last_name,first_name,description,'UNKNOWN',overall_grade)
+                    evs.append(ev)
+    
+    return evs
+
 def writeEvalCache(evalCache,evs):
     
     with open(evalCache,'w') as f:
@@ -29,63 +110,6 @@ def getEvaluationsFromCache(evalCache):
                 evs.append(ev)
 
     return evs
-
-def getEvaluationsFromWebOld(term):
-    
-    # base
-    trunc = 'https://edu-apps.mit.edu/ose-rpt/'
-    evaluation_url = 'subjectEvaluationSearch.htm?'
-    parameters = 'departmentId=+++8&search=Search&termId=%s&subjectCode=&instructorName='%term
-    
-    # the url
-    url = trunc + evaluation_url + parameters
-    
-    # get the page output
-    r = requests.get(url,cookies=cookies)
-    
-    data = r.text
-    
-    # scrape it
-    evs = []
-    soup = BeautifulSoup(data,"lxml")
-    paras = soup.find_all('p')
-    for row in paras:
-        for link in row.find_all('a'):
-            evaluation_link = link.get('href')
-            if 'evaluation' in evaluation_link:
-                number = evaluation_link.split("/").pop()
-                number = number.replace(".html","")
-                print " %s --> %s"%(term,number)
-                evs = getEvaluationsForSubjectOld(trunc+evaluation_link,cookies_eval,number,evs)
-    return evs
-
-def getEvaluationsForSubjectOld(url,cookies_eval,number,evs):
-
-    r = requests.get(url,cookies=cookies_eval)
-    data = r.text
-    print data
-    
-    soup = BeautifulSoup(data,"lxml")
-
-    column = 4
-    
-    # find the table
-    tables = soup.find_all('table')
-
-##    # find and analyze header rows
-##    trs = table.find_all('tr')
-##    for tr in trs:
-##        tds = tr.find_all('td')
-##        if len(tds)>0:
-##            index = -1
-##            for td in tds:
-##                index += 1
-##                if 'verall rating' in td.get_text():
-##                    column = index
-##                    print ' Setting rating index to: %d'%(column)
-    
-    return
-
 
 def getEvaluationsFromWeb(term):
     
@@ -147,8 +171,11 @@ def getCookies(cookie_file):
 
     lines = data.split(";")
     for cookie in lines:
+        ##print " C " + cookie
         cookie = cookie.strip()
-        (cookie_key,cookie_value) = cookie.split('=')
+        #(cookie_key,cookie_value) = cookie.split('=')
+        cookie_key = cookie.split('=')[0]
+        cookie_value = "=".join(cookie.split('=')[1:])
         cookies.set(cookie_key,cookie_value,domain='mit.edu', path='/')
         #print cookie_key + " --> " + cookie_value
 
@@ -230,7 +257,9 @@ if os.path.isfile(evalCache):
     print ' Evaluations cache (%s) exists already.'%(evalCache)
     evs = getEvaluationsFromCache(evalCache)
 else:
-    evs = getEvaluationsFromWeb(term)
+    print ' !! TEST OLD FORMAT !!'
+    evs = getEvaluationsFromWebOld(term)
+    #evs = getEvaluationsFromWeb(term)
     print ' Writing evaluations cache (%s).'%(evalCache)
     writeEvalCache(evalCache,evs)
     
@@ -355,3 +384,7 @@ for task, assignment in activeAssignments.getHash().iteritems():
 # finish
 db.disco()
 sys.exit()
+
+
+##############
+

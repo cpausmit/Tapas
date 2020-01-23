@@ -12,7 +12,6 @@ include_once("app/models/Ta.php");
 include_once("app/models/Teacher.php");
 include_once("app/models/Tables.php");
 
-
 // get the active tables to consider
 $activeTables = new Tables('ActiveTables');
 $taTerm = substr($activeTables->getUniqueMatchingName('Tas'),-5,5);

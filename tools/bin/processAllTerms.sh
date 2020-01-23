@@ -10,6 +10,8 @@ findAllEvaluationsForCourse.py 2017FA
 findAllEvaluationsForCourse.py 2018FA
 findAllEvaluationsForCourse.py 2019FA
 
+findAllEvaluationsForCourse.py 2020FA
+
 findAllEvaluationsForCourse.py 2010JA
 findAllEvaluationsForCourse.py 2011JA
 findAllEvaluationsForCourse.py 2012JA
