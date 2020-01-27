@@ -7,6 +7,20 @@ import sys,re,os
 import MySQLdb
 import Database
 
+def termString(period):
+    # set term string
+
+    termString = period
+    if   period[0] == "I":
+        termString = "IAP %s"%(period[1:])
+    elif period[0] == "S":
+        termString = "Spring %s"%(period[1:])
+    elif period[0] == "F":
+        termString = "Fall %s"%(period[1:])
+        
+    return termString
+
+
 debug = False
 check = False
 dataDir = os.getenv('TAPAS_TOOLS_DATA','./')
@@ -36,6 +50,9 @@ if taskType == "part":
 else:
     taskType = "full"
 
+# set term string
+termString = termString(period)
+    
 # Open database connection
 db = Database.DatabaseHandle()
 # Prepare a cursor object using cursor() method
@@ -177,131 +194,151 @@ preAssignment   = [ ]
 preEmails       = ''
 teachersEmails  = ''
 
-for key, assignment in assignments.iteritems():
-    if debug:
-        print "\n\n# NEXT # Key: " + key + ' --> ' + assignment
 
-#    try:
-    if True:
-        try:
-            student = activeStudents.retrieveElement(key)
-        except:
-            if debug:
-                print ' Not a student (%s) ... moving on to next entry.'%(key)
-            # make sure to add up all the teachers emails
-            if re.search('-Lec-',assignment):
-                if teachersEmails == '':
-                    teachersEmails = key
-                else:
-                    teachersEmails += "," + key
-            continue
-            
+with open("%s/eml/%s/distributor.csv"%(dataDir,period),"w") as f:
+    f.write("TERM+EMAIL+FIRST_NAME+LAST_NAME+CC+COURSE+PS\n")
+    
+    for key, assignment in assignments.iteritems():
         if debug:
-            print "\n Assignment for %s %s (%s)"%(student.firstName,student.lastName,key)
-
-        if preEmails == '':
-            preEmails = key
-        else:
-            preEmails += "," + key
-
-        # filename for the email
-        filename = period + "_" + taskType + "_" + student.firstName + "_" + student.lastName
-
-        # reset the assignment string
-        assignString = ""
-
-        # construct the '*visors' email
-        additionalCc = student.advisorEmail
-        if student.supervisorEmail != "?":
-            additionalCc += ',' + student.supervisorEmail
-
-        for task in assignment.split(','):
-            if assignString != "":
-                assignString += "\n"
+            print "\n\n# NEXT # Key: " + key + ' --> ' + assignment
+    
+    #    try:
+        if True:
+            try:
+                student = activeStudents.retrieveElement(key)
+            except:
+                if debug:
+                    print ' Not a student (%s) ... moving on to next entry.'%(key)
+                # make sure to add up all the teachers emails
+                if re.search('-Lec-',assignment):
+                    if teachersEmails == '':
+                        teachersEmails = key
+                    else:
+                        teachersEmails += "," + key
+                continue
                 
-            term   = task.split('-')[0]
-            number = task.split('-')[1]
-            type   = task.split('-')[2]
-            
-            filename += "_" + number
-
             if debug:
-                print " FileName: %s"%(filename)
-
-            if ((taskType == 'full' and (re.search('TaF',type) or re.search('TaH',type))) or \
-                (taskType == 'part' and  re.search('TaP',type)) ):
-
-                if debug:
-                    print " Number: %s"%(number)
-                try:
-                    course  = activeCourses.retrieveElement(number)
-                except:
-                    print '\n ERROR - Not a registered course (%s). EXIT!\n'%(number)
-                    sys.exit(1)
-
-                if debug:
-                    print " Admin: %s"%(course.admin)
-                try:
-                    teacher = activeTeachers.retrieveElement(course.admin)
-                except:
-                    print '\n ERROR - Not a registered teacher (%s). EXIT!\n'%(course.admin)
-                    sys.exit(1)
-
-                if debug:
-                    print " Course: " + number + "  Teacher: " + course.admin
-
-                if type[3] == "U":
-                    tmp = "%-14s, %-14s TA (U) - %-6s  %-40s %s %s (%s)"%\
-                          (student.lastName,student.firstName,course.number,course.name, \
-                           teacher.firstName,teacher.lastName,teacher.eMail)
-                    preAssignment.append(tmp)
-                    assignString += " Utility TA in course  " + course.number + \
-                                    " (" + course.name + ") administered by " + \
-                                    teacher.firstName + " " + teacher.lastName + \
-                                    " (" + teacher.eMail + ")"
-                elif type[3] == "R" or type[3] == "L":
-                    tmp = "%-14s, %-14s TA (R) - %-6s  %-40s %s %s (%s)"%\
-                          (student.lastName,student.firstName,course.number,course.name, \
-                           teacher.firstName,teacher.lastName,teacher.eMail)
-                    preAssignment.append(tmp)
-
-                    assignString += " Recitation TA in course  " + course.number + \
-                                    " (" + course.name + ") administered by " + \
-                                    teacher.firstName + " " + teacher.lastName + \
-                                    " (" + teacher.eMail + ")"
+                print "\n Assignment for %s %s (%s)"%(student.firstName,student.lastName,key)
+    
+            if preEmails == '':
+                preEmails = key
+            else:
+                preEmails += "," + key
+    
+            # filename for the email
+            filename = period + "_" + taskType + "_" + student.firstName + "_" + student.lastName
+    
+            # reset the assignment string
+            assignString = ""
+    
+            # construct the '*visors' email
+            additionalCc = student.advisorEmail
+            if student.supervisorEmail != "?":
+                additionalCc += ',' + student.supervisorEmail
+    
+            for task in assignment.split(','):
+                if assignString != "":
+                    assignString += "\\n"
                     
-                else:
-                    assignString += " ERROR - Unknown TA type found: " + type[3]
-
-                # addup the additional teacher to be copied
-                ##additionalCc += "," + teacher.eMail
-                if course.admin != 'EMPTY@mit.edu' and course.admin != 'EMPTY': 
-                    additionalCc += "," + course.admin
-
-        if debug:
-            print assignString
-
-        if assignString == "":
+                term   = task.split('-')[0]
+                number = task.split('-')[1]
+                type   = task.split('-')[2]
+                
+                filename += "_" + number
+    
+                if debug:
+                    print " FileName: %s"%(filename)
+    
+                if ((taskType == 'full' and (re.search('TaF',type) or re.search('TaH',type))) or \
+                    (taskType == 'part' and  re.search('TaP',type)) ):
+    
+                    if debug:
+                        print " Number: %s"%(number)
+                    try:
+                        course  = activeCourses.retrieveElement(number)
+                    except:
+                        print '\n ERROR - Not a registered course (%s). EXIT!\n'%(number)
+                        sys.exit(1)
+    
+                    if debug:
+                        print " Admin: %s"%(course.admin)
+                    try:
+                        teacher = activeTeachers.retrieveElement(course.admin)
+                    except:
+                        print '\n ERROR - Not a registered teacher (%s). EXIT!\n'%(course.admin)
+                        sys.exit(1)
+    
+                    if debug:
+                        print " Course: " + number + "  Teacher: " + course.admin
+                    psString = "PS: Please add 12 units of 8.399 to your registration."
+                    if type[2:3] == "PU":
+                        tmp = "%-14s, %-14s TA (U) - %-6s  %-40s %s %s (%s)"%\
+                              (student.lastName,student.firstName,course.number,course.name, \
+                               teacher.firstName,teacher.lastName,teacher.eMail)
+                        preAssignment.append(tmp)
+                        psString = ""
+                        assignString += " Part-time Utility TA in course  " + course.number + \
+                                        " (" + course.name + ") administered by " + \
+                                        teacher.firstName + " " + teacher.lastName + \
+                                        " (" + teacher.eMail + ")"
+                    elif type[3] == "U":
+                        tmp = "%-14s, %-14s TA (U) - %-6s  %-40s %s %s (%s)"%\
+                              (student.lastName,student.firstName,course.number,course.name, \
+                               teacher.firstName,teacher.lastName,teacher.eMail)
+                        preAssignment.append(tmp)
+                        assignString += " Utility TA in course  " + course.number + \
+                                        " (" + course.name + ") administered by " + \
+                                        teacher.firstName + " " + teacher.lastName + \
+                                        " (" + teacher.eMail + ")"
+                    elif type[3] == "R" or type[3] == "L":
+                        tmp = "%-14s, %-14s TA (R) - %-6s  %-40s %s %s (%s)"%\
+                              (student.lastName,student.firstName,course.number,course.name, \
+                               teacher.firstName,teacher.lastName,teacher.eMail)
+                        preAssignment.append(tmp)
+    
+                        assignString += " Recitation TA in course  " + course.number + \
+                                        " (" + course.name + ") administered by " + \
+                                        teacher.firstName + " " + teacher.lastName + \
+                                        " (" + teacher.eMail + ")"
+                        
+                    else:
+                        assignString += " ERROR - Unknown TA type found: " + type[3]
+    
+                    # addup the additional teacher to be copied
+                    ##additionalCc += "," + teacher.eMail
+                    if course.admin != 'EMPTY@mit.edu' and course.admin != 'EMPTY': 
+                        additionalCc += "," + course.admin
+    
             if debug:
-                print "No type match %s %s %s %s\n"% \
-                      (student.firstName,student.lastName,key,assignment)
-            continue
+                print assignString
+    
+            if assignString == "":
+                if debug:
+                    print "No type match %s %s %s %s\n"% \
+                          (student.firstName,student.lastName,key,assignment)
+                continue
+    
+            filename += ".eml"
+    
+            print "\n" + term + " " + student.firstName + " " + student.lastName + "\n" \
+                  + assignString
 
-        filename += ".eml"
+            
+            cc = "%s,%s"%(additionalCc,departmentEmail)
+            f.write("%s+%s+%s+%s+%s+%s+%s\n"\
+                    %(termString,student.eMail,student.firstName,student.lastName,cc,assignString,psString))
 
-        print "\n" + term + " " + student.firstName + " " + student.lastName + "\n" \
-              + assignString
-
-        if printEmail == "email":
-            cmd = "generateEmail.sh '" + term + "' \"" + student.firstName + " " \
-                  + student.lastName + "\" '" + assignString +"' \"" + filename + "\" " + taskType
-            if debug:
-                print " CMD: " + cmd
-            os.system(cmd)
-            print " mail -S replyto=paus@mit.edu " + "-c " + additionalCc + "," + departmentEmail \
-                + " -s \'TA Assignment " + term + " (" + student.firstName + " " \
-                + student.lastName + ")\' " + student.eMail + " < " + dataDir + "/spool/" + filename
-
+    
+            if printEmail == "email":
+                cmd = "generateEmail.sh '" + term + "' \"" + student.firstName + " " \
+                      + student.lastName + "\" '" + assignString +"' \"" + filename + "\" " + taskType
+                if debug:
+                    print " CMD: " + cmd
+                os.system(cmd)
+                print " mail -S replyto=paus@mit.edu " + "-c " + additionalCc + "," + departmentEmail \
+                    + " -s \'TA Assignment " + term + " (" + student.firstName + " " \
+                    + student.lastName + ")\' " + student.eMail + " < " + dataDir + "/spool/" + filename
+    
 #    except:
 #        student = 0       
 #
