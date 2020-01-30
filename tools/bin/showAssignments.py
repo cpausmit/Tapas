@@ -21,8 +21,9 @@ def termString(period):
     return termString
 
 
-debug = False
+debug = False #debug = True
 check = False
+
 dataDir = os.getenv('TAPAS_TOOLS_DATA','./')
 os.chdir(dataDir)
 
@@ -143,7 +144,8 @@ try:
             if   task.split('-')[2] == 'Lec':          ## and task.split('-')[3] == '1':
                 course = activeCourses.retrieveElement(number);
                 course.setTeacher(email)
-                course.show()
+                if debug:
+                    course.show()
             elif task.split('-')[2] == 'Adm':
                 course = activeCourses.retrieveElement(number);
                 course.setAdmin(email)
@@ -271,7 +273,7 @@ with open("%s/eml/%s/distributor.csv"%(dataDir,period),"w") as f:
                     if debug:
                         print " Course: " + number + "  Teacher: " + course.admin
                     psString = "PS: Please add 12 units of 8.399 to your registration."
-                    if type[2:3] == "PU":
+                    if type[2:4] == "PU":
                         tmp = "%-14s, %-14s TA (U) - %-6s  %-40s %s %s (%s)"%\
                               (student.lastName,student.firstName,course.number,course.name, \
                                teacher.firstName,teacher.lastName,teacher.eMail)
