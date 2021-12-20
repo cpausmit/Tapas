@@ -20,7 +20,7 @@ function generateOptions($term,$courses)
   $assignments = Assignments::fromDb($term);
   foreach ($assignments->list as $key => $assignment) {
     $myTask = new TeachingTask($assignment->task);
-    if ($myTask->isTa() && $myTask->getEffort() == 'full') {
+    if ($myTask->isTa() && $myTask->getEffort() != 'part') {
       $number = $myTask->getCourse();
       $course = $courses->list[$number];
       $option = $myTask->getTaTask() . ' --> ' . $course->name;

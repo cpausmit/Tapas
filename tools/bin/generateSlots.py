@@ -24,8 +24,8 @@ usage += "          debug            should this script just produce the list?\n
 usage += "                           '' (anything will trigger clean list)\n\n"
 
 if len(sys.argv) < 2:
-    print "\n ERROR - need to specify the semester id and the database option.\n"
-    print usage
+    print("\n ERROR - need to specify the semester id and the database option.\n")
+    print(usage)
     sys.exit(0)
 
 # command line arguments
@@ -45,7 +45,7 @@ cursor = db.getCursor()
 courseResources = Database.Container()
 rc = courseResources.fillWithCourseResources(db.handle,period)
 if rc != 0:
-    print " ERROR - filling course resources."
+    print(" ERROR - filling course resources.")
     # disconnect from server
     db.disco()
     sys.exit()
@@ -64,7 +64,7 @@ for number in sorted(courseResources.getHash()):
     cr = courseResources.retrieveElement(number)
     
     if debug:
-        print ' ---- '
+        print(' ---- ')
         cr.show()
 
     # print the slots
@@ -78,6 +78,6 @@ for number in sorted(courseResources.getHash()):
     totalTasP  += cr.numPartUtilTas;
     
 if debug:
-    print "  Total %3d %3d                %4.1f %4.1f\n"%(totalLec,totalRec,totalTasF,totalTasP)
+    print("  Total %3d %3d                %4.1f %4.1f\n"%(totalLec,totalRec,totalTasF,totalTasP))
 
 sys.exit(0)

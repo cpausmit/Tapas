@@ -56,11 +56,11 @@ class CourseResource:
         self.numPartUtilTas = nPUTa
 
     def show(self):
-        print "%s,%s,%d,%d,%d,%d,%d,%d,%d,%d"%(self.term,self.number,
+        print("%s,%s,%d,%d,%d,%d,%d,%d,%d,%d"%(self.term,self.number,
                                                self.numAdmins,self.numLecturers,self.numRecitators,
                                                self.numFullRecTas,self.numHalfRecTas,
                                                self.numFullUtilTas,self.numHalfUtilTas,
-                                               self.numPartUtilTas)
+                                               self.numPartUtilTas))
     def printSlots(self):
         # lecturer slots
         i = 0
@@ -76,27 +76,27 @@ class CourseResource:
         i = 0
         while i < self.numFullRecTas:
             n = i+1;
-            print '%s-%s-TaFR-%s'%(self.term,self.number,n)
+            print('EMPTY,%s-%s-TaFR-%s'%(self.term,self.number,n))
             i += 1
         i = 0
         while i < self.numFullUtilTas:
             n = i+1;
-            print '%s-%s-TaFU-%s'%(self.term,self.number,n)
+            print('EMPTY,%s-%s-TaFU-%s'%(self.term,self.number,n))
             i += 1
         i = 0
         while i < self.numHalfRecTas:
             n = i+1;
-            print '%s-%s-TaHR-%s'%(self.term,self.number,n)
+            print('EMPTY,%s-%s-TaHR-%s'%(self.term,self.number,n))
             i += 1
         i = 0
         while i < self.numHalfUtilTas:
             n = i+1;
-            print '%s-%s-TaHU-%s'%(self.term,self.number,n)
+            print('EMPTY,%s-%s-TaHU-%s'%(self.term,self.number,n))
             i += 1
         i = 0
         while i < self.numPartUtilTas:
             n = i+1;
-            print '%s-%s-TaPU-%s'%(self.term,self.number,n)
+            print('EMPTY,%s-%s-TaPU-%s'%(self.term,self.number,n))
             i += 1
         
 class Course:
@@ -121,8 +121,22 @@ class Course:
         self.admin = admin
             
     def show(self):
-        print " Course: %s: %s  -- version %d (Teacher: %s (%s))"%\
-        (self.number,self.name,self.version,self.teacher,self.admin)
+        print(" Course: %s: %s  -- version %d (Teacher: %s (%s))"%\
+        (self.number,self.name,self.version,self.teacher,self.admin))
+
+class Task:
+    'Class to describe a teaching task.'
+
+    def __init__(self, task):
+        self.task    = task
+        self.term    = task.split('-')[0]
+        self.number  = task.split('-')[1]
+        self.type    = task.split('-')[2]
+        self.n       = task.split('-')[3]
+       
+    def show(self):
+        print(" Task: %s\n - Term: %s  Course: %s  Type: %s  N: %s )"\
+            %(self.task,self.term,self.number,self.type,self.n))
 
 class BaseTeacher:
     'Base class for any teaching Personnel.'
@@ -133,7 +147,7 @@ class BaseTeacher:
         self.eMail     = eMail
        
     def show(self):
-        print " Name (Last, First): %s, %s (%s)"%(self.lastName,self.firstName,self.eMail)
+        print(" Name (Last, First): %s, %s (%s)"%(self.lastName,self.firstName,self.eMail))
 
 class Student(BaseTeacher):
     'Students that fill the slots of Teaching Assistants in the department.'
@@ -148,8 +162,8 @@ class Student(BaseTeacher):
 
     def show(self):
         BaseTeacher.show(self)
-        print "   Visors (Ad, Super): %s, %s  -- %4d %s %s"% \
-              (self.advisorEmail,self.supervisorEmail,self.year,self.division,self.research)
+        print("   Visors (Ad, Super): %s, %s  -- %4d %s %s"% \
+              (self.advisorEmail,self.supervisorEmail,self.year,self.division,self.research))
 
     def insertString(self):
         string = "('%s','%s','%s','%s','%s',%d,'%s','%s')"% \
@@ -167,7 +181,7 @@ class Teacher(BaseTeacher):
 
     def show(self):
         BaseTeacher.show(self)
-        print "   Position: %s  Status, %s"%(self.position,self.status)
+        print("   Position: %s  Status, %s"%(self.position,self.status))
 
     def insertString(self):
         string = "('%s','%s','%s','%s','%s')"% \
@@ -188,7 +202,7 @@ class Assignment:
         return string
 
     def show(self):
-        print " Number: %5s %20s %s %3.1f"%(self.term,self.task,self.person,self.evalO)
+        print(" Number: %5s %20s %s %3.1f"%(self.term,self.task,self.person,self.evalO))
 
     def update(self,evalO):
         self.evalO = evalO
@@ -201,7 +215,7 @@ class Assignment:
         try:
             # Execute the SQL command
             rc = cursor.execute(sql)
-            print ' Executed: %s (%d)'%(sql,rc)
+            print(' Executed: %s (%d)'%(sql,rc))
             results = cursor.fetchall()
             for row in results:
                 self.term = row[0]
@@ -209,7 +223,7 @@ class Assignment:
                 self.person = row[2]
                 self.evalO = row[3]
         except:
-            print " ERROR - selecting into Assignments table (%s)."%sql
+            print(" ERROR - selecting into Assignments table (%s)."%sql)
             return 1
         return 0
     
@@ -222,9 +236,9 @@ class Assignment:
             # Execute the SQL command
             rc = cursor.execute(sql)
             database.commit()
-            print ' Executed: %s (%d)'%(sql,rc)
+            print(' Executed: %s (%d)'%(sql,rc))
         except:
-            print " ERROR - inserting into Assignments table (%s)."%sql
+            print(" ERROR - inserting into Assignments table (%s)."%sql)
             return 1
         return
     
@@ -237,9 +251,9 @@ class Assignment:
             # Execute the SQL command
             rc = cursor.execute(sql)
             database.commit()
-            print ' Executed: %s (%d)'%(sql,rc)
+            print(' Executed: %s (%d)'%(sql,rc))
         except:
-            print " ERROR - deleting from Assignments table (%s)."%sql
+            print(" ERROR - deleting from Assignments table (%s)."%sql)
             return 1
         return
     
@@ -252,9 +266,9 @@ class Assignment:
             # Execute the SQL command
             rc = cursor.execute(sql)
             database.commit()
-            print ' Executed: %s (%d)'%(sql,rc)
+            print(' Executed: %s (%d)'%(sql,rc))
         except:
-            print " ERROR - updating Assignments table (%s)."%sql
+            print(" ERROR - updating Assignments table (%s)."%sql)
             return 1
         return
         
@@ -268,6 +282,7 @@ class Container:
         self.hash[key] = element
 
     def retrieveElement(self, key):
+        ##print(" Key: %s"%(key))
         return self.hash[key]
 
     def popElement(self, key):
@@ -283,13 +298,13 @@ class Container:
 
     def fillWithAssignments(self,database,debug=False):
         if debug:
-            print " Start fill assignments."
+            print(" Start fill assignments.")
         # grab the cursor
         cursor = database.cursor()
         # Prepare SQL query to select all courses from the Courses table
         sql = "SELECT * FROM Assignments"
         if debug:
-            print " SQL> " + sql
+            print(" SQL> " + sql)
         try:
             # Execute the SQL command
             cursor.execute(sql)
@@ -302,16 +317,16 @@ class Container:
                 evalO = row[3]
                 # Now print fetched result
                 if debug:
-                    print " found Assignment with ('%s','%s''%s',%d);"\
-                        %(term,task,person,evalO)
+                    print(" found Assignment with ('%s','%s''%s',%d);"\
+                        %(term,task,person,evalO))
                 # create a new course and add it to our courses object
                 assignment = Assignment(term,task,person,evalO)
                 if debug:
-                    print " Assignment created."
+                    print(" Assignment created.")
                 self.addElement(task,assignment);
                 
         except:
-            print " ERROR - unable to fetch data from Assignments table."
+            print(" ERROR - unable to fetch data from Assignments table.")
             return 1
 
         # all went well
@@ -334,7 +349,7 @@ class Container:
                 number = row[1]
                 self.addElement(number,courseResource);                
         except:
-            print " ERROR - unable to fetch data from CourseResources table."
+            print(" ERROR - unable to fetch data from CourseResources table.")
             return 1
 
         # all went well
@@ -342,13 +357,13 @@ class Container:
 
     def fillWithCourses(self,database,debug=False):
         if debug:
-            print " Start fill courses."
+            print(" Start fill courses.")
         # grab the cursor
         cursor = database.cursor()
         # Prepare SQL query to select all courses from the Courses table
         sql = "SELECT * FROM Courses"
         if debug:
-            print " SQL> " + sql
+            print(" SQL> " + sql)
         try:
             # Execute the SQL command
             cursor.execute(sql)
@@ -360,15 +375,15 @@ class Container:
                 version    = row[2]
                 # Now print fetched result
                 if debug:
-                    print " found Course with ('%s','%s',%d);"%(number,name,version)
+                    print(" found Course with ('%s','%s',%d);"%(number,name,version))
                 # create a new course and add it to our courses object
                 course = Course(number,name,version)
                 if debug:
-                    print " Course create."
+                    print(" Course create.")
                 self.addElement(number,course);
                 
         except:
-            print " ERROR - unable to fetch data from Courses table."
+            print(" ERROR - unable to fetch data from Courses table.")
             return 1
 
         # all went well
@@ -376,13 +391,13 @@ class Container:
 
     def fillWithTeachers(self,database,debug=False):
         if debug:
-            print " Start fill Teachers."
+            print(" Start fill Teachers.")
         # grab the cursor
         cursor = database.cursor()
         # Prepare SQL query to select all courses from the Courses table
         sql = "SELECT * FROM Teachers"
         if debug:
-            print " SQL> " + sql
+            print(" SQL> " + sql)
         try:
             # Execute the SQL command
             cursor.execute(sql)
@@ -397,16 +412,16 @@ class Container:
                 status     = row[4]
                 # Now print fetched result
                 if debug:
-                    print " found Teacher with ('%s','%s','%s','%s','%s');"% \
-                          (firstName,lastName,eMail,position,status)
+                    print(" found Teacher with ('%s','%s','%s','%s','%s');"% \
+                          (firstName,lastName,eMail,position,status))
 
                 # create a new teacher and add it to our teachers object
                 teacher = Teacher(firstName,lastName,eMail,position,status)
                 if debug:
-                    print " Teacher create."
+                    print(" Teacher create.")
                 self.addElement(eMail,teacher);
         except:
-            print " ERROR - unable to fetch data from Teachers table."
+            print(" ERROR - unable to fetch data from Teachers table.")
             return 1
 
         # all went well
@@ -414,13 +429,13 @@ class Container:
 
     def fillWithStudents(self,database,debug=False):
         if debug:
-            print " Start fill Students."
+            print(" Start fill Students.")
         # grab the cursor
         cursor = database.cursor()
         # Prepare SQL query to select all courses from the Courses table
         sql = "SELECT * FROM Students"
         if debug:
-            print " SQL> " + sql
+            print(" SQL> " + sql)
         try:
             # Execute the SQL command
             cursor.execute(sql)
@@ -437,18 +452,18 @@ class Container:
                 research   = row[7]
                 # Now print fetched result
                 if debug:
-                    print " found Student with ('%s','%s','%s','%s','%s',%d,'%s','%s');"% \
-                          (firstName,lastName,eMail,advisor,supervisor,year,division,research)
+                    print(" found Student with ('%s','%s','%s','%s','%s',%d,'%s','%s');"% \
+                          (firstName,lastName,eMail,advisor,supervisor,year,division,research))
 
                 # create a new student and add it to our students object
                 student = Student(firstName,lastName,eMail,advisor,supervisor,year,\
                                   division,research)
                 if debug:
-                    print " Student create."
+                    print(" Student create.")
                 self.addElement(eMail,student);
                 
         except:
-            print " ERROR - unable to fetch data from Students table."
+            print(" ERROR - unable to fetch data from Students table.")
             return 1
 
         # all went well

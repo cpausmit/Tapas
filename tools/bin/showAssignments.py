@@ -21,7 +21,8 @@ def termString(period):
     return termString
 
 
-debug = False #debug = True
+debug = False
+#debug = True
 check = False
 
 dataDir = os.getenv('TAPAS_TOOLS_DATA','./')
@@ -36,8 +37,8 @@ usage += "          printEmail       generate emails and print email linux comma
 usage += "                           def = '', activate with 'email'\n\n"
 
 if len(sys.argv) < 3:
-    print "\n ERROR - need to specify the semester id and the relevant task type.\n"
-    print usage
+    print("\n ERROR - need to specify the semester id and the relevant task type.\n")
+    print(usage)
     sys.exit(0)
     
 period     = sys.argv[1]
@@ -63,7 +64,7 @@ cursor = db.getCursor()
 courses = Database.Container()
 rc = courses.fillWithCourses(db.handle,debug)
 if rc != 0:
-    print " ERROR - filling courses."
+    print(" ERROR - filling courses.")
     # disconnect from server
     db.disco()
     sys.exit()
@@ -72,7 +73,7 @@ if rc != 0:
 teachers = Database.Container()
 rc = teachers.fillWithTeachers(db.handle)
 if rc != 0:
-    print " ERROR - filling teachers."
+    print(" ERROR - filling teachers.")
     # disconnect from server
     db.disco()
     sys.exit()
@@ -81,7 +82,7 @@ if rc != 0:
 students = Database.Container()
 rc = students.fillWithStudents(db.handle)
 if rc != 0:
-    print " ERROR - filling students."
+    print(" ERROR - filling students.")
     # disconnect from server
     db.disco()
     sys.exit()
@@ -110,11 +111,11 @@ try:
 
         # deal with empty assignments first
         if email == None or email == '':
-            print ' WARNING - empty assignment for task: ' + task
+            print(' WARNING - empty assignment for task: ' + task)
             continue
         
         if debug:
-            print " TASK : %s  EMAIL: %s"%(task,email)
+            print(" TASK : %s  EMAIL: %s"%(task,email))
 
         # decode the course number
         number = task.split('-')[1]
@@ -126,10 +127,10 @@ try:
         # find corresponding course in our courses list
         try:
             course = courses.retrieveElement(number);
-            #print "%-20s"%(number)
+            #print("%-20s"%(number))
             activeCourses.addElement(number,course)
         except:
-            print " ERROR - course is not in our master table (%s)."%(number)
+            print(" ERROR - course is not in our master table (%s)."%(number))
 
             # disconnect from server
             db.disco()
@@ -150,7 +151,7 @@ try:
                 course = activeCourses.retrieveElement(number);
                 course.setAdmin(email)
         except:
-            #print " Not a teacher (%s)"%(email)
+            #print(" Not a teacher (%s)"%(email))
             teacher = 0
 
         # find the student in our students list
@@ -159,7 +160,7 @@ try:
             activeStudents.addElement(email,student)
             isStudent = True
         except:
-            #print " Not a student (%s)"%(email)
+            #print(" Not a student (%s)"%(email))
             student = 0
 
         # store assignment
@@ -172,15 +173,15 @@ try:
         # did we find the person in the database
         if isStudent or isTeacher:
             if check:
-                print " Found the person."
+                print(" Found the person.")
         else:
-            print " ERROR -- Did not find the person: " + email + "  (task: " + task + ")"
+            print(" ERROR -- Did not find the person: " + email + "  (task: " + task + ")")
             #db.disco()
             #sys.exit(0)
 
 
 except:
-    print " ERROR - unable to complete ACTIVE elements loop."
+    print(" ERROR - unable to complete ACTIVE elements loop.")
 
 # disconnect from server
 db.disco()
@@ -200,9 +201,11 @@ teachersEmails  = ''
 with open("%s/eml/%s/distributor.csv"%(dataDir,period),"w") as f:
     f.write("TERM+EMAIL+FIRST_NAME+LAST_NAME+CC+COURSE+PS\n")
     
-    for key, assignment in assignments.iteritems():
+#    for key, assignment in assignments.iteritems():
+    for key in assignments:
+        assignment = assignments[key]
         if debug:
-            print "\n\n# NEXT # Key: " + key + ' --> ' + assignment
+            print("\n\n# NEXT # Key: " + key + ' --> ' + assignment)
     
     #    try:
         if True:
@@ -210,7 +213,7 @@ with open("%s/eml/%s/distributor.csv"%(dataDir,period),"w") as f:
                 student = activeStudents.retrieveElement(key)
             except:
                 if debug:
-                    print ' Not a student (%s) ... moving on to next entry.'%(key)
+                    print(' Not a student (%s) ... moving on to next entry.'%(key))
                 # make sure to add up all the teachers emails
                 if re.search('-Lec-',assignment):
                     if teachersEmails == '':
@@ -220,7 +223,7 @@ with open("%s/eml/%s/distributor.csv"%(dataDir,period),"w") as f:
                 continue
                 
             if debug:
-                print "\n Assignment for %s %s (%s)"%(student.firstName,student.lastName,key)
+                print("\n Assignment for %s %s (%s)"%(student.firstName,student.lastName,key))
     
             if preEmails == '':
                 preEmails = key
@@ -249,29 +252,30 @@ with open("%s/eml/%s/distributor.csv"%(dataDir,period),"w") as f:
                 filename += "_" + number
     
                 if debug:
-                    print " FileName: %s"%(filename)
+                    print(" FileName: %s"%(filename))
     
                 if ((taskType == 'full' and (re.search('TaF',type) or re.search('TaH',type))) or \
                     (taskType == 'part' and  re.search('TaP',type)) ):
     
                     if debug:
-                        print " Number: %s"%(number)
+                        print(" Number: %s"%(number))
                     try:
                         course  = activeCourses.retrieveElement(number)
                     except:
-                        print '\n ERROR - Not a registered course (%s). EXIT!\n'%(number)
+                        print('\n ERROR - Not a registered course (%s). EXIT!\n'%(number))
                         sys.exit(1)
     
                     if debug:
-                        print " Admin: %s"%(course.admin)
+                        print(" Admin: %s"%(course.admin))
                     try:
                         teacher = activeTeachers.retrieveElement(course.admin)
                     except:
-                        print '\n ERROR - Not a registered teacher (%s). EXIT!\n'%(course.admin)
-                        sys.exit(1)
+                        print('\n ERROR - Not a registered teacher (%s). EXIT!\n'%(course.admin))
+                        teacher = Database.Teacher("TempFirst","TempLast","EMPTY@mit.edu","LECTURER","active")
+                        #sys.exit(1)
     
                     if debug:
-                        print " Course: " + number + "  Teacher: " + course.admin
+                        print(" Course: " + number + "  Teacher: " + course.admin)
                     psString = "PS: Please add 12 units of 8.399 to your registration."
                     if type[2:4] == "PU":
                         tmp = "%-14s, %-14s TA (U) - %-6s  %-40s %s %s (%s)"%\
@@ -312,18 +316,18 @@ with open("%s/eml/%s/distributor.csv"%(dataDir,period),"w") as f:
                         additionalCc += "," + course.admin
     
             if debug:
-                print assignString
+                print(assignString)
     
             if assignString == "":
                 if debug:
-                    print "No type match %s %s %s %s\n"% \
-                          (student.firstName,student.lastName,key,assignment)
+                    print("No type match %s %s %s %s\n"% \
+                          (student.firstName,student.lastName,key,assignment))
                 continue
     
             filename += ".eml"
     
-            print "\n" + term + " " + student.firstName + " " + student.lastName + "\n" \
-                  + assignString
+            print("\n" + term + " " + student.firstName + " " + student.lastName + "\n" \
+                  + assignString)
 
             
             cc = "%s,%s"%(additionalCc,departmentEmail)
@@ -335,12 +339,12 @@ with open("%s/eml/%s/distributor.csv"%(dataDir,period),"w") as f:
                 cmd = "generateEmail.sh '" + term + "' \"" + student.firstName + " " \
                       + student.lastName + "\" '" + assignString +"' \"" + filename + "\" " + taskType
                 if debug:
-                    print " CMD: " + cmd
+                    print(" CMD: " + cmd)
                 os.system(cmd)
-                print " mail -S replyto=paus@mit.edu " + "-c " + additionalCc + "," + departmentEmail \
+                print(" mail -S replyto=paus@mit.edu " + "-c " + additionalCc + "," + departmentEmail \
                     + " -s \'TA Assignment " + term + " (" + student.firstName + " " \
-                    + student.lastName + ")\' " + student.eMail + " < " + dataDir + "/spool/" + filename
-    
+                    + student.lastName + ")\' " + student.eMail + " < " + dataDir + "/spool/" + filename)
+
 #    except:
 #        student = 0       
 #
@@ -350,15 +354,15 @@ with open("%s/eml/%s/distributor.csv"%(dataDir,period),"w") as f:
 # Print out (pre-)assignment Summary
 #---------------------------------------------------------------------------------------------------
 
-print "\nEMAIL TEXT for pre-assignments"
+print("\nEMAIL TEXT for pre-assignments")
 preAssignment.sort();
 for task in preAssignment:
-    print task
+    print(task)
 
-print "\nEMAIL ADDRESS for pre-assignments"
-print preEmails
+print("\nEMAIL ADDRESS for pre-assignments")
+print(preEmails)
 
-print "\nEMAIL ADDRESS for feedback"
-print teachersEmails
+print("\nEMAIL ADDRESS for feedback")
+print(teachersEmails)
 
 sys.exit(0)

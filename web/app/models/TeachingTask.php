@@ -17,12 +17,12 @@ class TeachingTask
       $this->course = trim($f[1]);
       $this->type = $this->findType($f[2]);
       if ($this->type == 'TA') {
-	$this->effort = $this->convertEffort(substr($f[2],2,1));
-	$this->taType = substr($f[2],3,1);
+        $this->effort = $this->convertEffort(substr($f[2],2,1));
+        $this->taType = substr($f[2],3,1);
       }
       else {
-	$this->effort = 'full';
-	$this->taType = 'none';
+        $this->effort = 'full';
+        $this->taType = 'none';
       }
       $this->instance = $f[3];
     }

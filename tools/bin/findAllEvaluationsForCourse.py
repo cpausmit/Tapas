@@ -257,9 +257,9 @@ if os.path.isfile(evalCache):
     print ' Evaluations cache (%s) exists already.'%(evalCache)
     evs = getEvaluationsFromCache(evalCache)
 else:
-    print ' !! TEST OLD FORMAT !!'
-    evs = getEvaluationsFromWebOld(term)
-    #evs = getEvaluationsFromWeb(term)
+    ## print ' !! TEST OLD FORMAT !!'
+    ## evs = getEvaluationsFromWebOld(term)
+    evs = getEvaluationsFromWeb(term)
     print ' Writing evaluations cache (%s).'%(evalCache)
     writeEvalCache(evalCache,evs)
     
@@ -332,6 +332,10 @@ for ev in evs:
         for eml, teacher in activeTeachers.getHash().iteritems():
             if ev.lastName == teacher.lastName:
                 tasks = findTasks(tapasTerm,activeAssignments,teacher.eMail)
+                #if teacher.lastName == 'Loureiro':
+                #print " LL - %s"%teacher.lastName
+                #print tasks
+                #ev.show()
                 if ev.number in tasks:
                     done = True
                     #print '\n ==== MATCH ===='

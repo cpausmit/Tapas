@@ -29,14 +29,14 @@ function printForm()
   print '<td align=center>';
   print '<input type="submit" value="submit" style="width:100%" />'."\n";
   print '</td><td>';
-  print '  <input type="text" name="email" placeholder="jane_doe"><br>'."\n";
+  print '  <input type="text" name="email" placeholder="<email>"><br>'."\n";
   print '</td>';
-  print '<td align=center><select class="type" name="fullTime">'."\n";
+  print '<td align=center>&nbsp; Full time: <select class="type" name="fullTime">'."\n";
   print '    <option value="1">1</option>'."\n";
   print '    <option value="0">0</option>';
   print '    </select>'."\n";
   print '</td>';
-  print '<td align=center><select class="type" name="partTime">'."\n";
+  print '<td align=center>&nbsp; Part time: <select class="type" name="partTime">'."\n";
   print '    <option value="0">0</option>'."\n";
   print '    <option value="1">1</option>';
   print '    </select>'."\n";

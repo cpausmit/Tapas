@@ -21,14 +21,15 @@ echo "export TAPAS_TOOLS_PYTHON="`pwd`/python                      >> setup.sh
 echo "export TAPAS_TOOLS_TEMPLATES="`pwd`/templates                >> setup.sh
 echo "export TAPAS_TOOLS_DATA=$DATA"                               >> setup.sh
 echo ""                                                            >> setup.sh
-echo "export TAPAS_TOOLS_DEPEML=paus@mit.edu,nergis@mit.edu,cmodica@mit.edu,phys-finance@mit.edu,phys-gradappts@mit.edu,denisew@mit.edu" \
+echo "export TAPAS_TOOLS_DEPEML=paus@mit.edu,deepto@mit.edu,cmodica@mit.edu,phys-finance@mit.edu,phys-gradappts@mit.edu,denisew@mit.edu" \
                                                                    >> setup.sh
 echo ""                                                            >> setup.sh
 echo "export PATH=\"\${PATH}:\${TAPAS_TOOLS_BIN}\""                >> setup.sh
 echo "export PYTHONPATH=\"\${PYTHONPATH}:\${TAPAS_TOOLS_PYTHON}\"" >> setup.sh
 echo ""                                                            >> setup.sh
 echo "alias tapgo=\"cd $TAPAS_TOOLS_DATA\""                        >> setup.sh
-echo "alias taphelp=\"head -20 $TAPAS_TOOLS_DATA/INSTRUCTIONS\""   >> setup.sh
+echo "alias taphelp=\"head -30 $TAPAS_TOOLS_DATA/INSTRUCTIONS\""   >> setup.sh
+echo "alias tapassign=\"edit $TAPAS_TOOLS_DATA/spreadsheets/*Assignments.csv\""   >> setup.sh
 echo ""                                                            >> setup.sh
 
 exit 0

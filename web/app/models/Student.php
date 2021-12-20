@@ -213,7 +213,7 @@ class Student
     else
       return false;
 
-    if ($this->year > 1970 and $this->year < 2020)
+    if ($this->year > 1970 and $this->year < 2050)
       print "";
     //print "Number is a year: $this->year -- Year valid.<br>\n";
     else {

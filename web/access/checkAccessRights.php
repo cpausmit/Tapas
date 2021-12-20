@@ -10,6 +10,10 @@ function isMaster()
   // see whether the email is in the access list and what level is given
 
   // find ssl client email id
+  //print '<p> ERROR you are not allowed to enter this page.<br>';
+  //foreach ($_SERVER as $key_name => $key_value) {
+  //  print $key_name . " = " . $key_value . "<br>";
+  //}
   $email = strtolower(strtolower($_SERVER['SSL_CLIENT_S_DN_Email']));
 
   // initialize to no access
