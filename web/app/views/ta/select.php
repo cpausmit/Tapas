@@ -58,6 +58,17 @@ print '<form class="ta" action="/register" method="post">'."\n";
 // start the table
 print '<p>'."\n";
 print '<table cellborder="1">'."\n";
+    
+if (isMaster()) {
+  print '<tr><td>';
+  print '  TA email:&nbsp;'."\n";
+  print '</td><td>';
+  print '  <input type="text" name="email"><br>'."\n";
+  print '</td></tr>';
+}
+else {
+  print '';
+}
 
 // First preference
 print '<tr><td>First preference?</td><td><select class="ta" name="pref1">'."\n";

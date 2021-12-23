@@ -11,6 +11,7 @@ include_once("app/models/Course.php");
 include_once("app/models/Preference.php");
 include_once("app/models/Tables.php");
 include_once("app/models/TeachingTask.php");
+include_once("app/models/Utils.php");
 
 function parametersSet() {
   if (!isset($_POST['pref1']) || !isset($_POST['pref1']) || !isset($_POST['pref1'])) {
@@ -63,8 +64,12 @@ if (isset($_POST['Comment'])) {
 
 // test whether selection is valid
 if (testSelection($_POST['pref1'],$_POST['pref2'],$_POST['pref3'])) {
+  // In case this is a choice made by an administrator for a student
+  if (isMaster() && isset($_POST['email'])) {
+     $email = makeEmail($_POST['email']);
+  }
   print '<p>Selection is valid. ';
-//  
+
   $row = array();
   $row[0] = $term;
   $row[1] = $email;
