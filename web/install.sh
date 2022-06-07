@@ -9,9 +9,8 @@
 [ -z "$TAPAS_WEB_NAME" ]   && export TAPAS_WEB_NAME=tapas
 
 # install all relevant tools
-echo " RSYNC: rsync -Cavz ./ $TAPAS_WEB_SERVER:$TAPAS_WEB_BASE/$TAPAS_WEB_NAME >& /tmp/rsync.log"
-              rsync -Cavz ./ $TAPAS_WEB_SERVER:$TAPAS_WEB_BASE/$TAPAS_WEB_NAME >& /tmp/rsync.log
-mv /tmp/rsync.log /tmp/rsync-tapas.log
+echo " RSYNC: rsync -Cavz ./ $TAPAS_WEB_SERVER:$TAPAS_WEB_BASE/$TAPAS_WEB_NAME >& /tmp/rsync-tapas.log"
+              rsync -Cavz ./ $TAPAS_WEB_SERVER:$TAPAS_WEB_BASE/$TAPAS_WEB_NAME >& /tmp/rsync-tapas.log
 
 if [ "$1" != "lite" ]
 then
