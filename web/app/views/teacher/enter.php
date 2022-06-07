@@ -2,7 +2,7 @@
 
 include("app/views/teacher/header.php");
 
-// make sure we have a registered TA
+// make sure we have a registered Teacher
 if (! (isTeacher() || isMaster())) { 
   exitAccessError();
 }
@@ -23,7 +23,9 @@ function getNamesFromDb($term)
     if (isset($students->list[$assignment->person])) {
       $student = $students->list[$assignment->person];
       $myTask = new TeachingTask($assignment->task);
-      $names[$assignment->person] = $student->lastName . ', ' . $student->firstName . '  Task: ' . $myTask->getTaTask();
+      if ($myTask->type == 'TA') {
+        $names[$assignment->person] = $student->lastName . ', ' . $student->firstName . '  Task: ' . $myTask->getTaTask();
+      }
     }
   }
 
