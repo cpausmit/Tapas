@@ -76,6 +76,7 @@ function isTeacher()
   $activeTables = new Tables('ActiveTables');
   $term = substr($activeTables->getUniqueMatchingName('Evaluations'),-5,5);
   $teachers = Teachers::fromAssignments($term);
+
   //$teachers->printTable();
   
   // see whether the email is in the access list
