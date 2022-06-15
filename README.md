@@ -2,6 +2,9 @@
 
 Tapas is the Teaching Assistant in Physics Assignment System
 
+In the following we document the typical operations performed using Tapas.
+
+
 # Planning phase
 
 Add a new semester
