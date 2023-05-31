@@ -36,7 +36,7 @@ def getEvaluationsFromWebOld(term):
             if 'evaluation' in evaluation_link:
                 number = evaluation_link.split("/").pop()
                 number = number.replace(".html","")
-                print " %s --> %s"%(term,number)
+                print(" %s --> %s"%(term,number))
                 evs = getEvaluationsForSubjectOld(evaluation_link,cookies_eval,number,evs)
     return evs
 
@@ -44,11 +44,11 @@ def getEvaluationsForSubjectOld(url,cookies,number,evs):
 
     r = requests.get(url,cookies=cookies)
     data = r.text
-    #print data
+    #print(data)
 
     #with open("/home/paus/Work/Tapas/web/8.02.test.html",'r') as f:
     #    data = f.read()
-    #    #print data
+    #    #print(data)
         
     soup = BeautifulSoup(data,"lxml")
 
@@ -58,28 +58,28 @@ def getEvaluationsForSubjectOld(url,cookies,number,evs):
     table = soup.find_all('table')[1]
     table = table.find_all('table')[1]
     
-    #print table
+    #print(table)
 
     # find and analyze header rows
     trs = table.find_all('tr')
     for tr in trs:
-        #print tr
+        #print(tr)
         tds = tr.find_all('td')
         if len(tds)>6:
             index = -1
             for td in tds:
-                #print td.get_text()
+                #print(td.get_text())
                 index += 1
                 if 'overall' in td.get_text():
                     column = index
-                    #print ' Setting rating index to: %d'%(column)
+                    #print(' Setting rating index to: %d'%(column))
             if column>4:
-                #print tds[column]
+                #print(tds[column])
                 lecturer = tds[0].get_text()
                 bs = tds[column].find_all('b')
                 if len(bs)>0:
                     overall_grade = (bs[0].get_text()).strip()
-                    print ' Lecturer: %s;  Rating: %s'%(lecturer,overall_grade)
+                    print(' Lecturer: %s;  Rating: %s'%(lecturer,overall_grade))
                     f = lecturer.split(" ")
                     first_name = f[0]
                     description = f[-1]
@@ -94,7 +94,7 @@ def writeEvalCache(evalCache,evs):
     
     with open(evalCache,'w') as f:
         for ev in evs:
-            f.write(ev.writeline())
+            f.write(ev.writeline().decode())
 
     return 0
             
@@ -142,7 +142,7 @@ def getEvaluationsFromWeb(term):
                     matches = p.findall(evaluation_link)
                 if len(matches) > 0:
                     number = matches[0].split("=")[1]
-                    print " %s --> %s"%(term,number)
+                    print(" %s --> %s"%(term,number))
                     evs = getEvaluationsForSubject(trunc+evaluation_link,cookies,number,evs)
     return evs
                 
@@ -157,7 +157,7 @@ def getTerm(mitTerm):
     elif 'JA' in mitTerm:
         tapasTerm = "I%4d"%(year)
     else:
-        print " ERROR - MIT term (%s) not defined."%(mitTerm)
+        print(" ERROR - MIT term (%s) not defined."%(mitTerm))
         sys.exit(1)
         
     return tapasTerm
@@ -171,13 +171,13 @@ def getCookies(cookie_file):
 
     lines = data.split(";")
     for cookie in lines:
-        ##print " C " + cookie
+        ##print(" C " + cookie)
         cookie = cookie.strip()
         #(cookie_key,cookie_value) = cookie.split('=')
         cookie_key = cookie.split('=')[0]
         cookie_value = "=".join(cookie.split('=')[1:])
         cookies.set(cookie_key,cookie_value,domain='mit.edu', path='/')
-        #print cookie_key + " --> " + cookie_value
+        #print(cookie_key + " --> " + cookie_value)
 
     return cookies
 
@@ -203,7 +203,7 @@ def getEvaluationsForSubject(url,cookies,number,evs):
                 index += 1
                 if 'verall rating' in th.get_text():
                     column = index
-                    print ' Setting rating index to: %d'%(column)
+                    print(' Setting rating index to: %d'%(column))
 
     # find and analyze full content
     rows = table.find_all('tr')[2:]
@@ -219,7 +219,7 @@ def getEvaluationsForSubject(url,cookies,number,evs):
                 description = tds[0].get_text().split(',')[2].rstrip("\n")
                 #description = description.encode("utf-8")
                 
-                print "%20s %20s %20s %4.1f"%(last_name, first_name, description, overall_grade)
+                print("%20s %20s %20s %4.1f"%(last_name, first_name, description, overall_grade))
                 ev = Evaluation.Eval(number,last_name,first_name,description,'UNKNOWN',overall_grade)
                 evs.append(ev)
                 
@@ -227,14 +227,14 @@ def getEvaluationsForSubject(url,cookies,number,evs):
 
 def findLastName(name,list):
     nMatch = 0
-    for eml, entry in list.getHash().iteritems():
+    for eml, entry in list.getHash().items():
         if name == entry.lastName:
             nMatch += 1
     return nMatch
             
 def findTasks(tapasTerm,assignments,person):
     tasks = ""
-    for eml, element in assignments.getHash().iteritems():
+    for eml, element in assignments.getHash().items():
         if element.term == tapasTerm and element.person == person:
             tasks = tasks + "," + element.task
     return tasks
@@ -250,17 +250,17 @@ cookies_eval = getCookies("/home/paus/.cookies_eval")
 term = sys.argv[1]
 tapasTerm = getTerm(term)
 
-print " TERM: %s (MIT: %s)"%(tapasTerm,term)
+print(" TERM: %s (MIT: %s)"%(tapasTerm,term))
 evalCache = ".%s.evals"%(tapasTerm)
 
 if os.path.isfile(evalCache):
-    print ' Evaluations cache (%s) exists already.'%(evalCache)
+    print(' Evaluations cache (%s) exists already.'%(evalCache))
     evs = getEvaluationsFromCache(evalCache)
 else:
-    ## print ' !! TEST OLD FORMAT !!'
+    ## print(' !! TEST OLD FORMAT !!')
     ## evs = getEvaluationsFromWebOld(term)
     evs = getEvaluationsFromWeb(term)
-    print ' Writing evaluations cache (%s).'%(evalCache)
+    print(' Writing evaluations cache (%s).'%(evalCache))
     writeEvalCache(evalCache,evs)
     
 # Open database connection
@@ -270,7 +270,7 @@ db = Database.DatabaseHandle()
 teachers = Database.Container()
 rc = teachers.fillWithTeachers(db.handle)
 if rc != 0:
-    print " ERROR - filling teachers."
+    print(" ERROR - filling teachers.")
     # disconnect from server
     db.disco()
     sys.exit()
@@ -279,7 +279,7 @@ if rc != 0:
 students = Database.Container()
 rc = students.fillWithStudents(db.handle)
 if rc != 0:
-    print " ERROR - filling students."
+    print(" ERROR - filling students.")
     # disconnect from server
     db.disco()
     sys.exit()
@@ -288,18 +288,19 @@ if rc != 0:
 assignments = Database.Container()
 rc = assignments.fillWithAssignments(db.handle)
 if rc != 0:
-    print " ERROR - filling assignments."
+    print(" ERROR - filling assignments.")
     # disconnect from server
     db.disco()
     sys.exit()
 
 # filter out the active people and assignments
-print ' Finding all active elements in term: %s'%(term)
+print(' Finding all active elements in term: %s'%(term))
 activeStudents = Database.Container()
 activeTeachers = Database.Container()
 activeAssignments = Database.Container()
 
-for task, assignment in assignments.getHash().iteritems():
+#for task, assignment in assignments.getHash().iteritems():
+for task, assignment in assignments.getHash().items():
     if assignment.term == tapasTerm:
         activeAssignments.addElement(assignment.task,assignment)
         if assignment.person in students.getHash():
@@ -314,39 +315,39 @@ for ev in evs:
     #nMatchTeachers = findLastName(ev.lastName,activeTeachers)
     #
     #if nMatchStudents+nMatchTeachers > 1:
-    #    print '\n ==== AMBIGUOUS ===='
+    #    print('\n ==== AMBIGUOUS ====')
     #    ev.show()
-    #    print " nStudents: %d, NTeachers: %d"%(nMatchStudents,nMatchTeachers)
+    #    print(" nStudents: %d, NTeachers: %d"%(nMatchStudents,nMatchTeachers))
         
     done = False
-    for eml, student in activeStudents.getHash().iteritems():
+    for eml, student in activeStudents.getHash().items():
         if ev.lastName == student.lastName:
             tasks = findTasks(tapasTerm,activeAssignments,student.eMail)
             if ev.number in tasks:
                 done = True
-                #print '\n ==== MATCH ===='
+                #print('\n ==== MATCH ====')
                 #ev.show()
                 #student.show()
                 ev.update(student.eMail)
     if not done:
-        for eml, teacher in activeTeachers.getHash().iteritems():
+        for eml, teacher in activeTeachers.getHash().items():
             if ev.lastName == teacher.lastName:
                 tasks = findTasks(tapasTerm,activeAssignments,teacher.eMail)
                 #if teacher.lastName == 'Loureiro':
-                #print " LL - %s"%teacher.lastName
-                #print tasks
+                #print(" LL - %s"%teacher.lastName)
+                #print(tasks)
                 #ev.show()
                 if ev.number in tasks:
                     done = True
-                    #print '\n ==== MATCH ===='
+                    #print('\n ==== MATCH ====')
                     #ev.show()
                     #teacher.show()
                     ev.update(teacher.eMail)
                     
     if not done:
-        print '\n ERROR - could not match evaluation.\n '
+        print('\n ERROR - could not match evaluation.\n ')
         ev.show()
-        print '\n '
+        print('\n ')
         pass
 
 
@@ -354,11 +355,9 @@ for ev in evs:
 for ev in evs:
 
     if ev.email == 'UNKNOWN':
-        #print ' UNKNOWN: '
-        #ev.show()
         continue
 
-    for task, assignment in activeAssignments.getHash().iteritems():
+    for task, assignment in activeAssignments.getHash().items():
         if assignment.term == tapasTerm:
             if ev.email == assignment.person:
                 if ev.evalO != assignment.evalO:
@@ -366,29 +365,25 @@ for ev in evs:
                     assignment.updateDb(db)
 #            elif assignment.person == 'EMPTY@mit.edu' and ev.number in assignment.task:
 #                if 'Teaching Assistant' in ev.description:
-#                    print ' ==== TA ===='
+#                    print(' ==== TA ====')
 #                    ev.show()
 #                    assignment.show()
 #                elif 'Lecturer' in ev.description:
-#                    print ' ==== LECTURER ===='
+#                    print(' ==== LECTURER ====')
 #                    ev.show()
 #                    assignment.show()
 #                elif 'Recitation Instructor' in ev.description:
-#                    print ' ==== RECITATOR ===='
+#                    print(' ==== RECITATOR ====')
 #                    ev.show()
 #                    assignment.show()
                 
                     
 # do other updates
-for task, assignment in activeAssignments.getHash().iteritems():
+for task, assignment in activeAssignments.getHash().items():
     if assignment.person == "EMPTY@mit.edu":
-        print " EMPTY "
+        print(" EMPTY ")
         assignment.show()
 
 # finish
 db.disco()
 sys.exit()
-
-
-##############
-

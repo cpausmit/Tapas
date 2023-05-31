@@ -97,7 +97,8 @@ $subject = '';
 $message = '';
 
 // command line arguments
-$email = strtolower($_SERVER['SSL_CLIENT_S_DN_Email']);
+$email = strtolower(strtolower($_SERVER['eppn']));
+//$email = strtolower($_SERVER['SSL_CLIENT_S_DN_Email']);
 
 if (isset($_POST['Debugging']))
   $debug = intval($_POST['Debugging']);

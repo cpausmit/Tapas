@@ -11,7 +11,7 @@ include_once("app/models/Evaluation.php");
 include_once("app/models/Student.php");
 include_once("app/models/Tables.php");
 
-$email = strtolower($_SERVER['SSL_CLIENT_S_DN_Email']);
+$email = strtolower($_SERVER['eppn']);
 $studentEmail = 'undefined';
 if (isset($_POST['ta']))
   $studentEmail = $_POST['ta'];

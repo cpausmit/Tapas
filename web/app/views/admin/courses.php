@@ -2,7 +2,7 @@
 
 include("app/views/admin/header.php");
 
-$email = strtolower($_SERVER['SSL_CLIENT_S_DN_Email']);
+$email = strtolower($_SERVER['eppn']);
 
 // make sure we have an admin
 if (! (isAdmin() || isMaster())) {

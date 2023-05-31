@@ -7,7 +7,7 @@ if (isTeacher() || isMaster()) {
   print '&nbsp; Teachers:'."\n";
   print '&nbsp; <a href="/teacher"> <span class="fa fa-home">Home</span></a> &nbsp;'."\n";
   print ' <a href="/enter">enter</a>'."\n";
-  print ' <a href="/review">review</a>'."\n";
+  print ' <a href="/review">check</a>'."\n";
   print '</div>'."\n";
 }
 else {

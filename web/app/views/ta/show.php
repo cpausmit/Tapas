@@ -12,7 +12,8 @@ include_once("app/models/Tables.php");
 include_once("app/models/TeachingTask.php");
 
 // get the db link
-$email = strtolower($_SERVER['SSL_CLIENT_S_DN_Email']);
+$email = strtolower(strtolower($_SERVER['eppn']));
+//$email = strtolower($_SERVER['SSL_CLIENT_S_DN_Email']);
 
 // get all TAs and the possible full time assignments
 $planningTables = new Tables('PlanningTables');

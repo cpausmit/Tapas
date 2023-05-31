@@ -17,7 +17,8 @@ $term = substr($activeTables->getUniqueMatchingName('Preferences'),-5,5);
 print '<article class="page">'."\n";
 print '<h1>TA Preference Removal</h1>';
 
-$email = strtolower($_SERVER['SSL_CLIENT_S_DN_Email']);
+$email = strtolower(strtolower($_SERVER['eppn']));
+//$email = strtolower($_SERVER['SSL_CLIENT_S_DN_Email']);
 
 $preference = new Preference();
 $preference->term = $term;

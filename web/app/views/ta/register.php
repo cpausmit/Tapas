@@ -37,7 +37,8 @@ $courses = Courses::fromDb();
 $planningTables = new Tables('PlanningTables');
 $term = substr($planningTables->getUniqueMatchingName('Preferences'),-5,5);
 $preferences = Preferences::fromDb($term);
-$email = strtolower($_SERVER['SSL_CLIENT_S_DN_Email']);
+$email = strtolower(strtolower($_SERVER['eppn']));
+//$email = strtolower($_SERVER['SSL_CLIENT_S_DN_Email']);
 $comment = "";
 
 print '<article class="page">'."\n";

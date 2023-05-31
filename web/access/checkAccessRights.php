@@ -14,7 +14,9 @@ function isMaster()
   //foreach ($_SERVER as $key_name => $key_value) {
   //  print $key_name . " = " . $key_value . "<br>";
   //}
-  $email = strtolower(strtolower($_SERVER['SSL_CLIENT_S_DN_Email']));
+  //$email = strtolower(strtolower($_SERVER['SSL_CLIENT_S_DN_Email']));
+
+  $email = strtolower(strtolower($_SERVER['eppn']));
 
   // initialize to no access
   $level = -1;
@@ -24,8 +26,9 @@ function isMaster()
   if (array_key_exists($email,$admins->list))
     $level = $admins->list[$email]->level;
 
-  if ($level > 0)
+  if ($level > 0) {
     return true;
+  }	   
 
   return false;
 }
@@ -33,7 +36,8 @@ function isMaster()
 function isAdmin()
 {
   // see whether the email is in the access list
-  $email = strtolower(strtolower($_SERVER['SSL_CLIENT_S_DN_Email']));
+  // CP > $email = strtolower(strtolower($_SERVER['SSL_CLIENT_S_DN_Email']));
+  $email = strtolower(strtolower($_SERVER['eppn']));
 
   // initialize to no access
   $level = -1;
@@ -63,7 +67,8 @@ function isTa()
     return false;
 
   // see whether the email is in the access list
-  $email = strtolower($_SERVER['SSL_CLIENT_S_DN_Email']);
+  // CP > $email = strtolower($_SERVER['SSL_CLIENT_S_DN_Email']);
+  $email = strtolower(strtolower($_SERVER['eppn']));
   if (array_key_exists($email,$tas->list))
     return true;
 
@@ -80,7 +85,8 @@ function isTeacher()
   //$teachers->printTable();
   
   // see whether the email is in the access list
-  $email = strtolower($_SERVER['SSL_CLIENT_S_DN_Email']);
+  // CP > $email = strtolower($_SERVER['SSL_CLIENT_S_DN_Email']);
+  $email = strtolower($_SERVER['eppn']);
   if (array_key_exists($email,$teachers->list))
     return true;
 
@@ -113,8 +119,8 @@ function exitParameterError($parameter)
 function exitAccessError()
 {
   print '<p> ERROR you are not allowed to enter this page.<br>'; 
-  print '    You are: ' . $_SERVER['SSL_CLIENT_S_DN_CN'] . ' with email: ' . 
-    $_SERVER['SSL_CLIENT_S_DN_Email'] . '.</p><hr>'; 
+  print '    You are: ' . $_SERVER['displayName'] . ' with email: ' . 
+    $_SERVER['eppn'] . '.</p><hr>'; 
   print ' ';
   exit(); 
 }

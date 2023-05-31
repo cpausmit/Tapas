@@ -292,7 +292,7 @@ class Container:
         return self.hash
 
     def show(self):
-        for key, value in self.hash.iteritems():
+        for key, value in self.hash.items():
             sys.stdout.write(" Key: %-6s -- "%key)
             value.show()
 

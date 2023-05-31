@@ -10,7 +10,7 @@ if (! (isTeacher() || isMaster())) {
 include_once("app/models/Dbc.php");
 include_once("app/models/Tables.php");
 
-$email = strtolower($_SERVER['SSL_CLIENT_S_DN_Email']);
+$email = strtolower($_SERVER['eppn']);
 
 $studentEmail = 'undefined';
 if (isset($_GET['ta']))

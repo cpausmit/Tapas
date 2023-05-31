@@ -18,7 +18,7 @@ print '<article class="page">'."\n";
 print '<h1>Review TA Evaluations</h1>'."\n";
 print ' '."\n";
 
-$email = strtolower($_SERVER['SSL_CLIENT_S_DN_Email']);
+$email = strtolower($_SERVER['eppn']);
 
 $students = Students::fromDb();
 $teachers = Teachers::fromDb();

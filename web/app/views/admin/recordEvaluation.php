@@ -16,7 +16,7 @@ include_once("app/models/Teacher.php");
 print '<article class="page">'."\n";
 print '<h1>Recorded Evaluation</h1>';
 
-$email = strtolower($_SERVER['SSL_CLIENT_S_DN_Email']);
+$email = strtolower($_SERVER['eppn']);
 
 $term = $_POST['term'];
 $teacherEmail = $_POST['teacherEmail'];

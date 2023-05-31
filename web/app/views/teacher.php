@@ -12,9 +12,9 @@ if (isTeacher() || isMaster()) {
   print "      Please, check the button if you are suggesting an award and include\n";
   print "      a citation that we can use for the award. Use the submit button and\n";
   print "      check that the choices were accepted.\n";
-  print '<li> <a href="/review">review</a>'." your present evaluations. Here\n";
-  print "      we will go to the database and present what you submitted. To edit.\n";
-  print '      go back to \'enter\' it will give you your last text as starting point.';
+  print '<li> <a href="/review">check</a>'." your present evaluations. This\n";
+  print "      will go to the database and present what you submitted. To edit \n";
+  print '      go back to \'enter\'. You will have your last text as starting point.';
   print "</ul>\n";
   print ' '."\n";
   print ' <hr>'."\n";

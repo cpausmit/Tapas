@@ -11,7 +11,7 @@ print '<article class="page">'."\n";
 print '<h1>Add a TA Evaluation</h1>'."\n";
 print ' '."\n";
 
-$email = strtolower($_SERVER['SSL_CLIENT_S_DN_Email']);
+$email = strtolower($_SERVER['eppn']);
 
 $term = 'undefined';
 $teacherEmail = 'undefined';

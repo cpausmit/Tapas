@@ -23,7 +23,7 @@ $nTas = sizeof($preferences->list);
 
 // start page
 print '<article class="page">'."\n";
-print '<h1>All Active TA Preferences</h1>'."\n";
+print '<h1>All Active TA Preferences (Term: '.$term.')</h1>'."\n";
 print "<p>Number of TAs with registered preferences: $nTas</p>\n";
 print "\n";
 
@@ -32,11 +32,12 @@ print "<table>\n";
 print "<tr>";
 print "<th>&nbsp; Name &nbsp;</th>";
 print "<th>&nbsp; Email &nbsp;</th>";
-print "<th>&nbsp; Division &nbsp;</th>";
-print "<th>&nbsp; Research &nbsp;</th>";
-print "<th>&nbsp; Preference 1 &nbsp;</th>";
-print "<th>&nbsp; Preference 2 &nbsp;</th>";
-print "<th>&nbsp; Preference 3 &nbsp;</th>";
+print "<th>&nbsp; Div &nbsp;</th>";
+print "<th>&nbsp; Res &nbsp;</th>";
+print "<th>&nbsp; Prefer-Nr1 &nbsp;</th>";
+print "<th>&nbsp; Prefer-Nr2 &nbsp;</th>";
+print "<th>&nbsp; Prefer-Nr3 &nbsp;</th>";
+print "<th>&nbsp; Comment &nbsp;</th>";
 print "</tr>\n";
 
 $empty = true;
@@ -65,6 +66,9 @@ foreach ($preferences->list as $key => $preference) {
   print " &nbsp;</td>";
   print "<td>&nbsp; ";
   $task3->printTaskWithLink();
+  print " &nbsp;</td>";
+  print "<td>&nbsp; ";
+  print $preference->comment;
   print " &nbsp;</td>";
 }
 print "</table>\n";

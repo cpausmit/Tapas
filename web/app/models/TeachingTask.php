@@ -73,9 +73,8 @@ class TeachingTask
       . $this->type . ', ' . $this->effort . ' time, ' . $this->taType . "<br>\n"; 
   }
   public function printTaskWithLink() {
-    print ' ' . $this->year . ' ' . $this->term
-      . ', <a href="/showTaskSummary?number=' . $this->course . '">' . $this->course . '</a>, '
-      . $this->type . ', ' . $this->effort . ' time, ' . $this->taType . "\n"; 
+    print ' <a href="/showTaskSummary?number=' . $this->course . '">' . $this->course . '</a>_'
+      . $this->compactEffort() . $this->taType . "\n"; 
   }
   public function getTaTask() {
     return $this->year . ' ' . $this->term . ', ' . $this->course . ', '
@@ -135,6 +134,20 @@ class TeachingTask
       print ' ERROR - not a valid effort found : ' . $letter;
 
     return $effort; 
+  }
+
+  private function compactEffort() {
+    $compactEffort = '';
+    if     ($this->effort == "full")
+      $compactEffort = 'F';
+    elseif ($this->effort == "half")
+      $compactEffort = 'H';
+    elseif ($this->effort == "part")
+      $compactEffort = 'P';
+    else
+      print ' ERROR - not a valid effort found: ' . $this->effort;
+
+    return $compactEffort;
   }
 
   // property declaration
