@@ -1,8 +1,5 @@
 <?php
 
-// global variable to manage the result of the form input
-$GLOBALS['COMPLETE'] = 2;
-
 // make sure we are dealing with a administrator
 include("app/views/admin/header.php");
 if (! (isMaster() || isAdmin())) { 
@@ -10,32 +7,36 @@ if (! (isMaster() || isAdmin())) {
 }
 
 include_once("app/models/Semester.php");
+include_once("app/models/Tables.php");
 include_once("app/models/Course.php");
 include_once("app/models/CourseResource.php");
 
 // Find the term we want to plan
-function getPostVariable($variableName)
+function findTerm($semesters)
 {
-  // read complete courses table
-  $variable = 'undefined';
-  if (array_key_exists($variableName,$_POST))
-    $variable = $_POST[$variableName];
-  else
-    $GLOBALS['COMPLETE'] = 0;
-
-  return $variable;
+  $term = '';
+  if (array_key_exists('term',$_POST)) {    // find the term for the planning assignments table
+    $term = $_POST['term'];
+  }
+  else {
+    $planningTables = new Tables("PlanningTables");
+    $assignmentTable = $planningTables->getUniqueMatchingName('Assignments');
+    $term = substr($assignmentTable,-5,5);
+  }
+  return $term;
 }
 
-function printTermForm($semesters)
+function printTermForm($term,$semesters)
 {
   print '<table>';
   print '<form  action="/generateAssignments" method="post">'."\n";
+  print '<input type="hidden" name="term" value="'.$term.'" />';
   print '<tr>';
   print '<td>';
   print '  Term:&nbsp;'."\n";
   print '</td>';
   print '<td align=center><select class="type" name="term">'."\n";
-  print "<option value=\"\">term ?</option>";
+  print "<option value=\"\">".$term."</option>";
   foreach ($semesters->list as $key => $semester)
     print "<option value=\"$key\"> $key </option>";
   print '    </select></td>'."\n";
@@ -50,46 +51,33 @@ function printTermForm($semesters)
 // M A I N
 //==================================================================================================
 
-print "<article class=\"page\">\n";
-
 // get all relevant info from the database
 $semesters = Semesters::fromDb();
 $courses = Courses::fromDb();
-$term = getPostVariable('term');
+$term = findTerm($semesters);
+print "TERM: $term";
 $courseResources = CourseResources::fromDb($term);
 
-if (!$GLOBALS['COMPLETE']) {                // term parameter was not available
-  print "<article class=\"page\">\n";
-  print "<h1>Which Term?</h1>\n";
-  print "<hr>\n";
-  printTermForm($semesters);
-  // footer
-  print "<hr>\n";
-  print '</article>'."\n";
-  include("app/views/admin/footer.php");
-  exit("");
+print "<article class=\"page\">\n";
+if (! isset($semesters->list[$term])) {
+  print "<h1>ERROR</h1>\n";
+  print "This term ($term) is not in our database.\n";
 }
-else {                                     // term was set
-  print "<article class=\"page\">\n";
-  if (! isset($semesters->list[$term])) {
-    print "<h1>ERROR</h1>\n";
-    print "This term ($term) is not in our database.\n";
-  }
-  // start the remaining html page
-  print "<h1>Different Term?</h1>\n";
-  print "<hr>\n";
-  printTermForm($semesters);
-  print "<hr>\n";
-  print "<h1>Adding the following Assignments (Term: $term)</h1>\n";
-  print "<hr>\n";
-  if (isset($semesters->list[$term]))
-    $courseResources->registerAssignments();
-}
+
+// start the remaining html page
+print "<h1>Generating Assignments</h1>\n";
+print "<p>Different Term?</p>\n";
+print "<hr>\n";
+printTermForm($term,$semesters);
+print "<hr>\n";
+print "<h1>Adding the following Assignments (Term: $term)</h1>\n";
+print "<hr>\n";
+if (isset($semesters->list[$term]))
+  $courseResources->registerAssignments();
 
 // footer
 print "<hr>\n";
 print '</article>'."\n";
-
 include("app/views/admin/footer.php");
 
 ?>

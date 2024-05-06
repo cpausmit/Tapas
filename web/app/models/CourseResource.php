@@ -19,7 +19,8 @@ include_once("app/models/Dbc.php");
 function insertEmptySlot($term,$slotId)
 {
   // insert a particular slot id into the assignments table if it does not yet exist
-  $vals = sprintf("('%s','%s','EMPTY')",$term,$slotId);
+  $vals = sprintf("('%s','%s','EMPTY',-1)",$term,$slotId);
+  //print " VALS: " . $vals;
   $sql = "insert into Assignments values $vals;";
   $rc = Dbc::getReader()->Exec($sql);
   if (!$rc) {
@@ -109,7 +110,6 @@ class CourseResources
   public function registerAssignments()
   {
     // loop through course resources and make missing empty slots in the database
-
     foreach ($this->list as $key => $courseResource)
       $courseResource->registerAssignments();
 
@@ -329,6 +329,7 @@ class CourseResource
       insertEmptySlot($this->term,$this->term."-".$this->number."-TaHU-".$i);
     for ($i=1; $i<=$this->numPartUtilTas; $i++)
       insertEmptySlot($this->term,$this->term."-".$this->number."-TaPU-".$i);
+      
     return;
   }
 }

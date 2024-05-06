@@ -27,7 +27,10 @@ function show_student($assignment,$t,$student)
     . $t->getEffort()  . "&nbsp;</td><td>"
     . $t->getTaType()  . "&nbsp;</td><td>";
 
-  print "<a href=\"/showTaSummary?email=" . $assignment->person . "\">"
+  print $student->firstName . "&nbsp;</td><td>"
+    .   $student->lastName . "&nbsp;</td><td>";
+
+print "<a href=\"/showTaSummary?email=" . $assignment->person . "\">"
     . $assignment->person
     . "</a>"
     . "&nbsp;</td><td>"
@@ -50,6 +53,9 @@ function show_teacher($assignment,$t,$teacher)
     . $t->getType()    . "&nbsp;</td><td>"
     . $t->getEffort()  . "&nbsp;</td><td>"
     . $t->getTaType()  . "&nbsp;</td><td>";
+
+  print $teacher->firstName . "&nbsp;</td><td>"
+    .   $teacher->lastName . "&nbsp;</td><td>";
 
   print "<a href=\"/showTeacherSummary?email=" . $assignment->person . "\">"
     . $assignment->person
@@ -83,7 +89,7 @@ print "Active Assignments from $assignmentsTable</p>";
 
 print "<table>\n";
 print "<tr><th>&nbsp; Term &nbsp;</th><th>&nbsp; Course &nbsp;</th><th> Type &nbsp;</th><th> Effort &nbsp;</th>";
-print "<th> TA type &nbsp;</th><th> Person &nbsp;</th><th> Division &nbsp;</th><th> Id &nbsp;</th><th> EvalO &nbsp;</th></tr>\n";
+print "<th> TA type &nbsp;</th><th> First Name &nbsp;</th><th> Last Name &nbsp;</th><th> Person &nbsp;</th><th> Division &nbsp;</th><th> Id &nbsp;</th><th> EvalO &nbsp;</th></tr>\n";
 $iF = 0;
 $iP = 0;
 foreach ($assignments->list as $task => $assignment) {

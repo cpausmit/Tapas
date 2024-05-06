@@ -8,11 +8,9 @@ if (! (isMaster() || isAdmin())) {
 
 include_once("app/models/Dbc.php");
 include_once("app/models/Semester.php");
+include_once("app/models/Tables.php");
 include_once("app/models/Course.php");
 include_once("app/models/CourseResource.php");
-
-// global variable to manage the result of the form input
-$GLOBALS['COMPLETE'] = 2;
 
 function getPostVariable($variableName)
 {
@@ -20,45 +18,19 @@ function getPostVariable($variableName)
   $variable = 'undefined';
   if (array_key_exists($variableName,$_POST))
     $variable = $_POST[$variableName];
-  else
-    $GLOBALS['COMPLETE'] = 0;
-
   return $variable;
 }
 
 // Find the term we want to plan
-
 function findTerm($semesters)
 {
   $term = getPostVariable('term');
-  $test = $GLOBALS['COMPLETE'];
-  
-  if ($test != 2) {
-    print "<article class=\"page\">\n";
-    print "<h1>Which Term? ($term)</h1>\n";
-    print "<hr>\n";
-    printTermForm("term ?",$semesters);
-    // footer
-    print "<hr>\n";
-    print '</article>'."\n";
-    include("app/views/admin/footer.php");
-    exit("");
+  if (strcmp($term,'undefined') == 0) {       // assign the correct default
+    // find the term for the planning assignments table
+    $planningTables = new Tables("PlanningTables");
+    $assignmentTable = $planningTables->getUniqueMatchingName('Assignments');
+    $term = substr($assignmentTable,-5,5);
   }
-  else {
-    if (! isset($semesters->list[$term])) {
-      print "<article class=\"page\">\n";
-      print "<h1>ERROR</h1>\n";
-      print "<hr>\n";
-      print "This term is not in our database: $term\n";
-      // footer
-      print "<hr>\n";
-      print "<h2><a href=\"/planCourseResources\">try again</a></h2>\n";
-      print '</article>'."\n";
-      include("app/views/admin/footer.php");
-      exit("");
-    }
-  }
-
   return $term;
 }
 
@@ -73,19 +45,24 @@ function printNum($min,$max)
 
 function printGenerateAssignments($term)
 {
-  print '<table>';
-  print '<form  action="/generateAssignments" method="post">'."\n";
-  print '<input type="hidden" name="term" value="'.$term.'" />';
-  print '<tr>';
-  print '<td align=center><select class="type" name="action">'."\n";
-  print "<option value=\"\"> action ?</option>";
-  print "<option value=\"clear\"> clear  assignments </option>";
-  print "<option value=\"generate\"> generate  assignments </option>";
-  print '                 </select></td>'."\n";
-  print '<td><input type="submit" value="select" />'."\n";
-  print '</td></tr>';
-  print '</table>';
-  print '</form>'."\n";
+  print '<form action="/planCourseResources" method="post">'."\n";
+  print '<input type="hidden" name="term" value='.$term.'>'."\n";
+  print '<input type="hidden" name="publish" value=YES>'."\n";
+  print '<input type="submit" name="generateAssignments" value="Publish"/></form>'."\n";
+//  print '<input type="button" value="line">'."\n";
+//  print '<table>';
+//  print '<form  action="/generateAssignments" method="post">'."\n";
+//  print '<input type="hidden" name="term" value="'.$term.'" />';
+//  print '<tr>';
+//  print '<td align=center><select class="type" name="action">'."\n";
+//  print "<option value=\"\"> action ?</option>";
+//  print "<option value=\"clear\"> clear  assignments </option>";
+//  print "<option value=\"generate\"> generate  assignments </option>";
+//  print '                 </select></td>'."\n";
+//  print '<td><input type="submit" value="select" />'."\n";
+//  print '</td></tr>';
+//  print '</table>';
+//  print '</form>'."\n";
 }
 
 function printForm($courses,$term)
@@ -136,19 +113,37 @@ function printForm($courses,$term)
 function printTermForm($term,$semesters)
 {
   print '<table>';
-  print '<form  action="/planCourseResources" method="post">'."\n";
-  print '<input type="hidden" name="term" value="'.$term.'" />';
   print '<tr>';
+  print '<form  action="/planCourseResources" method="post">'."\n";
+  print '<td><input type="submit" value="Select term" />'."\n";
+  print '</td>';
+  print '<input type="hidden" name="term" value="'.$term.'" />';
   print '<td align=center><select class="type" name="term">'."\n";
   print "<option value=\"$term\">".$term."</option>";
   foreach ($semesters->list as $key => $semester)
     print "<option value=\"$key\"> $key </option>";
   print '    </select></td>'."\n";
   print '</td>';
-  print '<td><input type="submit" value="select term" />'."\n";
+  print '<td>';
+  print '</form>'."\n";
+  print '</tr>';
+  print '<tr>';
+  print '<td>';
+  print '<form action="/planCourseResources" method="post">'."\n";
+  print '<input type="hidden" name="term" value='.$term.'>'."\n";
+  print '<input type="hidden" name="publish" value=YES>'."\n";
+  print '<input type="submit" name="generateAssignments" value="Publish"/></form>'."\n";
   print '</td></tr>';
   print '</table>';
-  print '</form>'."\n";
+
+}
+
+function tryPublish($term,$semesters,$courseResources) {
+  if (array_key_exists('publish',$_POST)) {
+    print " Publishing the slots to the assignment tables: ".$term."\n";
+    if (isset($semesters->list[$term]))
+      $courseResources->registerAssignments();
+  }
 }
 
 //==================================================================================================
@@ -168,6 +163,9 @@ $courses = Courses::fromDb();
 $courseResources = CourseResources::fromDb($term);
 $nEntries = sizeof($courseResources->list);
 
+// publishing the slots?
+tryPublish($term,$semesters,$courseResources);
+
 $number = getPostVariable('number');
 $numAdmins = getPostVariable('numAdmins');
 $numLecturers = getPostVariable('numLecturers');
@@ -178,26 +176,26 @@ $numFullUtilTas = getPostVariable('numFullUtilTas');
 $numHalfUtilTas = getPostVariable('numHalfUtilTas');
 $numPartUtilTas = getPostVariable('numPartUtilTas');
 
-if ($GLOBALS['COMPLETE'] == 2) {                  // All post variables are filled == ready to register
-  if (! isset($semesters->list[$term])) {
-    print "<h1>ERROR</h1>\n";
-    print "This term ($term) is not in our database. \n";
-  }
-  else {
-    
-    // initialize a new courseResource
-    //print " Setting up resource $term:$number<br>\n";
-    $courseResource = courseResource::fresh();
-    $courseResource->term = $term;
-    $courseResource->number = $number;
-    $courseResource->numAdmins = $numAdmins;
-    $courseResource->numLecturers = $numLecturers;
-    $courseResource->numRecitators = $numRecitators;
-    $courseResource->numFullRecTas = $numFullRecTas;
-    $courseResource->numHalfRecTas = $numHalfRecTas;
-    $courseResource->numFullUtilTas = $numFullUtilTas;
-    $courseResource->numHalfUtilTas = $numHalfUtilTas;
-    $courseResource->numPartUtilTas = $numPartUtilTas;
+if (! isset($semesters->list[$term])) {
+  print "<h1>ERROR</h1>\n";
+  print "This term ($term) is not in our database. \n";
+}
+else {
+  // initialize a new courseResource
+  //print " Setting up resource $term:$number<br>\n";
+  $courseResource = courseResource::fresh();
+  $courseResource->term = $term;
+  $courseResource->number = $number;
+  $courseResource->numAdmins = $numAdmins;
+  $courseResource->numLecturers = $numLecturers;
+  $courseResource->numRecitators = $numRecitators;
+  $courseResource->numFullRecTas = $numFullRecTas;
+  $courseResource->numHalfRecTas = $numHalfRecTas;
+  $courseResource->numFullUtilTas = $numFullUtilTas;
+  $courseResource->numHalfUtilTas = $numHalfUtilTas;
+  $courseResource->numPartUtilTas = $numPartUtilTas;
+  
+  if (isset($courses->list[$number])) {           // course must exist
     
     if (isset($courseResources->list[$number])) { // if course exists it will be overwritten
       if ($numAdmins == -1) {
@@ -211,10 +209,15 @@ if ($GLOBALS['COMPLETE'] == 2) {                  // All post variables are fill
     }
     else {
       // add it to the database
-      print "Add new CourseResource in the database: $term:$number<br>\n";
-      $courseResource->addToDb();
+      if ($number === "") { // do not add empty selection
+        print "Not adding empty course number.<br>\n";
+      }
+      else {
+        print "Add new CourseResource in the database: $term:$number<br>\n";
+        $courseResource->addToDb();
+      }
     }
-
+  
     // update the course resource list in memory
     $courseResources = CourseResources::fromDb($term);
     $nEntries =  sizeof($courseResources->list);
@@ -226,6 +229,7 @@ print "<article class=\"page\">\n";
 print "<h1>CourseResource List (Term: $term)</h1>\n";
 print "<hr>\n";
 printTermForm($term,$semesters);
+//printGenerateAssignments($term);
   
 print "<table>\n";
 
@@ -252,8 +256,6 @@ print "<p> &nbsp;&nbsp;&nbsp;&nbsp; $nEntries unique entries (for term: $term)."
 $courseResources->showSummary();
 print "</p>\n";
 print "<hr>\n";
-// register all present assignment slots
-printGenerateAssignments($term);
 
 // footer
 print "<hr>\n";

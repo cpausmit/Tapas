@@ -105,11 +105,15 @@ print "<th>&nbsp; FullTime &nbsp;</th><th>&nbsp; PartTime &nbsp;</th></tr>";
 
 // loop through all TAs
 
+$fT = 0.;
+$pT = 0.;
 foreach ($tas->list as $key => $ta) {
   if (isset($students->list[$ta->email])) {
     $student = $students->list[$ta->email];
     $student->printTableRow(true);
     print "<td align=center>&nbsp;$ta->fullTime</td><td align=center>&nbsp;$ta->partTime</td></tr>";
+    $fT += $ta->fullTime;
+    $pT += $ta->partTime;
   }
   else                                     // should never happen, but checking is better
     print "<br><b> ERROR -- student not found in database: $ta->email</b><br>";
@@ -117,7 +121,7 @@ foreach ($tas->list as $key => $ta) {
 
 $nTas = sizeof($tas->list);
 print "</table>\n";
-print "<p> &nbsp;&nbsp;&nbsp;&nbsp; $nTas unique entries (term: $term).</p>";
+print "<p> &nbsp;&nbsp;&nbsp;&nbsp; TERM: $term - $nTas unique entries ($fT full, $pT part).</p>";
 
 
 // footer

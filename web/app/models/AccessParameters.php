@@ -45,11 +45,15 @@ class AccessParameters
       
       // add the parameters to the array
       static::$parameters = array();
+
       static::$parameters['host'] = $host;
       static::$parameters['user'] = $user;
       static::$parameters['passwd'] = $passwd;
     }
 
+    #print "HOST: ". $host;
+    #print "USER: ". $user;
+    #print "PW: ". $passwd;
     return static::$parameters;
   }
 }

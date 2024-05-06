@@ -41,6 +41,8 @@ $planningTables = new Tables('PlanningTables');
 $tasTable = $planningTables->getUniqueMatchingName('Tas');
 $term = substr($planningTables->getUniqueMatchingName('Assignments'),-5,5);
 
+// print 'TERM: '.$term;
+
 // select all possible options for the full time TAs
 $options = generateOptions($term,$courses);
 

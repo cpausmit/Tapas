@@ -22,7 +22,7 @@ def termString(period):
 
 
 debug = False
-#debug = True
+debug = True
 check = False
 
 dataDir = os.getenv('TAPAS_TOOLS_DATA','./')
@@ -136,7 +136,7 @@ try:
             db.disco()
             sys.exit()
             
-        # try if it is a techer in our teachers list
+        # try if it is a teacher in our teachers list
         try:
             teacher = teachers.retrieveElement(email);
             activeTeachers.addElement(email,teacher)
@@ -206,20 +206,28 @@ with open("%s/eml/%s/distributor.csv"%(dataDir,period),"w") as f:
         assignment = assignments[key]
         if debug:
             print("\n\n# NEXT # Key: " + key + ' --> ' + assignment)
-    
-    #    try:
+
         if True:
+            # check if it is a teacher (they cannot be students)
             try:
-                student = activeStudents.retrieveElement(key)
-            except:
-                if debug:
-                    print(' Not a student (%s) ... moving on to next entry.'%(key))
+                teacher = teachers.retrieveElement(key);
+                isTeacher = True
                 # make sure to add up all the teachers emails
                 if re.search('-Lec-',assignment):
                     if teachersEmails == '':
                         teachersEmails = key
                     else:
                         teachersEmails += "," + key
+                continue
+            except:
+                if debug:
+                    print(' Not a teacher (%s) ... this should be a student.'%(key))
+                
+            # now make sure it is a known student
+            try:
+                student = activeStudents.retrieveElement(key)
+            except:
+                print(' Not a known student (%s) ... moving on to next entry.'%(key))
                 continue
                 
             if debug:
@@ -276,7 +284,9 @@ with open("%s/eml/%s/distributor.csv"%(dataDir,period),"w") as f:
     
                     if debug:
                         print(" Course: " + number + "  Teacher: " + course.admin)
-                    psString = "PS: Please add 12 units of 8.399 to your registration."
+# not needed anymore according to Shannon
+#                   psString = "PS: Please add 12 units of 8.399 to your registration."
+                    psString = ""
                     if type[2:4] == "PU":
                         tmp = "%-14s, %-14s TA (U) - %-6s  %-40s %s %s (%s)"%\
                               (student.lastName,student.firstName,course.number,course.name, \
