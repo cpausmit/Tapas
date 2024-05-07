@@ -397,6 +397,13 @@ form ::-moz-focus-inner
 
 /* Tables */
 
+/* Add CSS to style the tables */
+.table-container {
+    display: flex;
+    justify-content: space-between;
+    width: 50%;
+}
+
 table
 {
     width: 100%;

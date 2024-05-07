@@ -43,28 +43,6 @@ function printNum($min,$max)
   }
 }
 
-function printGenerateAssignments($term)
-{
-  print '<form action="/planCourseResources" method="post">'."\n";
-  print '<input type="hidden" name="term" value='.$term.'>'."\n";
-  print '<input type="hidden" name="publish" value=YES>'."\n";
-  print '<input type="submit" name="generateAssignments" value="Publish"/></form>'."\n";
-//  print '<input type="button" value="line">'."\n";
-//  print '<table>';
-//  print '<form  action="/generateAssignments" method="post">'."\n";
-//  print '<input type="hidden" name="term" value="'.$term.'" />';
-//  print '<tr>';
-//  print '<td align=center><select class="type" name="action">'."\n";
-//  print "<option value=\"\"> action ?</option>";
-//  print "<option value=\"clear\"> clear  assignments </option>";
-//  print "<option value=\"generate\"> generate  assignments </option>";
-//  print '                 </select></td>'."\n";
-//  print '<td><input type="submit" value="select" />'."\n";
-//  print '</td></tr>';
-//  print '</table>';
-//  print '</form>'."\n";
-}
-
 function printForm($courses,$term)
 {
   // Generate the form for the courseResource planning
@@ -112,6 +90,7 @@ function printForm($courses,$term)
 
 function printTermForm($term,$semesters)
 {
+  print '<div class="table-container">';
   print '<table>';
   print '<tr>';
   print '<form  action="/planCourseResources" method="post">'."\n";
@@ -124,17 +103,19 @@ function printTermForm($term,$semesters)
     print "<option value=\"$key\"> $key </option>";
   print '    </select></td>'."\n";
   print '</td>';
-  print '<td>';
   print '</form>'."\n";
   print '</tr>';
-  print '<tr>';
-  print '<td>';
+  print '</table>';
+  print '<table>';
+  print '<tr><td>';
   print '<form action="/planCourseResources" method="post">'."\n";
   print '<input type="hidden" name="term" value='.$term.'>'."\n";
   print '<input type="hidden" name="publish" value=YES>'."\n";
-  print '<input type="submit" name="generateAssignments" value="Publish"/></form>'."\n";
+  print '<input type="submit" name="generateAssignments" value="Publish?"/>'."\n";
+  print '</form>'."\n";
   print '</td></tr>';
   print '</table>';
+  print '</div>';
 
 }
 
@@ -229,8 +210,6 @@ print "<article class=\"page\">\n";
 print "<h1>CourseResource List (Term: $term)</h1>\n";
 print "<hr>\n";
 printTermForm($term,$semesters);
-//printGenerateAssignments($term);
-  
 print "<table>\n";
 
 // loop through all course resources
