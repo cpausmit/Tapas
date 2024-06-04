@@ -12,6 +12,7 @@
 
 include_once("app/models/Dbc.php");
 include_once("app/models/TeachingTask.php");
+include_once("app/models/Utils.php");
 
 class Assignments
 {
@@ -121,6 +122,35 @@ class Assignment
     $this->evalO = $row[3];
   }
 
+  protected function isValid()
+  {
+    // making sure assignment information is valid
+
+    $valid = true;
+    if (strcmp($this->person,"EMPTY") == 0 || isEmail($this->person))
+      print "";
+    else
+      return false;
+   
+    return $valid;
+  }
+
+  public function updateDb()
+  {
+    // updating the given preference to the database
+  
+    // make sure this is a valid new entry
+    if ($this->isValid()) {
+      $form = "Term = '%s', Task = '%s', Person = '%s', EvalO = '%f'";
+      $vals = sprintf($form,$this->term,$this->task,$this->person,$this->evalO);
+      $sql = " update Assignments set $vals where Term = '$this->term' and Task = '$this->task';";
+      Dbc::getReader()->Exec($sql);
+      //print "SQL: $sql <br>\n ";
+    }
+    else
+      print '<br> Invalid entry. STOP!<br>';
+  }
+
   public function show($option='full')
   {
     // print the full assignment
@@ -138,7 +168,7 @@ class Assignment
 
     if ($option == 'simple')
       print "</td>\n"
-        . "<td>&nbsp; (Eval:" . number_format($this->evalO,1,'.',',') . ") &nbsp;</td>";
+        . "<td>&nbsp; (EvalO:" . number_format($this->evalO,1,'.',',') . ") &nbsp;</td>";
     else
       print "<a href=\"/showTaSummary?email=" . $this->person . "\">"
         . $this->person

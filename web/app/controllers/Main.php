@@ -156,6 +156,11 @@ class Main extends Controller {
     $view = new View;
     echo $view->render('admin/showAssignments.php');
   }
+  public function assign($f3) {
+    $f3->set('selected', 'admin');
+    $view = new View;
+    echo $view->render('admin/assign.php');
+  }
   public function assignments($f3) {
     $f3->set('selected', 'admin');
     $view = new View;

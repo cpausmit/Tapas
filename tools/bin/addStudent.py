@@ -63,16 +63,16 @@ else:
    os.chdir(os.getenv('TAPAS_TOOLS_DATA','./'))
 
    # add all existing tables (starting with the newest == most up to date one)
-   tables  = "spreadsheets/grads_S2024.csv "
-#   tables  = "spreadsheets/grads_F2018.csv "
-#   tables += "spreadsheets/grads_F2017.csv "
-#   tables += "spreadsheets/grads_S2016.csv "
-#   tables += "spreadsheets/grads_F2016.csv "
-#   tables += "spreadsheets/grads_F2014.csv "
-#   tables += "spreadsheets/grads_F2013.csv "
-#   tables += "spreadsheets/grads_F2012.csv "
-#   tables += "spreadsheets/grads_F2009.csv "
-#   tables += "spreadsheets/ugrads_F2015.csv "
+   tables  = "csv/grads_S2024.csv "
+#   tables  = "csv/grads_F2018.csv "
+#   tables += "csv/grads_F2017.csv "
+#   tables += "csv/grads_S2016.csv "
+#   tables += "csv/grads_F2016.csv "
+#   tables += "csv/grads_F2014.csv "
+#   tables += "csv/grads_F2013.csv "
+#   tables += "csv/grads_F2012.csv "
+#   tables += "csv/grads_F2009.csv "
+#   tables += "csv/ugrads_F2015.csv "
 
    for line in os.popen('cat ' + tables).readlines():   # run command
        line = line.replace('\n','')

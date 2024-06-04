@@ -1,4 +1,4 @@
-@charset 'UTF-8';
+@chaet 'UTF-8';
 
 @font-face{
     font-family:'FontAwesome';
@@ -50,16 +50,16 @@ body,input,textarea,select
 {
     font-family: 'Source Sans Pro', sans-serif;
     font-size: 14pt;
-    font-weight: 300;
-    line-height: 1.75em;
-    color: #888;
-    -webkit-text-stroke: 0.15px;
+    font-weight: 400;
+    line-height: 1.5em;
+    color: #999;
+    //-webkit-text-stroke: 0.15px;
 }
 
 h1,h2,h3,h4,h5,h6
 {
     font-weight: 200;
-    color: #666;
+    color: #444;
     line-height: 1.5em;
 }
 
@@ -354,15 +354,16 @@ form textarea
     background: #fff;
     background: rgba(255,255,255,0.75);
     width: 100%;
-    border-radius: 0.35em;
-    padding: 0.75em 1em 0.75em 1em;
-    box-shadow: inset 0 0.1em 0.1em 0 rgba(0,0,0,0.05);
+    //border-radius: 0.35em;
+    //padding: 0.75em 1em 0.75em 1em;
+    //box-shadow: inset 0 0.1em 0.1em 0 rgba(0,0,0,0.05);
     border: solid 1px rgba(0,0,0,0.15);
     -moz-transition: all 0.35s ease-in-out;
     -webkit-transition: all 0.35s ease-in-out;
     -o-transition: all 0.35s ease-in-out;
     -ms-transition: all 0.35s ease-in-out;
     transition: all 0.35s ease-in-out;
+    vertical-align: middle;
 }
 
 form input.text:hover,
@@ -419,10 +420,10 @@ table.default tbody tr:nth-child(2n+2)
 {
     background: #f4f4f4;
 }
-//
+
 //table.default td
 //{
-//    padding: 0.5em 1em 0.5em 1em;
+//    padding: 0em 0em 0em 0em;
 //}
 //
 //table.default th
@@ -1358,8 +1359,28 @@ table th {
   background-color: DarkGray;
 } 
 
+table.assign {
+  
+}
+
+form.assign {
+  height: 1.75em;
+  margin:0;
+  font-family: arial, verdana, sans-serif; font-size: 14px;
+  vertical-align: middle;
+  //padding: 0em 0em 0em 0em;
+}
+select.assign {
+  height: 2.00em;
+  margin:0;
+  background-color: #ffeeee; color: Black;
+  font-family: arial, verdana, sans-serif; font-size: 14px;
+  vertical-align: middle;
+  //padding: 0em 0em 0em 0em;
+}
+
 form.ta {
-    font-family: arial, verdana, sans-serif; font-size: 20px;
+    font-family: arial, verdana, sans-serif; font-size: 14px;
     position: relative;
     -webkit-appearance: none;
     display: block;
@@ -1367,8 +1388,8 @@ form.ta {
     background: #fff;
     background: rgba(255,255,255,0.75);
     width: 98%;
-    border-radius: 0.35em;
-    padding: 0em 0em 0em 0em;
+    border-radius: 0.em;
+    //padding: 0em 0em 0em 0em;
     box-shadow: inset 0 0.1em 0.1em 0 rgba(0,0,0,0.05);
     border: solid 1px rgba(0,0,0,0.15);
     -moz-transition: all 0.35s ease-in-out;
@@ -1379,13 +1400,14 @@ form.ta {
 }
 select.ta {
   background-color: #ffeeee; color: Black;
-  font-family: arial, verdana, sans-serif; font-size: 18px;
+  font-family: arial, verdana, sans-serif; font-size: 14px;
+  //padding: 0em 0em 0em 0em;
 }
 select:hover {
   background-color: #eeffee;
 }
 option {
-  font-family: arial, verdana, sans-serif; font-size: 16px;
+  font-family: arial, verdana, sans-serif; font-size: 14px;
 }
 input {
   margin: 0px;

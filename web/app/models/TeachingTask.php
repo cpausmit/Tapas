@@ -77,8 +77,9 @@ class TeachingTask
       . $this->compactEffort() . $this->taType . "\n"; 
   }
   public function getTaTask() {
-    return $this->year . ' ' . $this->term . ', ' . $this->course . ', '
-      . $this->effort . ' time, ' . $this->taType;
+    //return $this->year . ' ' . $this->term . ', ' . $this->course . ', '
+    //  . $this->effort . ' time, ' . $this->taType;
+    return $this->course . ', ' . $this->effort . '(' . $this->taType .')';
   }
   public function printTaTask() {
     print $this->getTaTask() . "<br>\n"; 

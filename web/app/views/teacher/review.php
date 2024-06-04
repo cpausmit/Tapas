@@ -1,5 +1,4 @@
 <?php
-
 include("app/views/teacher/header.php");
 
 // make sure we have a registered TA
@@ -31,30 +30,26 @@ $sql = "select Term,TeacherEmail,TaEmail,Award,EvalText,Citation from Evaluation
     . "where Term='$term' and TeacherEmail='$email'";
 $rows = Dbc::getReader()->query($sql);
 if ($rows->rowCount() < 1) {
-  print " ERROR - could not find evaluation for sql: $sql\n";
-  exit();
+  print " INFO - there was no evaluation done by: $email\n";
 }
-else if ($rows->rowCount() > 1) {
-  print " ERROR - more evaluation than one registered for sql: $sql\n";
-  exit();
-}
-
-$evaluation = null;
-foreach ($rows as $key => $row)
-  $evaluation = Evaluation::fromRow($row);
-
-if ($evaluation == null)
-  print ' No evaluations found in this term.';
 else {
-  $student = $students->list[$evaluation->taEmail];
-  $teacher = $teachers->list[$evaluation->teacherEmail];
-  $taNames[$evaluation->taEmail] = $student->firstName." ".$student->lastName;
-  $teacherNames[$evaluation->teacherEmail] = $teacher->firstName." ".$teacher->lastName;
-  $evaluation->printEvaluation($taNames,$teacherNames);
+  $evaluation = null;
+  print ' Number of evaluations found in this term ('.$term.'): '.$rows->rowCount();
+  foreach ($rows as $key => $row) {
+    $evaluation = Evaluation::fromRow($row);
+    if ($evaluation == null)
+      print ' No evaluations found in this term.';
+    else {
+      $student = $students->list[$evaluation->taEmail];
+      $teacher = $teachers->list[$evaluation->teacherEmail];
+      $taNames[$evaluation->taEmail] = $student->firstName." ".$student->lastName;
+      $teacherNames[$evaluation->teacherEmail] = $teacher->firstName." ".$teacher->lastName;
+      $evaluation->printEvaluation($taNames,$teacherNames);
+    }
+  }
 }
   
 print '</article>'."\n";
 
 include("app/views/teacher/footer.php");
-
 ?>

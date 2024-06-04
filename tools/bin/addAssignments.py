@@ -81,7 +81,7 @@ if remove == 'remove':
 
 lastCourse = 0
 os.chdir(os.getenv('TAPAS_TOOLS_DATA','./'))
-cmd = 'cat spreadsheets/' + semesterId + 'Teachers.csv | sort  -t, -k3 | grep -v ^#'
+cmd = 'cat csv/' + semesterId + 'Teachers.csv | sort  -t, -k3 | grep -v ^#'
 for line in os.popen(cmd).readlines():
     line = line[:-1]
     f = line.split(',')
@@ -129,7 +129,7 @@ for line in os.popen(cmd).readlines():
 
 ## Loop through TA candidate file and add them to our table
 #os.chdir(os.getenv('TAPAS_TOOLS_DATA','./'))
-#for line in os.popen('cat spreadsheets/' + semesterId + 'Tas.csv | grep -v ^#').readlines():
+#for line in os.popen('cat csv/' + semesterId + 'Tas.csv | grep -v ^#').readlines():
 #    line = line[:-1]
 #    f = line.split(',')
 #    if len(f) == 1:
@@ -148,7 +148,7 @@ for line in os.popen(cmd).readlines():
 
 # Loop through TA the assignment file
 os.chdir(os.getenv('TAPAS_TOOLS_DATA','./'))
-for line in os.popen('cat spreadsheets/' + semesterId + 'Assignments.csv | grep -v ^#').readlines():
+for line in os.popen('cat csv/' + semesterId + 'Assignments.csv | grep -v ^#').readlines():
     line = line[:-1]
     f = line.split(',')
     if len(f) > 1:

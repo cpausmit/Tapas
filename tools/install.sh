@@ -29,7 +29,7 @@ echo "export PYTHONPATH=\"\${PYTHONPATH}:\${TAPAS_TOOLS_PYTHON}\"" >> setup.sh
 echo ""                                                            >> setup.sh
 echo "alias tapgo=\"cd $TAPAS_TOOLS_DATA\""                        >> setup.sh
 echo "alias taphelp=\"head -25 $TAPAS_TOOLS_DATA/INSTRUCTIONS\""   >> setup.sh
-echo "alias tapassign=\"edit $TAPAS_TOOLS_DATA/spreadsheets/*Assignments.csv\""   >> setup.sh
+echo "alias tapassign=\"edit $TAPAS_TOOLS_DATA/csv/*Assignments.csv\""   >> setup.sh
 echo ""                                                            >> setup.sh
 
 exit 0
