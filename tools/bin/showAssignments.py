@@ -22,7 +22,7 @@ def termString(period):
 
 
 debug = False
-debug = True
+debug = False
 check = False
 
 dataDir = os.getenv('TAPAS_TOOLS_DATA','./')
@@ -196,7 +196,6 @@ departmentEmail = os.getenv('TAPAS_TOOLS_DEPEML','XX-ERROR-XX@mit.edu')
 preAssignment   = [ ]
 preEmails       = ''
 teachersEmails  = ''
-
 
 with open("%s/eml/%s/distributor.csv"%(dataDir,period),"w") as f:
     f.write("TERM+EMAIL+FIRST_NAME+LAST_NAME+CC+COURSE+PS\n")

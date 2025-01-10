@@ -48,16 +48,23 @@ if ($email != "" && $studentEmail != "" && $evaluation != "") {
       . " where Term='$term' and TeacherEmail='$email' and TaEmail='$studentEmail'";
   $rows = Dbc::getReader()->query($sql);
   if ($rows->rowCount() < 1)   // no entry yet
-    $sql = "insert into Evaluations (Term,TeacherEmail,TaEmail,EvalText,Award,Citation) values"
-      . "('$term','$email','$studentEmail','$evaluation',$awardProposed,'$citation')";
+    $sql = "insert into Evaluations (Term,TeacherEmail,TaEmail,EvalText,Award,Citation) values('$term','$email','$studentEmail',:EvalText,$awardProposed,:Citation)";    
+    //$sql = "insert into Evaluations (Term,TeacherEmail,TaEmail,EvalText,Award,Citation) values"
+    //  . "('$term','$email','$studentEmail','$evaluation',$awardProposed,'$citation')";
   else                         // need to update existing entry
-    $sql = "update Evaluations set EvalText='$evaluation', Award=$awardProposed, Citation='$citation' where "
-      . " Term='$term' and TeacherEmail='$email' and TaEmail='$studentEmail'";
+    $sql = "update Evaluations  set EvalText=:EvalText, Award=$awardProposed, Citation=:Citation where Term='$term' and TeacherEmail='$email' and TaEmail='$studentEmail'";
+    //$sql = "update Evaluations set EvalText='$evaluation', Award=$awardProposed, Citation='$citation' where "
+    //  . " Term='$term' and TeacherEmail='$email' and TaEmail='$studentEmail'";
 
   // execute
   try {
-    Dbc::getReader()->exec($sql);
-    print "Evaluation has been registered. ($sql)</p>";
+    $safe_sql = Dbc::getReader()->prepare($sql);
+    $safe_sql->bindParam(':EvalText', $evaluation, PDO::PARAM_STR);
+    $safe_sql->bindParam(':Citation', $citation, PDO::PARAM_STR);
+    $safe_sql->execute();
+    
+    //Dbc::getReader()->exec($sql);
+    print "Evaluation has been registered.</p>";
   }
   catch (PDOException $e) {
     print " ERROR - could not register selection: ".$e->getMessage()."<br>\n";

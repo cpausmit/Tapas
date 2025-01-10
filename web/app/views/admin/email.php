@@ -48,10 +48,7 @@ function findRecipientList($targetString,$email)
 
 function isMessageReady()
 {
-  return (isset($_POST['Debugging']) &&
-          isset($_POST['Recipients']) &&
-          isset($_POST['Subject']) &&
-          isset($_POST['Message']));
+  return (isset($_POST['Action']) && isset($_POST['Recipients']) && isset($_POST['Subject']) && isset($_POST['Message']));
 }
 
 function printEmailForm($subject,$message)
@@ -60,11 +57,6 @@ function printEmailForm($subject,$message)
 
   print '<p>';
   print "<form action=\"/email\" method=\"post\">\n";
-  print '  <select class="type" name="Debugging">'."\n";
-  print '    <option value="">Debugging (0 or 1): </option>'."\n";
-  print '    <option value="0">0</option>'."\n";
-  print '    <option value="1">1</option>';
-  print '    </select>';
   print '  <select class="Recipients" name="Recipients">'."\n";
   print '    <option value="">To: </option>'."\n";
   print "    <option value=\"Myself\"> Myself </option>";
@@ -82,7 +74,8 @@ function printEmailForm($subject,$message)
         $message.'</textarea>';
   else
     print '<textarea '.$style.' name="Message" rows=8 cols=80>'.$message.'</textarea>';
-  print '<input type="submit" value="send email" />'."\n";
+  print '<input type="submit" name="Action" value="show" />'."\n";
+  print '<input type="submit" name="Action" value="send" />'."\n";
   print '</form>'."\n";
   print '</p>'."\n";
 }
@@ -92,7 +85,6 @@ function printEmailForm($subject,$message)
 //==================================================================================================
 
 // setting the right defaults
-$debug = true;
 $subject = '';
 $message = '';
 
@@ -100,8 +92,6 @@ $message = '';
 $email = strtolower(strtolower($_SERVER['eppn']));
 //$email = strtolower($_SERVER['SSL_CLIENT_S_DN_Email']);
 
-if (isset($_POST['Debugging']))
-  $debug = intval($_POST['Debugging']);
 if (isset($_POST['Recipients']))
   $targetString = $_POST['Recipients'];
 if (isset($_POST['Subject']))
@@ -126,6 +116,10 @@ print '<article class="page">'."\n";
 print "<hr>\n";
 
 if (isMessageReady()) {
+  foreach ($_POST as $key => $value) {
+    echo ' - '.$key.' :: '.$value.'</br>';
+  }
+
   $Uheaders = htmlentities($headers);
   // show what we are going to do
   print "<hr>\n";
@@ -138,19 +132,17 @@ if (isMessageReady()) {
   print " Message:<br> $message<br>\n";
   print " Headers:<br> $Uheaders<br>\n";
 
-  // Send
-  print '<br><b>==== RESULT ====</b><br>'."\n";
-
-  if ($debug)
-    print " MESSAGE NOT SEND. DEBUGGING = $debug";
-  else {
-    //print " MESSAGE NOT SEND. DISABLED = $debug";
+  if (strcmp($_POST['Action'],'send') == 0) {
+    // Send
+    //print " MESSAGE NOT SEND. DISABLED = ".$_POST['Action'];
     if (mail($list,$subject,$message,$headers))
       print "<p>Mail accepted for delivery (does not guarantee delivery though).</p>";
     else
       print "<p>Mail was NOT accepted for delivery.</p>";
   }
-
+  else {
+    print " MESSAGE NOT SEND. Action: ".$_POST['Action'];
+  }
 }
 print "<hr>\n";
 print "<h1>Compose an Email</h1>\n";
@@ -161,5 +153,4 @@ printEmailForm($subject,$message);
 print '</article>'."\n";
 
 include("app/views/admin/footer.php");
-
 ?>
